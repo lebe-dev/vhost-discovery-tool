@@ -11,5 +11,6 @@ codegen-units = 1
 panic = 'abort'
 
 [dependencies]
+regex = "1"
 log = "0.4"
 log4rs = "0.8.3"
