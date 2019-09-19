@@ -1,16 +1,41 @@
 pub mod webserver {
+    use std::{fs, io};
     use std::fs::File;
     use std::io::{BufRead, BufReader};
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
 
     use regex::Regex;
 
     pub const VHOST_DEFAULT_HOSTNAME: &str = "localhost";
     const VHOST_DEFAULT_PORT: i32 = 80;
 
+    const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
+
     pub struct VirtualHost {
         pub domain: String,
         pub port: i32
+    }
+
+    pub fn get_vhost_config_file_list(vhost_root_path: &Path) -> Result<Vec<PathBuf>,io::Error> {
+        let paths = fs::read_dir(&vhost_root_path)?;
+
+        let mut vhost_files: Vec<PathBuf> = Vec::new();
+
+        for path in paths {
+            let file = path.unwrap();
+            let file_type = file.file_type()?;
+
+            if file_type.is_file() {
+                let file_name = file.file_name().into_string().unwrap();
+
+                if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
+                    let vhost_file = vhost_root_path.join(file_name);
+                    vhost_files.push(vhost_file);
+                }
+            }
+        }
+
+        Ok(vhost_files)
     }
 
     pub fn get_virtual_hosts_from_file(vhost_file: &Path,

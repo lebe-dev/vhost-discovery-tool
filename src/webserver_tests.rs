@@ -2,7 +2,22 @@
 mod webserver_tests {
     use std::path::Path;
 
-    use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_from_vhost_file, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_server_port, get_virtual_hosts_from_file, VHOST_DEFAULT_HOSTNAME};
+    use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_from_vhost_file, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_vhost_server_port, get_virtual_hosts_from_file, VHOST_DEFAULT_HOSTNAME};
+
+    #[test]
+    fn get_vhost_config_file_list_should_return_file_names() {
+        let vhost_root_path = Path::new("tests/apache-vhosts");
+        let files = get_vhost_config_file_list(vhost_root_path).unwrap();
+
+        let expected_size: usize = 2;
+        assert_eq!(&files.len(), &expected_size);
+    }
+
+    #[test]
+    fn get_vhost_config_file_list_should_return_error_for_unknown_path() {
+        let unknown_path = Path::new("unknown-path");
+        assert!(get_vhost_config_file_list(unknown_path).is_err());
+    }
 
     #[test]
     fn get_virtual_hosts_from_nginx_file() {
@@ -91,7 +106,7 @@ mod webserver_tests {
         let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
         let domain = get_domain_from_vhost_file(vhost_file, domain_search_regex);
 
-        assert_eq!("collections.museum.ru", domain.unwrap());
+        assert_eq!("collections.company.ru", domain.unwrap());
     }
 
     #[test]
@@ -101,7 +116,7 @@ mod webserver_tests {
 
         let port = get_vhost_server_port(vhost_file, search_regex);
 
-        assert_eq!(port, 38101);
+        assert_eq!(port, 23512);
     }
 
     #[test]
