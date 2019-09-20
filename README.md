@@ -8,9 +8,11 @@
 {
     "data":[
         {
+            "{#NAME}":"somesite.ru",
             "{#URL}":"https://somesite.ru"
         },
         {
+            "{#NAME}":"15.128.42.21:2231",
             "{#URL}":"http://15.128.42.21:2231"
         }
     ]
