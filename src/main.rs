@@ -3,7 +3,6 @@ extern crate log;
 extern crate log4rs;
 extern crate serde_json;
 
-use std::env;
 use std::path::Path;
 use std::process::exit;
 
@@ -20,13 +19,6 @@ mod main_tests;
 
 mod webserver;
 mod webserver_tests;
-
-const VERSION: &str = "1.0.0";
-
-const VERTICAL_LINE: &str = "-----------------------------------";
-
-const WITHOUT_ARGUMENTS: usize = 1;
-const ONE_ARGUMENT: usize = 2;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
@@ -53,77 +45,59 @@ fn main() {
 
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
 
-    let args: Vec<String> = env::args().collect();
+    info!("[~] collect virtual hosts..");
+    info!("include domains with custom ports: {}", include_custom_domains);
+    let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-    if args.len() == ONE_ARGUMENT {
-        let first_argument = &args[1].to_lowercase();
+    let nginx_vhosts = get_nginx_vhosts();
 
-        if is_version_command(first_argument) { show_version() }
-        else if is_help_command(first_argument) { show_usage() }
-        else {
-            show_usage();
-            exit(ERROR_EXIT_CODE);
-        }
+    for nginx_vhost in nginx_vhosts {
+        if nginx_vhost.port == DEFAULT_HTTP_PORT {
+            if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
+                vhosts.push(nginx_vhost)
+            }
+        } else {
 
-    } else if args.len() == WITHOUT_ARGUMENTS {
-        info!("[~] collect virtual hosts..");
-        info!("include domains with custom ports: {}", include_custom_domains);
-        let mut vhosts: Vec<VirtualHost> = Vec::new();
-
-        let nginx_vhosts = get_nginx_vhosts();
-
-        for nginx_vhost in nginx_vhosts {
-            if nginx_vhost.port == DEFAULT_HTTP_PORT {
-                if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
+            if include_custom_domains && nginx_vhost.port != DEFAULT_HTTPS_PORT {
+                if !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
                     vhosts.push(nginx_vhost)
                 }
+
             } else {
-
-                if include_custom_domains && nginx_vhost.port != DEFAULT_HTTPS_PORT {
-                    if !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
-                        vhosts.push(nginx_vhost)
-                    }
-
-                } else {
-                    vhosts.push(nginx_vhost)
-                }
+                vhosts.push(nginx_vhost)
             }
         }
-
-        let apache_vhosts = get_apache_vhosts();
-
-        for apache_vhost in apache_vhosts {
-            if apache_vhost.port == DEFAULT_HTTP_PORT {
-                if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
-                    vhosts.push(apache_vhost)
-                }
-            } else {
-                if include_custom_domains && apache_vhost.port != DEFAULT_HTTPS_PORT {
-                    if !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
-                        vhosts.push(apache_vhost)
-                    }
-
-                } else {
-                    vhosts.push(apache_vhost)
-                }
-            }
-        }
-
-        let sites: Vec<Site> = vhosts.iter().map(|vhost| {
-            let url = get_url(&vhost.domain, vhost.port);
-
-            Site {
-                name: get_site_name(&vhost.domain, vhost.port),
-                url
-            }
-        }).collect();
-
-        show_low_level_discovery_json(sites);
-
-    } else {
-        show_usage();
-        exit(ERROR_EXIT_CODE);
     }
+
+    let apache_vhosts = get_apache_vhosts();
+
+    for apache_vhost in apache_vhosts {
+        if apache_vhost.port == DEFAULT_HTTP_PORT {
+            if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
+                vhosts.push(apache_vhost)
+            }
+        } else {
+            if include_custom_domains && apache_vhost.port != DEFAULT_HTTPS_PORT {
+                if !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
+                    vhosts.push(apache_vhost)
+                }
+
+            } else {
+                vhosts.push(apache_vhost)
+            }
+        }
+    }
+
+    let sites: Vec<Site> = vhosts.iter().map(|vhost| {
+        let url = get_url(&vhost.domain, vhost.port);
+
+        Site {
+            name: get_site_name(&vhost.domain, vhost.port),
+            url
+        }
+    }).collect();
+
+    show_low_level_discovery_json(sites);
 }
 
 fn get_site_name(domain: &str, port: i32) -> String {
@@ -255,27 +229,6 @@ fn vector_contains_same_domain_with_default_http_port(vhosts: &Vec<VirtualHost>,
 
     result
 }
-
-fn is_version_command(arg: &str) -> bool {
-    arg == "-v" || arg == "--version"
-}
-
-fn is_help_command(arg: &str) -> bool {
-    arg == "-h" || arg == "--help"
-}
-
-fn show_usage() {
-    println!("{}", VERTICAL_LINE);
-    println!(" SITE DISCOVERY FLEA v{}", VERSION);
-    println!("{}", VERTICAL_LINE);
-    println!("Discover site configs for nginx and apache. Then generate urls and show output in Zabbix Low Level Discovery format");
-    println!();
-    println!("usage:");
-    println!("<without arguments> - discover and generate site urls");
-    println!("-v - show version");
-}
-
-fn show_version() { println!("{}", VERSION) }
 
 #[derive(Clone, Serialize)]
 struct Site {
