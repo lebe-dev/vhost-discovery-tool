@@ -35,3 +35,10 @@ chmod +x /etc/zabbix/site-discovery
 ```
 UserParameter=site.discovery,/etc/zabbix/site-discovery
 ```
+
+## RoadMap
+
+### 1.1.0
+
+- Опция: Включать Endpoint'ы  
+  Например, проксирование вида `proxy_pass ...` выдавать как отдельный URL 
