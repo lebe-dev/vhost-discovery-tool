@@ -59,10 +59,8 @@ pub mod webserver {
                     let hostname: OsString = gethostname::gethostname();
                     let hostname_as_domain = hostname.into_string().unwrap();
 
-                    domain = Some(String::from(hostname_as_domain));
-
                     let vhost = VirtualHost {
-                        domain: domain.unwrap(), port: port.unwrap()
+                        domain: String::from(hostname_as_domain), port: port.unwrap()
                     };
 
                     hosts.push(vhost);
