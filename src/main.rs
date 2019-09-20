@@ -51,32 +51,20 @@ fn main() {
 
         for nginx_vhost in nginx_vhosts {
             if nginx_vhost.port == 80 {
-                match vhosts.iter().find(
-        |vhost|
-                    vhost.domain == nginx_vhost.domain && vhost.port == 443
-                ) {
-                    Some(_) => info!("found vhost with ssl, skip"),
-                    None => vhosts.push(nginx_vhost)
+                if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
+                    vhosts.push(nginx_vhost)
                 }
-            } else {
-                vhosts.push(nginx_vhost)
-            }
+            } else { vhosts.push(nginx_vhost) }
         }
 
         let apache_vhosts = get_apache_vhosts();
 
         for apache_vhost in apache_vhosts {
             if apache_vhost.port == 80 {
-                match vhosts.iter().find(
-                    |vhost|
-                        vhost.domain == apache_vhost.domain && vhost.port == 443
-                ) {
-                    Some(_) => info!("found vhost with ssl, skip"),
-                    None => vhosts.push(apache_vhost)
+                if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
+                    vhosts.push(apache_vhost)
                 }
-            } else {
-                vhosts.push(apache_vhost)
-            }
+            } else { vhosts.push(apache_vhost) }
         }
 
         let sites: Vec<Site> = vhosts.iter().map(|vhost| {
@@ -186,6 +174,20 @@ fn get_url(domain: &str, vhost_port: i32) -> String {
     } else {
         String::from(format!("http://{}:{}", domain, vhost_port))
     }
+}
+
+fn vector_contains_same_domain_with_ssl(vhosts: &Vec<VirtualHost>, domain: &String) -> bool {
+    let mut result = false;
+
+    let vhost_found = vhosts.iter().find(
+        |vhost| &vhost.domain == domain && vhost.port == 443
+    ).is_some();
+
+    if vhost_found {
+        result = true;
+    }
+
+    result
 }
 
 fn is_version_command(arg: &str) -> bool {
