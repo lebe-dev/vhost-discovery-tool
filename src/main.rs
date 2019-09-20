@@ -25,6 +25,9 @@ const VERTICAL_LINE: &str = "-----------------------------------";
 const WITHOUT_ARGUMENTS: usize = 1;
 const ONE_ARGUMENT: usize = 2;
 
+const DEFAULT_HTTP_PORT: i32 = 80;
+const DEFAULT_HTTPS_PORT: i32 = 443;
+
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
@@ -50,7 +53,7 @@ fn main() {
         let nginx_vhosts = get_nginx_vhosts();
 
         for nginx_vhost in nginx_vhosts {
-            if nginx_vhost.port == 80 {
+            if nginx_vhost.port == DEFAULT_HTTP_PORT {
                 if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
                     vhosts.push(nginx_vhost)
                 }
@@ -60,7 +63,7 @@ fn main() {
         let apache_vhosts = get_apache_vhosts();
 
         for apache_vhost in apache_vhosts {
-            if apache_vhost.port == 80 {
+            if apache_vhost.port == DEFAULT_HTTP_PORT {
                 if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
                     vhosts.push(apache_vhost)
                 }
@@ -180,7 +183,7 @@ fn vector_contains_same_domain_with_ssl(vhosts: &Vec<VirtualHost>, domain: &Stri
     let mut result = false;
 
     let vhost_found = vhosts.iter().find(
-        |vhost| &vhost.domain == domain && vhost.port == 443
+    |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTPS_PORT
     ).is_some();
 
     if vhost_found {
@@ -221,8 +224,6 @@ struct Site {
 
 fn show_low_level_discovery_json(sites: Vec<Site>) {
     let json_structure = json!({"data": sites});
-
     let json = serde_json::to_string(&json_structure).unwrap();
-
     println!("{}", json);
 }
