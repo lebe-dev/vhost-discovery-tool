@@ -168,10 +168,10 @@ fn get_apache_vhosts() -> Vec<VirtualHost> {
 }
 
 fn get_url(domain: &str, vhost_port: i32) -> String {
-    if vhost_port == 80 {
+    if vhost_port == DEFAULT_HTTP_PORT {
         String::from(format!("http://{}", domain))
 
-    } else if vhost_port == 443 {
+    } else if vhost_port == DEFAULT_HTTPS_PORT {
         String::from(format!("https://{}", domain))
 
     } else {
