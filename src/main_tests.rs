@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod main_tests {
-    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_site_name, get_url, vector_contains_same_domain_with_ssl};
+    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_site_name, get_url, vector_contains_same_domain_with_default_http_port, vector_contains_same_domain_with_ssl};
     use crate::webserver::webserver::VirtualHost;
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
@@ -59,5 +59,21 @@ mod main_tests {
         vhosts.push(vhost);
 
         assert!(vector_contains_same_domain_with_ssl(&vhosts, &domain))
+    }
+
+    #[test]
+    fn vector_contains_same_domain_with_default_http_port_should_return_true_if_vhost_with_standard_http_port_found() {
+        let mut vhosts: Vec<VirtualHost> = Vec::new();
+
+        let domain = String::from("meduttio.uk");
+
+        let vhost = VirtualHost {
+            domain: String::from(&domain),
+            port: DEFAULT_HTTP_PORT
+        };
+
+        vhosts.push(vhost);
+
+        assert!(vector_contains_same_domain_with_default_http_port(&vhosts, &domain))
     }
 }

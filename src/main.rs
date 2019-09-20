@@ -59,7 +59,17 @@ fn main() {
                 if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
                     vhosts.push(nginx_vhost)
                 }
-            } else { vhosts.push(nginx_vhost) }
+            } else {
+
+                if nginx_vhost.port != DEFAULT_HTTPS_PORT {
+                    if !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
+                        vhosts.push(nginx_vhost)
+                    }
+
+                } else {
+                    vhosts.push(nginx_vhost)
+                }
+            }
         }
 
         let apache_vhosts = get_apache_vhosts();
@@ -69,7 +79,16 @@ fn main() {
                 if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
                     vhosts.push(apache_vhost)
                 }
-            } else { vhosts.push(apache_vhost) }
+            } else {
+                if apache_vhost.port != DEFAULT_HTTPS_PORT {
+                    if !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
+                        vhosts.push(apache_vhost)
+                    }
+
+                } else {
+                    vhosts.push(apache_vhost)
+                }
+            }
         }
 
         let sites: Vec<Site> = vhosts.iter().map(|vhost| {
@@ -195,6 +214,21 @@ fn vector_contains_same_domain_with_ssl(vhosts: &Vec<VirtualHost>, domain: &Stri
 
     let vhost_found = vhosts.iter().find(
     |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTPS_PORT
+    ).is_some();
+
+    if vhost_found {
+        result = true;
+    }
+
+    result
+}
+
+fn vector_contains_same_domain_with_default_http_port(vhosts: &Vec<VirtualHost>,
+                                                      domain: &String) -> bool {
+    let mut result = false;
+
+    let vhost_found = vhosts.iter().find(
+        |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTP_PORT
     ).is_some();
 
     if vhost_found {
