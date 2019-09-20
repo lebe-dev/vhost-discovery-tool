@@ -1,15 +1,18 @@
 #[macro_use]
 extern crate log;
 extern crate log4rs;
+extern crate serde_json;
 
 use std::env;
 use std::path::Path;
 use std::process::exit;
 
+use serde::Serialize;
 use serde_json::json;
 
 use crate::logging::logging::get_logging_config;
 use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
+
 
 mod logging;
 
@@ -73,7 +76,7 @@ fn main() {
                     }
 
                 }
-                Err(error) => {
+                Err(_) => {
                     error!("unable to get vhost file list from '{}', \
                            possible reason: lack of permissions", apache_vhost_base_path.display());
                     exit(ERROR_EXIT_CODE)
@@ -109,7 +112,7 @@ fn main() {
                     }
 
                 }
-                Err(error) => {
+                Err(_error) => {
                     error!("unable to get vhost file list from '{}', \
                            possible reason: lack of permissions", nginx_vhost_base_path.display());
                     exit(ERROR_EXIT_CODE)
@@ -117,9 +120,15 @@ fn main() {
             }
         }
 
-        let urls: Vec<String> = vhosts.iter().map(|vhost| get_url(&vhost.domain, vhost.port)).collect();
+        let sites: Vec<Site> = vhosts.iter().map(|vhost| {
+            let url = get_url(&vhost.domain, vhost.port);
+            Site {
+                name: String::from(&vhost.domain),
+                url
+            }
+        }).collect();
 
-        show_low_level_discovery_json(urls);
+        show_low_level_discovery_json(sites);
 
     } else {
         show_usage();
@@ -160,8 +169,16 @@ fn show_usage() {
 
 fn show_version() { println!("{}", VERSION) }
 
-fn show_low_level_discovery_json(urls: Vec<String>) {
-    let json_structure = json!({"data": urls});
+#[derive(Clone, Serialize)]
+struct Site {
+    #[serde(rename(serialize = "{#NAME}"))]
+    pub name: String,
+    #[serde(rename(serialize = "{#URL}"))]
+    pub url: String
+}
+
+fn show_low_level_discovery_json(sites: Vec<Site>) {
+    let json_structure = json!({"data": sites});
 
     let json = serde_json::to_string(&json_structure).unwrap();
 
