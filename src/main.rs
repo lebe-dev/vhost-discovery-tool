@@ -13,7 +13,6 @@ use serde_json::json;
 use crate::logging::logging::get_logging_config;
 use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
 
-
 mod logging;
 
 mod webserver;
@@ -48,40 +47,10 @@ fn main() {
         info!("[~] collect virtual hosts..");
         let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-        // APACHE
+        let apache_vhosts = get_apache_vhosts();
 
-        let apache_vhost_base_path = Path::new("/etc/httpd/conf.d");
-
-        if apache_vhost_base_path.is_dir() && apache_vhost_base_path.exists() {
-            match get_vhost_config_file_list(apache_vhost_base_path) {
-                Ok(apache_vhost_files) => {
-
-                    for vhost_file in apache_vhost_files {
-                        let vhost_file_path = vhost_file.as_path();
-
-                        let section_start_regex = get_apache_vhost_section_start_regex();
-                        let port_search_regex = get_apache_vhost_port_regex();
-                        let domain_search_regex = get_domain_search_regex_for_apache_vhost();
-
-                        let apache_vhosts = get_virtual_hosts_from_file(
-                            vhost_file_path,
-                            section_start_regex,
-                            port_search_regex,
-                            domain_search_regex
-                        );
-
-                        for apache_vhost in apache_vhosts {
-                            vhosts.push(apache_vhost);
-                        }
-                    }
-
-                }
-                Err(_) => {
-                    error!("unable to get vhost file list from '{}', \
-                           possible reason: lack of permissions", apache_vhost_base_path.display());
-                    exit(ERROR_EXIT_CODE)
-                }
-            }
+        for apache_vhost in apache_vhosts {
+            vhosts.push(apache_vhost)
         }
 
         // NGINX
@@ -134,6 +103,46 @@ fn main() {
         show_usage();
         exit(ERROR_EXIT_CODE);
     }
+}
+
+fn get_apache_vhosts() -> Vec<VirtualHost> {
+    let mut vhosts: Vec<VirtualHost> = Vec::new();
+
+    let apache_vhost_base_path = Path::new("/etc/httpd/conf.d");
+
+    if apache_vhost_base_path.is_dir() && apache_vhost_base_path.exists() {
+        match get_vhost_config_file_list(apache_vhost_base_path) {
+            Ok(apache_vhost_files) => {
+
+                for vhost_file in apache_vhost_files {
+                    let vhost_file_path = vhost_file.as_path();
+
+                    let section_start_regex = get_apache_vhost_section_start_regex();
+                    let port_search_regex = get_apache_vhost_port_regex();
+                    let domain_search_regex = get_domain_search_regex_for_apache_vhost();
+
+                    let apache_vhosts = get_virtual_hosts_from_file(
+                        vhost_file_path,
+                        section_start_regex,
+                        port_search_regex,
+                        domain_search_regex
+                    );
+
+                    for apache_vhost in apache_vhosts {
+                        vhosts.push(apache_vhost);
+                    }
+                }
+
+            }
+            Err(_) => {
+                error!("unable to get vhost file list from '{}', \
+                        possible reason: lack of permissions", apache_vhost_base_path.display());
+                exit(ERROR_EXIT_CODE)
+            }
+        }
+    }
+
+    return vhosts
 }
 
 fn get_url(domain: &str, vhost_port: i32) -> String {
