@@ -7,6 +7,7 @@ use std::env;
 use std::path::Path;
 use std::process::exit;
 
+use clap::{App, Arg};
 use serde::Serialize;
 use serde_json::json;
 
@@ -30,11 +31,27 @@ const ONE_ARGUMENT: usize = 2;
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
 
+const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
+
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
     let logging_config = get_logging_config();
     log4rs::init_config(logging_config).unwrap();
+
+    let matches = App::new("Site Discovery Flea")
+                                    .version("1.0.0")
+                                    .author("Eugene Lebedev <duke.tougu@gmail.com>")
+                                    .about("Discover site configs for nginx and apache. \
+                                            Then generate urls and show output in \
+                                            Zabbix Low Level Discovery format")
+                                    .arg(
+                                        Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
+                                                .help("include domains with custom ports")
+                                    )
+                                    .get_matches();
+
+    let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
 
     let args: Vec<String> = env::args().collect();
 
@@ -50,6 +67,7 @@ fn main() {
 
     } else if args.len() == WITHOUT_ARGUMENTS {
         info!("[~] collect virtual hosts..");
+        info!("include domains with custom ports: {}", include_custom_domains);
         let mut vhosts: Vec<VirtualHost> = Vec::new();
 
         let nginx_vhosts = get_nginx_vhosts();
@@ -61,7 +79,7 @@ fn main() {
                 }
             } else {
 
-                if nginx_vhost.port != DEFAULT_HTTPS_PORT {
+                if include_custom_domains && nginx_vhost.port != DEFAULT_HTTPS_PORT {
                     if !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
                         vhosts.push(nginx_vhost)
                     }
@@ -80,7 +98,7 @@ fn main() {
                     vhosts.push(apache_vhost)
                 }
             } else {
-                if apache_vhost.port != DEFAULT_HTTPS_PORT {
+                if include_custom_domains && apache_vhost.port != DEFAULT_HTTPS_PORT {
                     if !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
                         vhosts.push(apache_vhost)
                     }
