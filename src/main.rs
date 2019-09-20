@@ -47,46 +47,16 @@ fn main() {
         info!("[~] collect virtual hosts..");
         let mut vhosts: Vec<VirtualHost> = Vec::new();
 
+        let nginx_vhosts = get_nginx_vhosts();
+
+        for nginx_vhost in nginx_vhosts {
+            vhosts.push(nginx_vhost)
+        }
+
         let apache_vhosts = get_apache_vhosts();
 
         for apache_vhost in apache_vhosts {
             vhosts.push(apache_vhost)
-        }
-
-        // NGINX
-
-        let nginx_vhost_base_path = Path::new("/etc/nginx/conf.d");
-
-        if nginx_vhost_base_path.is_dir() && nginx_vhost_base_path.exists() {
-            match get_vhost_config_file_list(nginx_vhost_base_path) {
-                Ok(apache_vhost_files) => {
-
-                    for vhost_file in apache_vhost_files {
-                        let vhost_file_path = vhost_file.as_path();
-
-                        let section_start_regex = get_nginx_vhost_section_start_regex();
-                        let port_search_regex = get_nginx_vhost_port_regex();
-                        let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
-
-                        let nginx_vhosts = get_virtual_hosts_from_file(
-                            vhost_file_path,
-                            section_start_regex,
-                            port_search_regex,
-                            domain_search_regex
-                        );
-
-                        for nginx_vhost in nginx_vhosts {
-                            vhosts.push(nginx_vhost);
-                        }
-                    }
-
-                }
-                Err(_error) => {
-                    error!("unable to get vhost file list from '{}', \
-                           possible reason: lack of permissions", nginx_vhost_base_path.display());
-                    exit(ERROR_EXIT_CODE)
-                }
-            }
         }
 
         let sites: Vec<Site> = vhosts.iter().map(|vhost| {
@@ -103,6 +73,46 @@ fn main() {
         show_usage();
         exit(ERROR_EXIT_CODE);
     }
+}
+
+fn get_nginx_vhosts() -> Vec<VirtualHost> {
+    let mut vhosts: Vec<VirtualHost> = Vec::new();
+
+    let nginx_vhost_base_path = Path::new("/etc/nginx/conf.d");
+
+    if nginx_vhost_base_path.is_dir() && nginx_vhost_base_path.exists() {
+        match get_vhost_config_file_list(nginx_vhost_base_path) {
+            Ok(apache_vhost_files) => {
+
+                for vhost_file in apache_vhost_files {
+                    let vhost_file_path = vhost_file.as_path();
+
+                    let section_start_regex = get_nginx_vhost_section_start_regex();
+                    let port_search_regex = get_nginx_vhost_port_regex();
+                    let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
+
+                    let nginx_vhosts = get_virtual_hosts_from_file(
+                        vhost_file_path,
+                        section_start_regex,
+                        port_search_regex,
+                        domain_search_regex
+                    );
+
+                    for nginx_vhost in nginx_vhosts {
+                        vhosts.push(nginx_vhost);
+                    }
+                }
+
+            }
+            Err(_error) => {
+                error!("unable to get vhost file list from '{}', \
+                           possible reason: lack of permissions", nginx_vhost_base_path.display());
+                exit(ERROR_EXIT_CODE)
+            }
+        }
+    }
+
+    return vhosts
 }
 
 fn get_apache_vhosts() -> Vec<VirtualHost> {
