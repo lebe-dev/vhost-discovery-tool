@@ -7,7 +7,6 @@ pub mod webserver {
     use regex::Regex;
 
     pub const VHOST_DEFAULT_HOSTNAME: &str = "localhost";
-    const VHOST_DEFAULT_PORT: i32 = 80;
 
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
 
@@ -47,8 +46,6 @@ pub mod webserver {
         info!("get virtual hosts from file '{}'", vhost_file.display());
         let input = File::open(vhost_file).unwrap();
         let buffered = BufReader::new(input);
-
-        let mut vhost_found = false;
 
         let mut inside_section = false;
         let mut port: Option<i32> = None;
@@ -104,56 +101,12 @@ pub mod webserver {
         return hosts
     }
 
-    pub fn get_domain_from_vhost_file(vhost_file: &Path, search_pattern: Regex) -> Option<String> {
-        let mut domain = None;
-
-        info!("get domain name from vhost file '{}'", vhost_file.display());
-        let input = File::open(vhost_file).unwrap();
-        let buffered = BufReader::new(input);
-
-        for line in buffered.lines() {
-            let row = line.unwrap();
-
-            if search_pattern.is_match(&row) {
-                let groups = search_pattern.captures_iter(&row).next().unwrap();
-                domain = Some(String::from(&groups[1]));
-                break;
-            }
-        }
-
-        domain
-    }
-
     pub fn get_domain_search_regex_for_nginx_vhost() -> Regex {
         return Regex::new("server_name[\\s\t]+([a-z0-9.\\-]+);").unwrap();
     }
 
     pub fn get_domain_search_regex_for_apache_vhost() -> Regex {
         return Regex::new("ServerName[\\s\t]+([a-zA-Z0-9.-]+)$").unwrap();
-    }
-
-    pub fn get_vhost_server_port(vhost_file: &Path, search_pattern: Regex) -> i32 {
-        let mut result: i32 = 80;
-
-        info!("get vhost server port");
-
-        let input = File::open(vhost_file).unwrap();
-        let buffered = BufReader::new(input);
-
-        for line in buffered.lines() {
-            let row = line.unwrap();
-
-            if search_pattern.is_match(&row) {
-                let groups = search_pattern.captures_iter(&row).next().unwrap();
-                let vhost_port = String::from(&groups[1]);
-                result = vhost_port.parse().unwrap();
-                info!("{}", &result);
-
-                if row.to_lowercase().contains("ssl;") { break; }
-            }
-        }
-
-        result
     }
 
     pub fn get_nginx_vhost_section_start_regex() -> Regex {
