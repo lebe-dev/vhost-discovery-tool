@@ -59,8 +59,9 @@ fn main() {
             }
         } else {
 
-            if include_custom_domains && nginx_vhost.port != DEFAULT_HTTPS_PORT {
-                if !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
+            if nginx_vhost.port != DEFAULT_HTTPS_PORT {
+                if include_custom_domains &&
+                   !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
                     vhosts.push(nginx_vhost)
                 }
 
@@ -78,8 +79,9 @@ fn main() {
                 vhosts.push(apache_vhost)
             }
         } else {
-            if include_custom_domains && apache_vhost.port != DEFAULT_HTTPS_PORT {
-                if !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
+            if apache_vhost.port != DEFAULT_HTTPS_PORT {
+                if include_custom_domains &&
+                   !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
                     vhosts.push(apache_vhost)
                 }
 
