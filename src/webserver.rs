@@ -1,12 +1,11 @@
 pub mod webserver {
     use std::{fs, io};
+    use std::ffi::OsString;
     use std::fs::File;
     use std::io::{BufRead, BufReader};
     use std::path::{Path, PathBuf};
 
     use regex::Regex;
-
-    pub const VHOST_DEFAULT_HOSTNAME: &str = "localhost";
 
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
 
@@ -56,7 +55,11 @@ pub mod webserver {
 
             if section_start_pattern.is_match(&row) {
                 if domain.is_none() && port.is_some() {
-                    domain = Some(String::from(VHOST_DEFAULT_HOSTNAME));
+
+                    let hostname: OsString = gethostname::gethostname();
+                    let hostname_as_domain = hostname.into_string().unwrap();
+
+                    domain = Some(String::from(hostname_as_domain));
 
                     let vhost = VirtualHost {
                         domain: domain.unwrap(), port: port.unwrap()

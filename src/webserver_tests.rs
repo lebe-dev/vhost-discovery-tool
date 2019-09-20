@@ -1,8 +1,9 @@
 #[cfg(test)]
 mod webserver_tests {
+    use std::ffi::OsString;
     use std::path::Path;
 
-    use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VHOST_DEFAULT_HOSTNAME};
+    use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
 
     #[test]
     fn get_vhost_config_file_list_should_return_file_names() {
@@ -41,7 +42,10 @@ mod webserver_tests {
         let second_vhost = &vhosts.get(1).unwrap();
 
         assert_eq!(second_vhost.port, 27239);
-        assert_eq!(second_vhost.domain, VHOST_DEFAULT_HOSTNAME);
+
+        let hostname: OsString = gethostname::gethostname();
+        let expected_domain = hostname.into_string().unwrap();
+        assert_eq!(second_vhost.domain, expected_domain);
 
         let last_vhost = &vhosts.last().unwrap();
 
