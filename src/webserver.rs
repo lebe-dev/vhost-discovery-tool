@@ -8,6 +8,7 @@ pub mod webserver {
     use regex::Regex;
 
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
+    const DEFAULT_HOSTNAME: &str = "localhost";
 
     pub struct VirtualHost {
         pub domain: String,
@@ -58,7 +59,7 @@ pub mod webserver {
                     let hostname: OsString = gethostname::gethostname();
                     let hostname_as_domain = hostname.into_string().unwrap();
 
-                    if &hostname_as_domain != "localhost" {
+                    if &hostname_as_domain != DEFAULT_HOSTNAME {
                         let vhost = VirtualHost {
                             domain: String::from(hostname_as_domain), port: port.unwrap()
                         };
@@ -87,12 +88,21 @@ pub mod webserver {
             }
 
             if port.is_some() && domain.is_some() {
-                let hostname: OsString = gethostname::gethostname();
-                let hostname_as_domain = hostname.into_string().unwrap();
+                let domain_name = domain.unwrap();
 
-                if &hostname_as_domain != "localhost" {
+                if &domain_name == DEFAULT_HOSTNAME {
+                    let hostname: OsString = gethostname::gethostname();
+                    let hostname_as_domain = hostname.into_string().unwrap();
+
                     let vhost = VirtualHost {
                         domain: String::from(hostname_as_domain), port: port.unwrap()
+                    };
+
+                    hosts.push(vhost);
+
+                } else {
+                    let vhost = VirtualHost {
+                        domain: String::from(&domain_name), port: port.unwrap()
                     };
 
                     hosts.push(vhost);
