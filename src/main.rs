@@ -50,17 +50,38 @@ fn main() {
         let nginx_vhosts = get_nginx_vhosts();
 
         for nginx_vhost in nginx_vhosts {
-            vhosts.push(nginx_vhost)
+            if nginx_vhost.port == 80 {
+                match vhosts.iter().find(
+        |vhost|
+                    vhost.domain == nginx_vhost.domain && vhost.port == 443
+                ) {
+                    Some(_) => info!("found vhost with ssl, skip"),
+                    None => vhosts.push(nginx_vhost)
+                }
+            } else {
+                vhosts.push(nginx_vhost)
+            }
         }
 
         let apache_vhosts = get_apache_vhosts();
 
         for apache_vhost in apache_vhosts {
-            vhosts.push(apache_vhost)
+            if apache_vhost.port == 80 {
+                match vhosts.iter().find(
+                    |vhost|
+                        vhost.domain == apache_vhost.domain && vhost.port == 443
+                ) {
+                    Some(_) => info!("found vhost with ssl, skip"),
+                    None => vhosts.push(apache_vhost)
+                }
+            } else {
+                vhosts.push(apache_vhost)
+            }
         }
 
         let sites: Vec<Site> = vhosts.iter().map(|vhost| {
             let url = get_url(&vhost.domain, vhost.port);
+
             Site {
                 name: String::from(&vhost.domain),
                 url
