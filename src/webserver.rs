@@ -55,15 +55,16 @@ pub mod webserver {
 
             if section_start_pattern.is_match(&row) {
                 if domain.is_none() && port.is_some() {
-
                     let hostname: OsString = gethostname::gethostname();
                     let hostname_as_domain = hostname.into_string().unwrap();
 
-                    let vhost = VirtualHost {
-                        domain: String::from(hostname_as_domain), port: port.unwrap()
-                    };
+                    if &hostname_as_domain != "localhost" {
+                        let vhost = VirtualHost {
+                            domain: String::from(hostname_as_domain), port: port.unwrap()
+                        };
 
-                    hosts.push(vhost);
+                        hosts.push(vhost);
+                    }
 
                     port = None;
                     domain = None;
