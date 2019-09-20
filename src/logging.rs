@@ -27,7 +27,7 @@ pub mod logging {
     fn get_file_appender() -> FileAppender {
         FileAppender::builder()
             .encoder(get_encoder())
-            .build("iss-discovery.log")
+            .build("site-discovery-flea.log")
             .unwrap()
     }
 
