@@ -39,6 +39,7 @@ fn main() {
                                             Zabbix Low Level Discovery format")
                                     .arg(
                                         Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
+                                                .long("include-custom-ports")
                                                 .help("include domains with custom ports")
                                     )
                                     .get_matches();
