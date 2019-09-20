@@ -15,6 +15,8 @@ use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_
 
 mod logging;
 
+mod main_tests;
+
 mod webserver;
 mod webserver_tests;
 
@@ -74,7 +76,7 @@ fn main() {
             let url = get_url(&vhost.domain, vhost.port);
 
             Site {
-                name: String::from(&vhost.domain),
+                name: get_site_name(&vhost.domain, vhost.port),
                 url
             }
         }).collect();
@@ -84,6 +86,15 @@ fn main() {
     } else {
         show_usage();
         exit(ERROR_EXIT_CODE);
+    }
+}
+
+fn get_site_name(domain: &str, port: i32) -> String {
+    if port == DEFAULT_HTTP_PORT || port == DEFAULT_HTTPS_PORT {
+        String::from(domain)
+
+    } else {
+        String::from(format!("{}:{}", domain, port))
     }
 }
 
