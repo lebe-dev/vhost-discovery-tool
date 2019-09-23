@@ -2,6 +2,16 @@
 
 Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
 
+## Опции
+
+### Показывать в результате хосты с нестандартными портами
+
+Опция: `--include-custom-ports`
+
+В результатах будут также хосты вида http://somehost.ru:3823
+
+Под стандартными портами понимаются: 80-й и 443-й 
+
 ## Пример вывода
 
 ```$json
