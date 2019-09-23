@@ -30,7 +30,7 @@ chown -R zabbix.zabbix /etc/zabbix
 chmod +x /etc/zabbix/site-discovery
 ```
 
-3.Редактируем конфигурацию агента `/etc/zabbix/zabbix-agent.d/site-discovery.conf`, добавляем:
+3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
 
 ```
 UserParameter=site.discovery,cat /etc/zabbix/vhosts.lld
