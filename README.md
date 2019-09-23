@@ -30,11 +30,14 @@ chown -R zabbix.zabbix /etc/zabbix
 chmod +x /etc/zabbix/site-discovery
 ```
 
-3.Редактируем конфигурацию агента `/etc/zabbix/zabbix-agent.d/site-discovery`, добавляем:
+3.Редактируем конфигурацию агента `/etc/zabbix/zabbix-agent.d/site-discovery.conf`, добавляем:
 
 ```
-UserParameter=site.discovery,/etc/zabbix/site-discovery
+UserParameter=site.discovery,cat /etc/zabbix/vhosts.lld
+UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
 ```
+
+4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
 
 ## RoadMap
 
