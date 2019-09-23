@@ -31,7 +31,7 @@
 
 ## Настройка Zabbix агента
 
-1.Копируем исполняемый файл `site-discovery` в `/etc/zabbix`.
+1.Копируем исполняемый файл `site-discovery-flea` в `/etc/zabbix`.
 
 2.Обновляем права:
 
@@ -43,7 +43,7 @@ chmod +x /etc/zabbix/site-discovery
 3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
 
 ```
-UserParameter=site.discovery,cat /etc/zabbix/vhosts.lld
+UserParameter=site.discovery,/etc/zabbix/site-discovery-flea --include-custom-ports
 UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
 ```
 
