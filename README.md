@@ -1,6 +1,6 @@
 # Site Discovery Flea
 
-Утилита для обнаружения доменных имен в конфигих nginx и apache. Вывод результатов в формате [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
+Утилита для ссылок для мониторинга из nginx и apache. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
 
 ## Пример вывода
 
