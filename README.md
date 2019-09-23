@@ -1,6 +1,6 @@
 # Site Discovery Flea
 
-Утилита сбора ссылок для мониторинга из nginx и apache. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
+Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
 
 ## Пример вывода
 
