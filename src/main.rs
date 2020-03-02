@@ -3,6 +3,7 @@ extern crate log;
 extern crate log4rs;
 extern crate serde_json;
 
+use std::env;
 use std::path::Path;
 use std::process::exit;
 
@@ -24,11 +25,15 @@ const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
 
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
+const WORKDIR: &str = "/var/lib/zabbix";
 
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
-    let logging_config = get_logging_config();
+    let work_dir = Path::new(WORKDIR).display().to_string();
+    env::set_current_dir(&work_dir).expect("unable to set working directory");
+
+    let logging_config = get_logging_config(&work_dir);
     log4rs::init_config(logging_config).unwrap();
 
     let matches = App::new("Site Discovery Flea")
