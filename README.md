@@ -2,6 +2,26 @@
 
 Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
 
+## Настройка Zabbix агента
+
+1.Копируем исполняемый файл `site-discovery-flea` в `/var/lib/zabbix`.
+
+2.Обновляем права:
+
+```
+chown -R zabbix.zabbix /var/lib/zabbix
+chmod +x /var/lib/zabbix/site-discovery-flea
+```
+
+3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
+
+```
+UserParameter=site.discovery,/var/lib/zabbix/site-discovery-flea
+UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
+```
+
+4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
+
 ## Опции
 
 ### Показывать в результате хосты с нестандартными портами
@@ -28,26 +48,6 @@
     ]
 }
 ```
-
-## Настройка Zabbix агента
-
-1.Копируем исполняемый файл `site-discovery-flea` в `/etc/zabbix`.
-
-2.Обновляем права:
-
-```
-chown -R zabbix.zabbix /etc/zabbix
-chmod +x /etc/zabbix/site-discovery
-```
-
-3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
-
-```
-UserParameter=site.discovery,/etc/zabbix/site-discovery-flea --include-custom-ports
-UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
-```
-
-4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
 
 ## RoadMap
 
