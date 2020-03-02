@@ -333,7 +333,7 @@ dependencies = [
 
 [[package]]
 name = "site-discovery-flea"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gethostname 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
