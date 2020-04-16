@@ -4,19 +4,18 @@
 
 ## Настройка Zabbix агента
 
-1.Копируем исполняемый файл `site-discovery-flea` в `/var/lib/zabbix`.
+1.Копируем исполняемый файл `site-discovery-flea` в `/usr/bin`.
 
 2.Обновляем права:
 
 ```
-chown -R zabbix.zabbix /var/lib/zabbix
-chmod +x /var/lib/zabbix/site-discovery-flea
+chmod +x /usr/bin/site-discovery-flea
 ```
 
 3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
 
 ```
-UserParameter=site.discovery,/var/lib/zabbix/site-discovery-flea
+UserParameter=site.discovery,/usr/bin/site-discovery-flea
 UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
 ```
 
