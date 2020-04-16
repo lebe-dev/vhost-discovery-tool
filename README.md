@@ -23,6 +23,24 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | c
 
 ## Опции
 
+### Указать рабочую директорию
+
+Опция: `--work-dir` или `-d`
+
+Значение по умолчанию: `/etc/zabbix`
+
+### Указать путь к конфигурациям nginx
+
+Опция: `--nginx-vhosts-path` или `-n`
+
+Значение по умолчанию: `/etc/nginx/conf.d`
+
+### Указать путь к конфигурациям apache
+
+Опция: `--apache-vhosts-path` или `-a`
+
+Значение по умолчанию: `/etc/httpd/conf.d`
+
 ### Показывать в результате хосты с нестандартными портами
 
 Опция: `--include-custom-ports`
