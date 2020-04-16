@@ -27,7 +27,11 @@ const DEFAULT_HTTPS_PORT: i32 = 443;
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
 const WORKDIR: &str = "/etc/zabbix";
 
+const NGINX_VHOSTS_PATH: &str = "/etc/nginx/conf.d";
+
 const WORK_DIR_ARGUMENT: &str = "work-dir";
+
+const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
 
 const ERROR_EXIT_CODE: i32 = 1;
 
@@ -50,6 +54,13 @@ fn main() {
                                                 .long("include-custom-ports")
                                                 .help("include domains with custom ports")
                                     )
+                                    .arg(
+                                        Arg::with_name(NGINX_VHOSTS_PATH_ARGUMENT)
+                                            .short("n")
+                                            .help("set nginx vhosts root path")
+                                            .long(NGINX_VHOSTS_PATH_ARGUMENT)
+                                            .takes_value(true).required(false)
+                                    )
                                     .get_matches();
 
     let working_directory: &Path = if matches.is_present(WORK_DIR_ARGUMENT) {
@@ -69,7 +80,13 @@ fn main() {
     info!("include domains with custom ports: {}", include_custom_domains);
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-    let nginx_vhosts = get_nginx_vhosts();
+    let nginx_vhosts_path: &Path = if matches.is_present(NGINX_VHOSTS_PATH_ARGUMENT) {
+        let nginx_vhosts_path_value = matches.value_of(NGINX_VHOSTS_PATH_ARGUMENT).unwrap();
+        Path::new(nginx_vhosts_path_value)
+
+    } else { Path::new(NGINX_VHOSTS_PATH) };
+
+    let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
 
     for nginx_vhost in nginx_vhosts {
         if nginx_vhost.port == DEFAULT_HTTP_PORT {
@@ -131,21 +148,19 @@ fn get_site_name(domain: &str, port: i32) -> String {
     }
 }
 
-fn get_nginx_vhosts() -> Vec<VirtualHost> {
+fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-    let nginx_vhost_base_path = Path::new("/etc/nginx/conf.d");
-
-    if nginx_vhost_base_path.is_dir() && nginx_vhost_base_path.exists() {
-        match get_vhost_config_file_list(nginx_vhost_base_path) {
+    if nginx_vhosts_path.is_dir() && nginx_vhosts_path.exists() {
+        match get_vhost_config_file_list(nginx_vhosts_path) {
             Ok(apache_vhost_files) => {
 
                 for vhost_file in apache_vhost_files {
-                    let vhost_file_path = vhost_file.as_path();
-
                     let section_start_regex = get_nginx_vhost_section_start_regex();
                     let port_search_regex = get_nginx_vhost_port_regex();
                     let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
+
+                    let vhost_file_path = vhost_file.as_path();
 
                     let nginx_vhosts = get_virtual_hosts_from_file(
                         vhost_file_path,
@@ -162,7 +177,7 @@ fn get_nginx_vhosts() -> Vec<VirtualHost> {
             }
             Err(_error) => {
                 error!("unable to get vhost file list from '{}', \
-                           possible reason: lack of permissions", nginx_vhost_base_path.display());
+                       possible reason: lack of permissions", nginx_vhosts_path.display());
                 exit(ERROR_EXIT_CODE)
             }
         }
