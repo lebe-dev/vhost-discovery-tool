@@ -27,11 +27,12 @@ const DEFAULT_HTTPS_PORT: i32 = 443;
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
 const WORKDIR: &str = "/etc/zabbix";
 
-const NGINX_VHOSTS_PATH: &str = "/etc/nginx/conf.d";
-
 const WORK_DIR_ARGUMENT: &str = "work-dir";
+const NGINX_VHOSTS_PATH: &str = "/etc/nginx/conf.d";
+const APACHE_VHOSTS_PATH: &str = "/etc/httpd/conf.d";
 
 const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
+const APACHE_VHOSTS_PATH_ARGUMENT: &str = "apache-vhosts-path";
 
 const ERROR_EXIT_CODE: i32 = 1;
 
@@ -59,6 +60,13 @@ fn main() {
                                             .short("n")
                                             .help("set nginx vhosts root path")
                                             .long(NGINX_VHOSTS_PATH_ARGUMENT)
+                                            .takes_value(true).required(false)
+                                    )
+                                    .arg(
+                                        Arg::with_name(APACHE_VHOSTS_PATH_ARGUMENT)
+                                            .short("a")
+                                            .help("set apache vhosts root path")
+                                            .long(APACHE_VHOSTS_PATH_ARGUMENT)
                                             .takes_value(true).required(false)
                                     )
                                     .get_matches();
@@ -107,7 +115,13 @@ fn main() {
         }
     }
 
-    let apache_vhosts = get_apache_vhosts();
+    let apache_vhosts_path: &Path = if matches.is_present(APACHE_VHOSTS_PATH_ARGUMENT) {
+        let apache_vhosts_path_value = matches.value_of(APACHE_VHOSTS_PATH_ARGUMENT).unwrap();
+        Path::new(apache_vhosts_path_value)
+
+    } else { Path::new(APACHE_VHOSTS_PATH) };
+
+    let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
 
     for apache_vhost in apache_vhosts {
         if apache_vhost.port == DEFAULT_HTTP_PORT {
@@ -186,16 +200,14 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
     return vhosts
 }
 
-fn get_apache_vhosts() -> Vec<VirtualHost> {
+fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-    let apache_vhost_base_path = Path::new("/etc/httpd/conf.d");
+    if vhosts_path.is_dir() && vhosts_path.exists() {
+        match get_vhost_config_file_list(vhosts_path) {
+            Ok(vhost_files) => {
 
-    if apache_vhost_base_path.is_dir() && apache_vhost_base_path.exists() {
-        match get_vhost_config_file_list(apache_vhost_base_path) {
-            Ok(apache_vhost_files) => {
-
-                for vhost_file in apache_vhost_files {
+                for vhost_file in vhost_files {
                     let vhost_file_path = vhost_file.as_path();
 
                     let section_start_regex = get_apache_vhost_section_start_regex();
@@ -217,7 +229,7 @@ fn get_apache_vhosts() -> Vec<VirtualHost> {
             }
             Err(_) => {
                 error!("unable to get vhost file list from '{}', \
-                        possible reason: lack of permissions", apache_vhost_base_path.display());
+                        possible reason: lack of permissions", vhosts_path.display());
                 exit(ERROR_EXIT_CODE)
             }
         }
