@@ -7,7 +7,7 @@ use std::env;
 use std::path::Path;
 use std::process::exit;
 
-use clap::{App, Arg};
+use clap::{App, Arg, ArgMatches};
 use serde::Serialize;
 use serde_json::json;
 
@@ -115,11 +115,8 @@ fn main() {
         }
     }
 
-    let apache_vhosts_path: &Path = if matches.is_present(APACHE_VHOSTS_PATH_ARGUMENT) {
-        let apache_vhosts_path_value = matches.value_of(APACHE_VHOSTS_PATH_ARGUMENT).unwrap();
-        Path::new(apache_vhosts_path_value)
-
-    } else { Path::new(APACHE_VHOSTS_PATH) };
+    let apache_vhosts_path: &Path = get_argument_path_value(
+        &matches, APACHE_VHOSTS_PATH_ARGUMENT, APACHE_VHOSTS_PATH);
 
     let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
 
@@ -151,6 +148,16 @@ fn main() {
     }).collect();
 
     show_low_level_discovery_json(sites);
+}
+
+fn get_argument_path_value<'a>(matches: &'a ArgMatches, argument: &str, default_path: &'a str) -> &'a Path {
+    let path: &Path = if matches.is_present(argument) {
+        let apache_vhosts_path_value = matches.value_of(argument).unwrap();
+        Path::new(apache_vhosts_path_value)
+
+    } else { Path::new(default_path) };
+
+    return path;
 }
 
 fn get_site_name(domain: &str, port: i32) -> String {
