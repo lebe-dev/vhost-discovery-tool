@@ -88,11 +88,8 @@ fn main() {
     info!("include domains with custom ports: {}", include_custom_domains);
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-    let nginx_vhosts_path: &Path = if matches.is_present(NGINX_VHOSTS_PATH_ARGUMENT) {
-        let nginx_vhosts_path_value = matches.value_of(NGINX_VHOSTS_PATH_ARGUMENT).unwrap();
-        Path::new(nginx_vhosts_path_value)
-
-    } else { Path::new(NGINX_VHOSTS_PATH) };
+    let nginx_vhosts_path: &Path = get_argument_path_value(
+        &matches, NGINX_VHOSTS_PATH_ARGUMENT, NGINX_VHOSTS_PATH);
 
     let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
 
