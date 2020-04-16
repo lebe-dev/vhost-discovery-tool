@@ -71,11 +71,8 @@ fn main() {
                                     )
                                     .get_matches();
 
-    let working_directory: &Path = if matches.is_present(WORK_DIR_ARGUMENT) {
-        let work_dir_value = matches.value_of(WORK_DIR_ARGUMENT).unwrap();
-        Path::new(work_dir_value)
-
-    } else { Path::new(WORKDIR) };
+    let working_directory: &Path = get_argument_path_value(
+        &matches, WORK_DIR_ARGUMENT, WORKDIR);
 
     env::set_current_dir(&working_directory).expect("unable to set working directory");
 
