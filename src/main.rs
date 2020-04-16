@@ -153,9 +153,9 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
 
     if nginx_vhosts_path.is_dir() && nginx_vhosts_path.exists() {
         match get_vhost_config_file_list(nginx_vhosts_path) {
-            Ok(apache_vhost_files) => {
+            Ok(vhost_files) => {
 
-                for vhost_file in apache_vhost_files {
+                for vhost_file in vhost_files {
                     let section_start_regex = get_nginx_vhost_section_start_regex();
                     let port_search_regex = get_nginx_vhost_port_regex();
                     let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
