@@ -27,15 +27,11 @@ const DEFAULT_HTTPS_PORT: i32 = 443;
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
 const WORKDIR: &str = "/etc/zabbix";
 
+const WORK_DIR_ARGUMENT: &str = "work-dir";
+
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
-    let work_dir = Path::new(WORKDIR).display().to_string();
-    env::set_current_dir(&work_dir).expect("unable to set working directory");
-
-    let logging_config = get_logging_config(&work_dir);
-    log4rs::init_config(logging_config).unwrap();
-
     let matches = App::new("Site Discovery Flea")
                                     .version("1.1.0")
                                     .author("Eugene Lebedev <duke.tougu@gmail.com>")
@@ -43,11 +39,29 @@ fn main() {
                                             Then generate urls and show output in \
                                             Zabbix Low Level Discovery format")
                                     .arg(
+                                        Arg::with_name(WORK_DIR_ARGUMENT)
+                                            .short("d")
+                                            .help("set working directory")
+                                            .long(WORK_DIR_ARGUMENT)
+                                            .takes_value(true).required(false)
+                                    )
+                                    .arg(
                                         Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
                                                 .long("include-custom-ports")
                                                 .help("include domains with custom ports")
                                     )
                                     .get_matches();
+
+    let working_directory: &Path = if matches.is_present(WORK_DIR_ARGUMENT) {
+        let work_dir_value = matches.value_of(WORK_DIR_ARGUMENT).unwrap();
+        Path::new(work_dir_value)
+
+    } else { Path::new(WORKDIR) };
+
+    env::set_current_dir(&working_directory).expect("unable to set working directory");
+
+    let logging_config = get_logging_config(working_directory.to_str().unwrap());
+    log4rs::init_config(logging_config).unwrap();
 
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
 
