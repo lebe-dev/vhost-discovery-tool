@@ -37,7 +37,7 @@ fn main() {
     log4rs::init_config(logging_config).unwrap();
 
     let matches = App::new("Site Discovery Flea")
-                                    .version("1.0.1")
+                                    .version("1.1.0")
                                     .author("Eugene Lebedev <duke.tougu@gmail.com>")
                                     .about("Discover site configs for nginx and apache. \
                                             Then generate urls and show output in \
