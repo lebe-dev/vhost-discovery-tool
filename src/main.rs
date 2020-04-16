@@ -25,7 +25,7 @@ const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
 
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
-const WORKDIR: &str = "/var/lib/zabbix";
+const WORKDIR: &str = "/etc/zabbix";
 
 const ERROR_EXIT_CODE: i32 = 1;
 
