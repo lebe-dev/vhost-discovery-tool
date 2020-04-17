@@ -38,7 +38,7 @@ const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
     let matches = App::new("Site Discovery Flea")
-                                    .version("1.1.0")
+                                    .version("1.2.0")
                                     .author("Eugene Lebedev <duke.tougu@gmail.com>")
                                     .about("Discover site configs for nginx and apache. \
                                             Then generate urls and show output in \
