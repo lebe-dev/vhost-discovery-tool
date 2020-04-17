@@ -140,15 +140,7 @@ fn main() {
         }
     }
 
-    let sites: Vec<Site> = vhosts.iter().map(|vhost| {
-        let url = get_url(&vhost.domain, vhost.port);
-
-        Site {
-            name: get_site_name(&vhost.domain, vhost.port),
-            url
-        }
-    }).collect();
-
+    let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts);
 
     let json;
 
@@ -160,6 +152,19 @@ fn main() {
     };
 
     println!("{}", json);
+}
+
+fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>) -> Vec<Site> {
+    let sites: Vec<Site> = vhosts.iter().map(|vhost| {
+        let url = get_url(&vhost.domain, vhost.port);
+
+        Site {
+            name: get_site_name(&vhost.domain, vhost.port),
+            url
+        }
+    }).collect();
+
+    return sites;
 }
 
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, argument: &str, default_path: &'a str) -> &'a Path {
