@@ -2,6 +2,8 @@
 
 Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
 
+Для версии Zabbix ниже 4.2 используйте опцию `--use-data-property` (см.раздел Опции).
+
 ## Настройка Zabbix агента
 
 1.Копируем исполняемый файл `site-discovery-flea` в `/usr/bin`.
@@ -48,6 +50,20 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | c
 В результатах будут также хосты вида http://somehost.ru:3823
 
 Под стандартными портами понимаются: 80-й и 443-й 
+
+### Поддержка версий до 4.2
+
+До версии Zabbix 4.2 использовался JSON формат такого вида:
+
+```json
+{
+  "data": []
+}
+``` 
+
+В поздних версиях отказались от свойства `data`.
+
+Чтобы включить поддержку старого формата используйте опцию `--use-data-property`
 
 ## Пример вывода
 
