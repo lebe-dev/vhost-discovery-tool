@@ -141,7 +141,8 @@ fn main() {
         }
     }).collect();
 
-    show_low_level_discovery_json(sites);
+    let json = get_low_level_discovery_json(sites);
+    println!("{}", json);
 }
 
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, argument: &str, default_path: &'a str) -> &'a Path {
@@ -280,16 +281,16 @@ fn vector_contains_same_domain_with_default_http_port(vhosts: &Vec<VirtualHost>,
     result
 }
 
+fn get_low_level_discovery_json(sites: Vec<Site>) -> String {
+    let json_structure = json!(sites);
+    let json = serde_json::to_string(&json_structure).unwrap();
+    return json;
+}
+
 #[derive(Clone, Serialize)]
 struct Site {
     #[serde(rename(serialize = "{#NAME}"))]
     pub name: String,
     #[serde(rename(serialize = "{#URL}"))]
     pub url: String
-}
-
-fn show_low_level_discovery_json(sites: Vec<Site>) {
-    let json_structure = json!({"data": sites});
-    let json = serde_json::to_string(&json_structure).unwrap();
-    println!("{}", json);
 }

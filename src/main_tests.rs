@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod main_tests {
-    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_site_name, get_url, vector_contains_same_domain_with_default_http_port, vector_contains_same_domain_with_ssl};
+    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_site_name, get_url, Site, vector_contains_same_domain_with_default_http_port, vector_contains_same_domain_with_ssl};
     use crate::webserver::webserver::VirtualHost;
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
@@ -75,5 +75,34 @@ mod main_tests {
         vhosts.push(vhost);
 
         assert!(vector_contains_same_domain_with_default_http_port(&vhosts, &domain))
+    }
+
+    #[test]
+    fn get_low_level_discovery_json_should_return_valid_json() {
+        let mut vhosts: Vec<VirtualHost> = Vec::new();
+
+        let domain = String::from("meduttio.uk");
+
+        let vhost = VirtualHost {
+            domain: String::from(&domain),
+            port: DEFAULT_HTTP_PORT
+        };
+
+        vhosts.push(vhost);
+
+        let sites: Vec<Site> = vhosts.iter().map(|vhost| {
+            let url = get_url(&vhost.domain, vhost.port);
+
+            Site {
+                name: get_site_name(&vhost.domain, vhost.port),
+                url
+            }
+        }).collect();
+
+        let expected_json: &str = r#"[{"{#NAME}":"meduttio.uk","{#URL}":"http://meduttio.uk"}]"#;
+
+        let json = get_low_level_discovery_json(sites);
+
+        assert_eq!(json, expected_json);
     }
 }
