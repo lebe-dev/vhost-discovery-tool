@@ -72,3 +72,9 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | c
 
 - Опция: Включать Endpoint'ы  
   Например, проксирование вида `proxy_pass ...` выдавать как отдельный URL 
+
+## Спасибо за поддержку
+
+Спасибо за поддержку проекта, тестирование и обратную связь:
+
+- [ttsrg](https://github.com/ttsrg)
