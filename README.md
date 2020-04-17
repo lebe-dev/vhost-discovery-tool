@@ -68,7 +68,7 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | c
 
 ## RoadMap
 
-### 1.2.0
+### 1.3.0
 
 - Опция: Включать Endpoint'ы  
   Например, проксирование вида `proxy_pass ...` выдавать как отдельный URL 
