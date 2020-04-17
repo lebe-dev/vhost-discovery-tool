@@ -67,19 +67,17 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | c
 
 ## Пример вывода
 
-```$json
-{
-    "data":[
-        {
-            "{#NAME}":"somesite.ru",
-            "{#URL}":"https://somesite.ru"
-        },
-        {
-            "{#NAME}":"15.128.42.21:2231",
-            "{#URL}":"http://15.128.42.21:2231"
-        }
-    ]
-}
+```json
+[
+    {
+        "{#NAME}":"somesite.ru",
+        "{#URL}":"https://somesite.ru"
+    },
+    {
+        "{#NAME}":"15.128.42.21:2231",
+        "{#URL}":"http://15.128.42.21:2231"
+    }
+]
 ```
 
 ## RoadMap
