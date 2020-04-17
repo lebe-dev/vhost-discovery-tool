@@ -34,6 +34,8 @@ const APACHE_VHOSTS_PATH: &str = "/etc/httpd/conf.d";
 const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
 const APACHE_VHOSTS_PATH_ARGUMENT: &str = "apache-vhosts-path";
 
+const USE_DATA_PROPERTY_ARGUMENT: &str = "use-data-property";
+
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
@@ -68,6 +70,12 @@ fn main() {
                                             .help("set apache vhosts root path")
                                             .long(APACHE_VHOSTS_PATH_ARGUMENT)
                                             .takes_value(true).required(false)
+                                    )
+                                    .arg(
+                                        Arg::with_name(USE_DATA_PROPERTY_ARGUMENT)
+                                            .help("use low level discovery format with 'data' property. example: { \"data\": [] }")
+                                            .long(USE_DATA_PROPERTY_ARGUMENT)
+                                            .takes_value(false).required(false)
                                     )
                                     .get_matches();
 
@@ -141,7 +149,16 @@ fn main() {
         }
     }).collect();
 
-    let json = get_low_level_discovery_json(sites);
+
+    let json;
+
+    if matches.is_present(USE_DATA_PROPERTY_ARGUMENT) {
+        json = get_low_level_discovery_json_with_data_property(sites);
+
+    } else {
+        json = get_low_level_discovery_json(sites);
+    };
+
     println!("{}", json);
 }
 
@@ -283,6 +300,12 @@ fn vector_contains_same_domain_with_default_http_port(vhosts: &Vec<VirtualHost>,
 
 fn get_low_level_discovery_json(sites: Vec<Site>) -> String {
     let json_structure = json!(sites);
+    let json = serde_json::to_string(&json_structure).unwrap();
+    return json;
+}
+
+fn get_low_level_discovery_json_with_data_property(sites: Vec<Site>) -> String {
+    let json_structure = json!({"data": sites});
     let json = serde_json::to_string(&json_structure).unwrap();
     return json;
 }
