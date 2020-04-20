@@ -212,6 +212,8 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
             Ok(vhost_files) => {
 
                 for vhost_file in vhost_files {
+                    debug!("analyze vhost file '{}'", vhost_file.display());
+
                     let section_start_regex = get_nginx_vhost_section_start_regex();
                     let port_search_regex = get_nginx_vhost_port_regex();
                     let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
@@ -255,6 +257,8 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
 
                 for vhost_file in vhost_files {
                     let vhost_file_path = vhost_file.as_path();
+
+                    debug!("analyze vhost file '{}'", vhost_file_path.display());
 
                     let section_start_regex = get_apache_vhost_section_start_regex();
                     let port_search_regex = get_apache_vhost_port_regex();
