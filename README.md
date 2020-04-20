@@ -21,7 +21,11 @@ UserParameter=site.discovery,/usr/bin/site-discovery-flea
 UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i "200 Ok" > /dev/null; echo $?
 ```
 
+Файл поставляется с дистрибутивом утилиты.
+
 4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
+
+Шаблон идет с дистрибутивом утилиты.
 
 ## Как работает утилита
 
