@@ -6,7 +6,7 @@ pub mod logging {
 
     const FILE_APPENDER_NAME: &str = "file";
 
-    const LOG_FILE_PATH: &str = "/var/log/site-discovery-flea.log";
+    const LOG_FILE_PATH: &str = "/etc/zabbix/site-discovery-flea.log";
 
     pub fn get_logging_config() -> Config {
         Config::builder()
