@@ -27,8 +27,6 @@ const DEFAULT_HTTPS_PORT: i32 = 443;
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
 const WORKDIR: &str = "/etc/zabbix";
 
-const LOG_FILE_PATH: &str = "/var/log/site-discovery-flea.log";
-
 const WORK_DIR_ARGUMENT: &str = "work-dir";
 const NGINX_VHOSTS_PATH: &str = "/etc/nginx/conf.d";
 const APACHE_VHOSTS_PATH: &str = "/etc/httpd/conf.d";
@@ -86,7 +84,7 @@ fn main() {
 
     env::set_current_dir(&working_directory).expect("unable to set working directory");
 
-    let logging_config = get_logging_config(LOG_FILE_PATH);
+    let logging_config = get_logging_config();
     log4rs::init_config(logging_config).unwrap();
 
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;

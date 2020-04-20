@@ -6,28 +6,29 @@ pub mod logging {
 
     const FILE_APPENDER_NAME: &str = "file";
 
-    pub fn get_logging_config(log_file_path: &str) -> Config {
+    const LOG_FILE_PATH: &str = "/var/log/site-discovery-flea.log";
+
+    pub fn get_logging_config() -> Config {
         Config::builder()
-            .appender(get_file_appender_definition(log_file_path))
+            .appender(get_file_appender_definition())
             .logger(get_default_logger())
             .build(
             Root::builder()
                 .appender(FILE_APPENDER_NAME)
                 .build(LevelFilter::Info)
-            )
-            .unwrap()
+            ).expect(&format!("unable to create log file '{}'", LOG_FILE_PATH))
     }
 
-    fn get_file_appender_definition(log_file_path: &str) -> Appender {
+    fn get_file_appender_definition() -> Appender {
         Appender::builder()
-            .build(FILE_APPENDER_NAME, Box::new(get_file_appender(log_file_path))
+            .build(FILE_APPENDER_NAME, Box::new(get_file_appender())
         )
     }
 
-    fn get_file_appender(log_file_path: &str) -> FileAppender {
+    fn get_file_appender() -> FileAppender {
         FileAppender::builder()
             .encoder(get_encoder())
-            .build(log_file_path)
+            .build(LOG_FILE_PATH)
             .unwrap()
     }
 
