@@ -84,7 +84,7 @@ fn main() {
                                     .get_matches();
 
     let working_directory: &Path = get_argument_path_value(
-        &matches, WORK_DIR_ARGUMENT, WORKDIR);
+        &matches, WORK_DIR_ARGUMENT, WORK_DIR_SHORT_ARGUMENT, WORKDIR);
 
     debug!("working directory '{}'", &working_directory.display());
 
@@ -100,7 +100,8 @@ fn main() {
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
     let nginx_vhosts_path: &Path = get_argument_path_value(
-        &matches, NGINX_VHOSTS_PATH_ARGUMENT, NGINX_VHOSTS_PATH);
+        &matches, NGINX_VHOSTS_PATH_ARGUMENT,
+        NGINX_VHOSTS_PATH_SHORT_ARGUMENT, NGINX_VHOSTS_PATH);
 
     debug!("nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
@@ -129,7 +130,8 @@ fn main() {
     }
 
     let apache_vhosts_path: &Path = get_argument_path_value(
-        &matches, APACHE_VHOSTS_PATH_ARGUMENT, APACHE_VHOSTS_PATH);
+        &matches, APACHE_VHOSTS_PATH_ARGUMENT,
+        APACHE_VHOSTS_PATH_SHORT_ARGUMENT, APACHE_VHOSTS_PATH);
 
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
@@ -183,12 +185,20 @@ fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>) -> Vec<Site> {
     return sites;
 }
 
-fn get_argument_path_value<'a>(matches: &'a ArgMatches, argument: &str, default_path: &'a str) -> &'a Path {
-    let path: &Path = if matches.is_present(argument) {
-        let apache_vhosts_path_value = matches.value_of(argument).unwrap();
-        Path::new(apache_vhosts_path_value)
+fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
+                               short_argument: &str, default_path: &'a str) -> &'a Path {
+    let mut path: &Path = Path::new(default_path);
 
-    } else { Path::new(default_path) };
+    if matches.is_present(long_argument) {
+        let vhosts_path_value = matches.value_of(long_argument).unwrap();
+        path = Path::new(vhosts_path_value)
+
+    } else {
+        if matches.is_present(short_argument) {
+            let vhosts_path_value = matches.value_of(short_argument).unwrap();
+            path = Path::new(vhosts_path_value)
+        }
+    }
 
     return path;
 }
