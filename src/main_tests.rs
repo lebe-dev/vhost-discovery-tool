@@ -9,8 +9,14 @@ mod main_tests {
     fn get_site_name_with_standard_port_should_return_name_without_port() {
         let domain = "superco.ru";
 
-        assert_eq!(get_site_name(domain, DEFAULT_HTTP_PORT), domain);
         assert_eq!(get_site_name(domain, DEFAULT_HTTPS_PORT), domain);
+    }
+
+    #[test]
+    fn get_site_name_with_standard_port_should_return_name_with_http_postfix_for_site_with_http() {
+        let domain = "superco.ru";
+
+        assert_eq!(get_site_name(domain, DEFAULT_HTTP_PORT), format!("{}_http", domain));
     }
 
     #[test]
@@ -85,14 +91,14 @@ mod main_tests {
 
         let vhost = VirtualHost {
             domain: String::from(&domain),
-            port: DEFAULT_HTTP_PORT
+            port: DEFAULT_HTTPS_PORT
         };
 
         vhosts.push(vhost);
 
         let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts);
 
-        let expected_json: &str = r#"[{"{#NAME}":"meduttio.uk","{#URL}":"http://meduttio.uk"}]"#;
+        let expected_json: &str = r#"[{"{#NAME}":"meduttio.uk","{#URL}":"https://meduttio.uk"}]"#;
 
         let json = get_low_level_discovery_json(sites);
 
@@ -107,7 +113,7 @@ mod main_tests {
 
         let vhost = VirtualHost {
             domain: String::from(&domain),
-            port: DEFAULT_HTTP_PORT
+            port: DEFAULT_HTTPS_PORT
         };
 
         vhosts.push(vhost);
@@ -115,7 +121,7 @@ mod main_tests {
         let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts);
 
         let expected_json: &str =
-            r#"{"data":[{"{#NAME}":"meduttio.uk","{#URL}":"http://meduttio.uk"}]}"#;
+            r#"{"data":[{"{#NAME}":"meduttio.uk","{#URL}":"https://meduttio.uk"}]}"#;
 
         let json = get_low_level_discovery_json_with_data_property(sites);
 
