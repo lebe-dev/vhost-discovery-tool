@@ -23,6 +23,22 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 
 4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
 
+## Как работает утилита
+
+Утилита идет в конфиги Apache и Nginx и извлекает оттуда доменные имена и порты. На базе этих данных она формирует
+данные для Low Level Discovery:
+
+- Домен
+- Ссылка
+
+Для доменов с протоколом HTTP добавляет постфикс `_http`. Например, для сайта `http://somesite.ru` будет такая структура:
+```json
+{
+  "{#NAME}":"somesite.ru_http",
+  "{#URL}":"http://somesite.ru"
+}
+```
+
 ## Опции
 
 ### Указать рабочую директорию
