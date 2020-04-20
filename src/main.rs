@@ -28,11 +28,15 @@ const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
 const WORKDIR: &str = "/etc/zabbix";
 
 const WORK_DIR_ARGUMENT: &str = "work-dir";
+const WORK_DIR_SHORT_ARGUMENT: &str = "d";
+
 const NGINX_VHOSTS_PATH: &str = "/etc/nginx/conf.d";
 const APACHE_VHOSTS_PATH: &str = "/etc/httpd/conf.d";
 
 const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
+const NGINX_VHOSTS_PATH_SHORT_ARGUMENT: &str = "n";
 const APACHE_VHOSTS_PATH_ARGUMENT: &str = "apache-vhosts-path";
+const APACHE_VHOSTS_PATH_SHORT_ARGUMENT: &str = "a";
 
 const USE_DATA_PROPERTY_ARGUMENT: &str = "use-data-property";
 
@@ -47,7 +51,7 @@ fn main() {
                                             Zabbix Low Level Discovery format")
                                     .arg(
                                         Arg::with_name(WORK_DIR_ARGUMENT)
-                                            .short("d")
+                                            .short(WORK_DIR_SHORT_ARGUMENT)
                                             .help("set working directory")
                                             .long(WORK_DIR_ARGUMENT)
                                             .takes_value(true).required(false)
@@ -59,14 +63,14 @@ fn main() {
                                     )
                                     .arg(
                                         Arg::with_name(NGINX_VHOSTS_PATH_ARGUMENT)
-                                            .short("n")
+                                            .short(NGINX_VHOSTS_PATH_SHORT_ARGUMENT)
                                             .help("set nginx vhosts root path")
                                             .long(NGINX_VHOSTS_PATH_ARGUMENT)
                                             .takes_value(true).required(false)
                                     )
                                     .arg(
                                         Arg::with_name(APACHE_VHOSTS_PATH_ARGUMENT)
-                                            .short("a")
+                                            .short(APACHE_VHOSTS_PATH_SHORT_ARGUMENT)
                                             .help("set apache vhosts root path")
                                             .long(APACHE_VHOSTS_PATH_ARGUMENT)
                                             .takes_value(true).required(false)
