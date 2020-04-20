@@ -178,7 +178,10 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, argument: &str, default_
 }
 
 fn get_site_name(domain: &str, port: i32) -> String {
-    if port == DEFAULT_HTTP_PORT || port == DEFAULT_HTTPS_PORT {
+    if port == DEFAULT_HTTP_PORT {
+        String::from(format!("{}_http", domain))
+
+    } else if port == DEFAULT_HTTPS_PORT {
         String::from(domain)
 
     } else {
