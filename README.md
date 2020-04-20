@@ -84,6 +84,12 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep "20
 
 Утилита пишет свой лог в файл `/etc/zabbix/site-discovery-flea.log`.
 
+Запуск утилиты от пользователя `zabbix`:
+
+```shell script
+sudo -u zabbix /usr/bin/site-discovery-flea
+```
+
 ## RoadMap
 
 ### 1.4.0
