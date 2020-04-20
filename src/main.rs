@@ -98,6 +98,8 @@ fn main() {
     let nginx_vhosts_path: &Path = get_argument_path_value(
         &matches, NGINX_VHOSTS_PATH_ARGUMENT, NGINX_VHOSTS_PATH);
 
+    debug!("nginx vhosts root: '{}'", nginx_vhosts_path.display());
+
     let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
 
     for nginx_vhost in nginx_vhosts {
