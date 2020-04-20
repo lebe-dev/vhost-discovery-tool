@@ -15,7 +15,7 @@ pub mod logging {
             .build(
             Root::builder()
                 .appender(FILE_APPENDER_NAME)
-                .build(LevelFilter::Info)
+                .build(LevelFilter::Debug)
             ).expect(&format!("unable to create log file '{}'", LOG_FILE_PATH))
     }
 
