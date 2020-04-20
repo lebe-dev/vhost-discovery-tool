@@ -82,6 +82,8 @@ fn main() {
     let working_directory: &Path = get_argument_path_value(
         &matches, WORK_DIR_ARGUMENT, WORKDIR);
 
+    debug!("working directory '{}'", &working_directory.display());
+
     env::set_current_dir(&working_directory).expect("unable to set working directory");
 
     let logging_config = get_logging_config();
