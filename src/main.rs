@@ -41,6 +41,7 @@ const APACHE_VHOSTS_PATH_SHORT_ARGUMENT: &str = "a";
 const USE_DATA_PROPERTY_ARGUMENT: &str = "use-data-property";
 
 const LOG_LEVEL_ARGUMENT: &str = "log-level";
+const LOG_LEVEL_DEFAULT_VALUE: &str = "info";
 
 const ERROR_EXIT_CODE: i32 = 1;
 
@@ -82,6 +83,14 @@ fn main() {
                                             .help("use low level discovery format with 'data' property. example: { \"data\": [] }")
                                             .long(USE_DATA_PROPERTY_ARGUMENT)
                                             .takes_value(false).required(false)
+                                    )
+                                    .arg(
+                                        Arg::with_name(LOG_LEVEL_ARGUMENT)
+                                            .help("set logging level. possible values: debug, info, error, warn, trace")
+                                            .long(LOG_LEVEL_ARGUMENT)
+                                            .case_insensitive(true)
+                                            .takes_value(true).required(false)
+                                            .default_value(LOG_LEVEL_DEFAULT_VALUE)
                                     )
                                     .get_matches();
 
