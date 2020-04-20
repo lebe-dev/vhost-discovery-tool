@@ -47,52 +47,52 @@ const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
     let matches = App::new("Site Discovery Flea")
-                                    .version("1.3.0")
-                                    .author("Eugene Lebedev <duke.tougu@gmail.com>")
-                                    .about("Discover site configs for nginx and apache. \
+        .version("1.3.0")
+        .author("Eugene Lebedev <duke.tougu@gmail.com>")
+        .about("Discover site configs for nginx and apache. \
                                             Then generate urls and show output in \
                                             Zabbix Low Level Discovery format")
-                                    .arg(
-                                        Arg::with_name(WORK_DIR_ARGUMENT)
-                                            .short(WORK_DIR_SHORT_ARGUMENT)
-                                            .help("set working directory")
-                                            .long(WORK_DIR_ARGUMENT)
-                                            .takes_value(true).required(false)
-                                    )
-                                    .arg(
-                                        Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
-                                                .long("include-custom-ports")
-                                                .help("include domains with custom ports")
-                                    )
-                                    .arg(
-                                        Arg::with_name(NGINX_VHOSTS_PATH_ARGUMENT)
-                                            .short(NGINX_VHOSTS_PATH_SHORT_ARGUMENT)
-                                            .help("set nginx vhosts root path")
-                                            .long(NGINX_VHOSTS_PATH_ARGUMENT)
-                                            .takes_value(true).required(false)
-                                    )
-                                    .arg(
-                                        Arg::with_name(APACHE_VHOSTS_PATH_ARGUMENT)
-                                            .short(APACHE_VHOSTS_PATH_SHORT_ARGUMENT)
-                                            .help("set apache vhosts root path")
-                                            .long(APACHE_VHOSTS_PATH_ARGUMENT)
-                                            .takes_value(true).required(false)
-                                    )
-                                    .arg(
-                                        Arg::with_name(USE_DATA_PROPERTY_ARGUMENT)
-                                            .help("use low level discovery format with 'data' property. example: { \"data\": [] }")
-                                            .long(USE_DATA_PROPERTY_ARGUMENT)
-                                            .takes_value(false).required(false)
-                                    )
-                                    .arg(
-                                        Arg::with_name(LOG_LEVEL_ARGUMENT)
-                                            .help("set logging level. possible values: debug, info, error, warn, trace")
-                                            .long(LOG_LEVEL_ARGUMENT)
-                                            .case_insensitive(true)
-                                            .takes_value(true).required(false)
-                                            .default_value(LOG_LEVEL_DEFAULT_VALUE)
-                                    )
-                                    .get_matches();
+        .arg(
+            Arg::with_name(WORK_DIR_ARGUMENT)
+                .short(WORK_DIR_SHORT_ARGUMENT)
+                .help("set working directory")
+                .long(WORK_DIR_ARGUMENT)
+                .takes_value(true).required(false)
+        )
+        .arg(
+            Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
+                .long("include-custom-ports")
+                .help("include domains with custom ports")
+        )
+        .arg(
+            Arg::with_name(NGINX_VHOSTS_PATH_ARGUMENT)
+                .short(NGINX_VHOSTS_PATH_SHORT_ARGUMENT)
+                .help("set nginx vhosts root path")
+                .long(NGINX_VHOSTS_PATH_ARGUMENT)
+                .takes_value(true).required(false)
+        )
+        .arg(
+            Arg::with_name(APACHE_VHOSTS_PATH_ARGUMENT)
+                .short(APACHE_VHOSTS_PATH_SHORT_ARGUMENT)
+                .help("set apache vhosts root path")
+                .long(APACHE_VHOSTS_PATH_ARGUMENT)
+                .takes_value(true).required(false)
+        )
+        .arg(
+            Arg::with_name(USE_DATA_PROPERTY_ARGUMENT)
+                .help("use low level discovery format with 'data' property. example: { \"data\": [] }")
+                .long(USE_DATA_PROPERTY_ARGUMENT)
+                .takes_value(false).required(false)
+        )
+        .arg(
+            Arg::with_name(LOG_LEVEL_ARGUMENT)
+                .help("set logging level. possible values: debug, info, error, warn, trace")
+                .long(LOG_LEVEL_ARGUMENT)
+                .case_insensitive(true)
+                .takes_value(true).required(false)
+                .default_value(LOG_LEVEL_DEFAULT_VALUE)
+        )
+        .get_matches();
 
     let working_directory: &Path = get_argument_path_value(
         &matches, WORK_DIR_ARGUMENT, WORK_DIR_SHORT_ARGUMENT, WORKDIR);
@@ -103,10 +103,7 @@ fn main() {
 
     let logging_level: &str = if matches.is_present(LOG_LEVEL_ARGUMENT) {
         matches.value_of(LOG_LEVEL_ARGUMENT).unwrap()
-
-    } else {
-        "info"
-    };
+    } else { LOG_LEVEL_DEFAULT_VALUE };
 
     let logging_config = get_logging_config(logging_level);
     log4rs::init_config(logging_config).unwrap();
@@ -114,14 +111,14 @@ fn main() {
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
 
     info!("[~] collect virtual hosts..");
-    info!("include domains with custom ports: {}", include_custom_domains);
+    info!("- include domains with custom ports: {}", include_custom_domains);
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
     let nginx_vhosts_path: &Path = get_argument_path_value(
         &matches, NGINX_VHOSTS_PATH_ARGUMENT,
         NGINX_VHOSTS_PATH_SHORT_ARGUMENT, NGINX_VHOSTS_PATH);
 
-    debug!("nginx vhosts root: '{}'", nginx_vhosts_path.display());
+    debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
     let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
 
@@ -132,14 +129,12 @@ fn main() {
                 vhosts.push(nginx_vhost)
             }
         } else {
-
             if nginx_vhost.port != DEFAULT_HTTPS_PORT {
                 if include_custom_domains &&
-                   !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
+                    !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
                     debug!("+ add vhost '{}'", nginx_vhost.to_string());
                     vhosts.push(nginx_vhost)
                 }
-
             } else {
                 debug!("+ add vhost '{}'", nginx_vhost.to_string());
                 vhosts.push(nginx_vhost)
@@ -164,11 +159,10 @@ fn main() {
         } else {
             if apache_vhost.port != DEFAULT_HTTPS_PORT {
                 if include_custom_domains &&
-                   !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
+                    !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
                     debug!("+ found vhost '{}'", apache_vhost.to_string());
                     vhosts.push(apache_vhost)
                 }
-
             } else {
                 debug!("+ found vhost '{}'", apache_vhost.to_string());
                 vhosts.push(apache_vhost)
@@ -182,7 +176,6 @@ fn main() {
 
     if matches.is_present(USE_DATA_PROPERTY_ARGUMENT) {
         json = get_low_level_discovery_json_with_data_property(sites);
-
     } else {
         json = get_low_level_discovery_json(sites);
     };
@@ -196,7 +189,7 @@ fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>) -> Vec<Site> {
 
         Site {
             name: get_site_name(&vhost.domain, vhost.port),
-            url
+            url,
         }
     }).collect();
 
@@ -210,7 +203,6 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
     if matches.is_present(long_argument) {
         let vhosts_path_value = matches.value_of(long_argument).unwrap();
         path = Path::new(vhosts_path_value)
-
     } else {
         if matches.is_present(short_argument) {
             let vhosts_path_value = matches.value_of(short_argument).unwrap();
@@ -224,10 +216,8 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
 fn get_site_name(domain: &str, port: i32) -> String {
     if port == DEFAULT_HTTP_PORT {
         String::from(format!("{}_http", domain))
-
     } else if port == DEFAULT_HTTPS_PORT {
         String::from(domain)
-
     } else {
         String::from(format!("{}:{}", domain, port))
     }
@@ -242,7 +232,6 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
     if nginx_vhosts_path.is_dir() && nginx_vhosts_path.exists() {
         match get_vhost_config_file_list(nginx_vhosts_path) {
             Ok(vhost_files) => {
-
                 for vhost_file in vhost_files {
                     debug!("analyze vhost file '{}'", vhost_file.display());
 
@@ -256,7 +245,7 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
                         vhost_file_path,
                         section_start_regex,
                         port_search_regex,
-                        domain_search_regex
+                        domain_search_regex,
                     );
 
                     for nginx_vhost in nginx_vhosts {
@@ -264,7 +253,6 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
                         vhosts.push(nginx_vhost);
                     }
                 }
-
             }
             Err(_error) => {
                 error!("unable to get vhost file list from '{}', \
@@ -274,7 +262,7 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
         }
     }
 
-    return vhosts
+    return vhosts;
 }
 
 fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
@@ -286,7 +274,6 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
     if vhosts_path.is_dir() && vhosts_path.exists() {
         match get_vhost_config_file_list(vhosts_path) {
             Ok(vhost_files) => {
-
                 for vhost_file in vhost_files {
                     let vhost_file_path = vhost_file.as_path();
 
@@ -300,7 +287,7 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
                         vhost_file_path,
                         section_start_regex,
                         port_search_regex,
-                        domain_search_regex
+                        domain_search_regex,
                     );
 
                     for apache_vhost in apache_vhosts {
@@ -308,7 +295,6 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
                         vhosts.push(apache_vhost);
                     }
                 }
-
             }
             Err(_) => {
                 error!("unable to get vhost file list from '{}', \
@@ -318,16 +304,14 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
         }
     }
 
-    return vhosts
+    return vhosts;
 }
 
 fn get_url(domain: &str, vhost_port: i32) -> String {
     if vhost_port == DEFAULT_HTTP_PORT {
         String::from(format!("http://{}", domain))
-
     } else if vhost_port == DEFAULT_HTTPS_PORT {
         String::from(format!("https://{}", domain))
-
     } else {
         String::from(format!("http://{}:{}", domain, vhost_port))
     }
@@ -337,7 +321,7 @@ fn vector_contains_same_domain_with_ssl(vhosts: &Vec<VirtualHost>, domain: &Stri
     let mut result = false;
 
     let vhost_found = vhosts.iter().find(
-    |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTPS_PORT
+        |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTPS_PORT
     ).is_some();
 
     if vhost_found {
@@ -379,5 +363,5 @@ struct Site {
     #[serde(rename(serialize = "{#NAME}"))]
     pub name: String,
     #[serde(rename(serialize = "{#URL}"))]
-    pub url: String
+    pub url: String,
 }
