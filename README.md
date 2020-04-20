@@ -18,7 +18,7 @@ chmod +x /usr/bin/site-discovery-flea
 
 ```
 UserParameter=site.discovery,/usr/bin/site-discovery-flea
-UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep "200 Ok" > /dev/null; echo $?
+UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i "200 Ok" > /dev/null; echo $?
 ```
 
 4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
