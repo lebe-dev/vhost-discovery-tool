@@ -43,8 +43,12 @@ pub mod webserver {
                                        domain_search_pattern: Regex) -> Vec<VirtualHost> {
         let mut hosts: Vec<VirtualHost> = Vec::new();
 
-        info!("get virtual hosts from file '{}'", vhost_file.display());
-        let input = File::open(vhost_file).unwrap();
+        let vhost_file_name = vhost_file.to_str().unwrap();
+
+        info!("get virtual hosts from file '{}'", vhost_file_name);
+
+        let input = File::open(vhost_file)
+                                .expect(&format!("unable to open file '{}'", vhost_file_name));
         let buffered = BufReader::new(input);
 
         let mut inside_section = false;
