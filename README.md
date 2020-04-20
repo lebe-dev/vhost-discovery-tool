@@ -80,6 +80,10 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep "20
 ]
 ```
 
+## Решение проблем
+
+Утилита пишет свой лог в файл `/etc/zabbix/site-discovery-flea.log`.
+
 ## RoadMap
 
 ### 1.3.0
