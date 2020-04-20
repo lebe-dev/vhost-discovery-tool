@@ -202,6 +202,9 @@ fn get_site_name(domain: &str, port: i32) -> String {
 }
 
 fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
+    debug!("get virtual hosts from nginx configs");
+    debug!("configs path '{}'", nginx_vhosts_path.display());
+
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
     if nginx_vhosts_path.is_dir() && nginx_vhosts_path.exists() {
@@ -223,6 +226,7 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
                     );
 
                     for nginx_vhost in nginx_vhosts {
+                        debug!("{}", nginx_vhost.to_string());
                         vhosts.push(nginx_vhost);
                     }
                 }
@@ -240,6 +244,9 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
 }
 
 fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
+    debug!("get virtual hosts from apache configs");
+    debug!("configs path '{}'", vhosts_path.display());
+
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
     if vhosts_path.is_dir() && vhosts_path.exists() {
@@ -261,6 +268,7 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
                     );
 
                     for apache_vhost in apache_vhosts {
+                        debug!("{}", apache_vhost.to_string());
                         vhosts.push(apache_vhost);
                     }
                 }

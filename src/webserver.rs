@@ -15,6 +15,12 @@ pub mod webserver {
         pub port: i32
     }
 
+    impl VirtualHost {
+        pub fn to_string(&self) -> String {
+            return String::from(format!("domain: {}, port: {}", self.domain, self.port));
+        }
+    }
+
     pub fn get_vhost_config_file_list(vhost_root_path: &Path) -> Result<Vec<PathBuf>,io::Error> {
         let paths = fs::read_dir(&vhost_root_path)?;
 
