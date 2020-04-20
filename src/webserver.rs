@@ -24,7 +24,7 @@ pub mod webserver {
             let file = path.unwrap();
             let file_type = file.file_type()?;
 
-            if file_type.is_file() {
+            if file_type.is_file() || file_type.is_symlink() {
                 let file_name = file.file_name().into_string().unwrap();
 
                 if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
