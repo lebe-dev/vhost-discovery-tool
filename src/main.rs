@@ -124,6 +124,8 @@ fn main() {
     let apache_vhosts_path: &Path = get_argument_path_value(
         &matches, APACHE_VHOSTS_PATH_ARGUMENT, APACHE_VHOSTS_PATH);
 
+    debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
+
     let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
 
     for apache_vhost in apache_vhosts {
