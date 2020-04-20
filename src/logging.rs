@@ -8,14 +8,27 @@ pub mod logging {
 
     const LOG_FILE_PATH: &str = "/var/log/zabbix/site-discovery-flea.log";
 
-    pub fn get_logging_config() -> Config {
+    fn get_logging_level_from_string(level: &str) -> LevelFilter {
+        return match level {
+            "debug" => LevelFilter::Debug,
+            "error" => LevelFilter::Error,
+            "warn" => LevelFilter::Warn,
+            "trace" => LevelFilter::Trace,
+            "off" => LevelFilter::Off,
+            _ => LevelFilter::Info
+        };
+    }
+
+    pub fn get_logging_config(logging_level: &str) -> Config {
+        let level = get_logging_level_from_string(logging_level);
+
         Config::builder()
             .appender(get_file_appender_definition())
             .logger(get_default_logger())
             .build(
             Root::builder()
                 .appender(FILE_APPENDER_NAME)
-                .build(LevelFilter::Debug)
+                .build(level)
             ).expect(&format!("unable to create log file '{}'", LOG_FILE_PATH))
     }
 

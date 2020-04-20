@@ -40,6 +40,8 @@ const APACHE_VHOSTS_PATH_SHORT_ARGUMENT: &str = "a";
 
 const USE_DATA_PROPERTY_ARGUMENT: &str = "use-data-property";
 
+const LOG_LEVEL_ARGUMENT: &str = "log-level";
+
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
@@ -90,7 +92,14 @@ fn main() {
 
     env::set_current_dir(&working_directory).expect("unable to set working directory");
 
-    let logging_config = get_logging_config();
+    let logging_level: &str = if matches.is_present(LOG_LEVEL_ARGUMENT) {
+        matches.value_of(LOG_LEVEL_ARGUMENT).unwrap()
+
+    } else {
+        "info"
+    };
+
+    let logging_config = get_logging_config(logging_level);
     log4rs::init_config(logging_config).unwrap();
 
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
