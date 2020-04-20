@@ -119,7 +119,7 @@ fn main() {
     for nginx_vhost in nginx_vhosts {
         if nginx_vhost.port == DEFAULT_HTTP_PORT {
             if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
-                debug!("+ add vhost '{}'", nginx_vhost.domain);
+                debug!("+ add vhost '{}'", nginx_vhost.to_string());
                 vhosts.push(nginx_vhost)
             }
         } else {
@@ -127,12 +127,12 @@ fn main() {
             if nginx_vhost.port != DEFAULT_HTTPS_PORT {
                 if include_custom_domains &&
                    !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
-                    debug!("+ add vhost '{}'", nginx_vhost.domain);
+                    debug!("+ add vhost '{}'", nginx_vhost.to_string());
                     vhosts.push(nginx_vhost)
                 }
 
             } else {
-                debug!("+ add vhost '{}'", nginx_vhost.domain);
+                debug!("+ add vhost '{}'", nginx_vhost.to_string());
                 vhosts.push(nginx_vhost)
             }
         }
@@ -149,19 +149,19 @@ fn main() {
     for apache_vhost in apache_vhosts {
         if apache_vhost.port == DEFAULT_HTTP_PORT {
             if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
-                debug!("+ add vhost '{}'", apache_vhost.domain);
+                debug!("+ add vhost '{}'", apache_vhost.to_string());
                 vhosts.push(apache_vhost)
             }
         } else {
             if apache_vhost.port != DEFAULT_HTTPS_PORT {
                 if include_custom_domains &&
                    !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
-                    debug!("+ add vhost '{}'", apache_vhost.domain);
+                    debug!("+ found vhost '{}'", apache_vhost.to_string());
                     vhosts.push(apache_vhost)
                 }
 
             } else {
-                debug!("+ add vhost '{}'", apache_vhost.domain);
+                debug!("+ found vhost '{}'", apache_vhost.to_string());
                 vhosts.push(apache_vhost)
             }
         }
