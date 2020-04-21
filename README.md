@@ -110,6 +110,18 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 sudo -u zabbix /usr/bin/site-discovery-flea
 ```
 
+### Уровни логирования
+
+Можно управлять уровнем логирования через флаг `--log-level`.
+
+Поддерживаемые значения: `debug`, `error`, `warn`, `trace`, `info`, `off`
+
+### Как отключить логирование?
+
+```shell script
+--log-level=off
+```
+
 ## RoadMap
 
 ### 1.5.0
