@@ -5,6 +5,8 @@ mod webserver_tests {
 
     use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
 
+    const NGINX_SAMPLE_VHOST_FILE: &str = "tests/nginx-vhosts/vhost2.conf";
+
     #[test]
     fn get_vhost_config_file_list_should_return_file_names() {
         let vhost_root_path = Path::new("tests/apache-vhosts");
@@ -22,7 +24,7 @@ mod webserver_tests {
 
     #[test]
     fn get_virtual_hosts_from_nginx_file() {
-        let vhost_file = Path::new("tests/nginx-vhosts/vhost2.conf");
+        let vhost_file = Path::new(NGINX_SAMPLE_VHOST_FILE);
         let section_start_regex = get_nginx_vhost_section_start_regex();
         let port_search_regex = get_nginx_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
@@ -55,7 +57,7 @@ mod webserver_tests {
 
     #[test]
     fn get_virtual_hosts_from_nginx_file_should_return_server_hostname_if_server_name_was_not_specified() {
-        let vhost_file = Path::new("tests/nginx-vhosts/vhost2.conf");
+        let vhost_file = Path::new(NGINX_SAMPLE_VHOST_FILE);
 
         let section_start_regex = get_nginx_vhost_section_start_regex();
         let port_search_regex = get_nginx_vhost_port_regex();
