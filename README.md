@@ -106,7 +106,7 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 
 ## Решение проблем
 
-Утилита пишет свой лог в файл `/etc/zabbix/site-discovery-flea.log`.
+Утилита пишет свой лог в файл `/var/log/zabbix/site-discovery-flea.log`.
 
 Запуск утилиты от пользователя `zabbix`:
 
