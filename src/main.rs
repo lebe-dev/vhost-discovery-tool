@@ -24,7 +24,11 @@ mod webserver_tests;
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
 
+const INCLUDE_DOMAINS_WITH_WWW: &str = "include-www";
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
+
+const WWW_SEARCH_PATTERN: &str = "www.";
+
 const WORKDIR: &str = "/etc/zabbix";
 
 const WORK_DIR_ARGUMENT: &str = "work-dir";
@@ -58,6 +62,11 @@ fn main() {
                 .help("set working directory")
                 .long(WORK_DIR_ARGUMENT)
                 .takes_value(true).required(false)
+        )
+        .arg(
+            Arg::with_name(INCLUDE_DOMAINS_WITH_WWW)
+                .long(INCLUDE_DOMAINS_WITH_WWW)
+                .help("include domains with www")
         )
         .arg(
             Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
@@ -108,6 +117,7 @@ fn main() {
     let logging_config = get_logging_config(logging_level);
     log4rs::init_config(logging_config).unwrap();
 
+    let include_domains_with_www = matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0;
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
 
     info!("[~] collect virtual hosts..");
@@ -170,7 +180,7 @@ fn main() {
         }
     }
 
-    let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts);
+    let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, include_domains_with_www);
 
     let json;
 
@@ -183,8 +193,19 @@ fn main() {
     println!("{}", json);
 }
 
-fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>) -> Vec<Site> {
-    let sites: Vec<Site> = vhosts.iter().map(|vhost| {
+fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>, include_domains_with_www: bool) -> Vec<Site> {
+    let sites: Vec<Site> = vhosts.iter()
+        .filter(|vhost| {
+        let domain_in_lowercase = vhost.domain.to_lowercase();
+
+        if domain_in_lowercase.starts_with(WWW_SEARCH_PATTERN) && !include_domains_with_www {
+            false
+
+        } else {
+            true
+        }
+
+    }).map(|vhost| {
         let url = get_url(&vhost.domain, vhost.port);
 
         Site {
