@@ -43,6 +43,10 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 }
 ```
 
+### Обработка конфигов nginx
+
+Если в `server` не указано значение для `server_name`, то данный виртуальный хост игнорируется. 
+
 ## Опции
 
 ### Указать рабочую директорию

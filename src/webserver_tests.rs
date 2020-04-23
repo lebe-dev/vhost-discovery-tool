@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod webserver_tests {
-    use std::ffi::OsString;
     use std::path::Path;
 
     use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
@@ -33,21 +32,13 @@ mod webserver_tests {
             vhost_file, section_start_regex, port_search_regex, domain_search_regex
         );
 
-        let expected_size: usize = 3;
+        let expected_size: usize = 2;
         assert_eq!(&vhosts.len(), &expected_size);
 
         let first_vhost = &vhosts.first().unwrap();
 
         assert_eq!(first_vhost.port, 38101);
         assert_eq!(first_vhost.domain, "collections.company.ru");
-
-        let second_vhost = &vhosts.get(1).unwrap();
-
-        assert_eq!(second_vhost.port, 27239);
-
-        let hostname: OsString = gethostname::gethostname();
-        let expected_domain = hostname.into_string().unwrap();
-        assert_eq!(second_vhost.domain, expected_domain);
 
         let last_vhost = &vhosts.last().unwrap();
 
@@ -56,7 +47,7 @@ mod webserver_tests {
     }
 
     #[test]
-    fn get_virtual_hosts_from_nginx_file_should_return_server_hostname_if_server_name_was_not_specified() {
+    fn ignore_vhost_server_without_server_name_property() {
         let vhost_file = Path::new(NGINX_SAMPLE_VHOST_FILE);
 
         let section_start_regex = get_nginx_vhost_section_start_regex();
@@ -67,12 +58,12 @@ mod webserver_tests {
             vhost_file, section_start_regex, port_search_regex, domain_search_regex
         );
 
-        let result_vhost = vhosts.get(1).unwrap();
+        let first_vhost = vhosts.first().unwrap();
+        let last_vhost = vhosts.last().unwrap();
 
-        let hostname: OsString = gethostname::gethostname();
-        let expected_domain = hostname.into_string().unwrap();
-
-        assert_eq!(expected_domain, result_vhost.domain);
+        assert_eq!(2, vhosts.len());
+        assert_eq!(first_vhost.domain, "collections.company.ru");
+        assert_eq!(last_vhost.domain, "collections.company.ru");
     }
 
     #[test]
@@ -112,8 +103,8 @@ mod webserver_tests {
     #[test]
     fn get_domain_search_regex_for_apache_vhost_should_match_valid_servername_values() {
         let regex = get_domain_search_regex_for_apache_vhost();
-        assert!(regex.is_match("    ServerName vp.ugramuseum.ru"));
-        assert!(regex.is_match("ServerName   vp123.Ugra2mus-eum.ru"));
-        assert_eq!(regex.is_match("ServerName 1 vp.Ugra2mu-seum.ru   "), false);
+        assert!(regex.is_match("    ServerName distrib.company.ru"));
+        assert!(regex.is_match("ServerName   vp123.Cgro2Mp-aNy.ru"));
+        assert_eq!(regex.is_match("ServerName 1 cp.coM2mu-any.ru   "), false);
     }
 }
