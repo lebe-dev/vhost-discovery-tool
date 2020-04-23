@@ -4,6 +4,8 @@ mod webserver_tests {
 
     use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
 
+    const SAMPLE_DOMAIN: &str = "collections.company.ru";
+
     const NGINX_SAMPLE_VHOST_FILE: &str = "tests/nginx-vhosts/vhost2.conf";
 
     #[test]
@@ -38,12 +40,12 @@ mod webserver_tests {
         let first_vhost = &vhosts.first().unwrap();
 
         assert_eq!(first_vhost.port, 38101);
-        assert_eq!(first_vhost.domain, "collections.company.ru");
+        assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
 
         let last_vhost = &vhosts.last().unwrap();
 
         assert_eq!(last_vhost.port, 23512);
-        assert_eq!(last_vhost.domain, "collections.company.ru");
+        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN);
     }
 
     #[test]
@@ -62,8 +64,8 @@ mod webserver_tests {
         let last_vhost = vhosts.last().unwrap();
 
         assert_eq!(2, vhosts.len());
-        assert_eq!(first_vhost.domain, "collections.company.ru");
-        assert_eq!(last_vhost.domain, "collections.company.ru");
+        assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
+        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN);
     }
 
     #[test]
