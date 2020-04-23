@@ -87,7 +87,7 @@ mod webserver_tests {
         );
 
         for vhost in &vhosts {
-            println!("port: '{}', domain: '{}'", vhost.port, vhost.domain);
+            println!("{}", vhost.to_string());
         }
 
         let expected_size: usize = 3;
