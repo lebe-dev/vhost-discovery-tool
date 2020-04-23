@@ -70,7 +70,7 @@ fn main() {
         )
         .arg(
             Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
-                .long("include-custom-ports")
+                .long(INCLUDE_CUSTOM_PORTS_OPTION)
                 .help("include domains with custom ports")
         )
         .arg(
