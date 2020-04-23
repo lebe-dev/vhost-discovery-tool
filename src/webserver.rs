@@ -100,23 +100,11 @@ pub mod webserver {
             if port.is_some() && domain.is_some() {
                 let domain_name = domain.unwrap();
 
-                if &domain_name == DEFAULT_HOSTNAME {
-                    let hostname: OsString = gethostname::gethostname();
-                    let hostname_as_domain = hostname.into_string().unwrap();
+                let vhost = VirtualHost {
+                    domain: String::from(&domain_name), port: port.unwrap()
+                };
 
-                    let vhost = VirtualHost {
-                        domain: String::from(hostname_as_domain), port: port.unwrap()
-                    };
-
-                    hosts.push(vhost);
-
-                } else {
-                    let vhost = VirtualHost {
-                        domain: String::from(&domain_name), port: port.unwrap()
-                    };
-
-                    hosts.push(vhost);
-                }
+                hosts.push(vhost);
 
                 port = None;
                 domain = None;

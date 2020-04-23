@@ -54,6 +54,26 @@ mod webserver_tests {
     }
 
     #[test]
+    fn get_virtual_hosts_from_nginx_file_should_return_server_hostname_if_server_name_was_not_specified() {
+        let vhost_file = Path::new("tests/nginx-vhosts/vhost2.conf");
+
+        let section_start_regex = get_nginx_vhost_section_start_regex();
+        let port_search_regex = get_nginx_vhost_port_regex();
+        let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
+
+        let vhosts = get_virtual_hosts_from_file(
+            vhost_file, section_start_regex, port_search_regex, domain_search_regex
+        );
+
+        let result_vhost = vhosts.get(1).unwrap();
+
+        let hostname: OsString = gethostname::gethostname();
+        let expected_domain = hostname.into_string().unwrap();
+
+        assert_eq!(expected_domain, result_vhost.domain);
+    }
+
+    #[test]
     fn get_virtual_hosts_from_apache_file() {
         let vhost_file = Path::new("tests/apache-vhosts/vhost2.conf");
         let section_start_regex = get_apache_vhost_section_start_regex();
