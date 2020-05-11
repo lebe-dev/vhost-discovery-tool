@@ -24,7 +24,7 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 
 Файл поставляется с дистрибутивом утилиты.
 
-4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
+4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts` (прилагается в виде файла `virtual-hosts-template.xml`).
 
 Шаблон идет с дистрибутивом утилиты.
 

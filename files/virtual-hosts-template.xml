@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.0</version>
-    <date>2020-04-20T14:19:53Z</date>
+    <date>2020-05-11T08:21:17Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -32,7 +32,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>site.discovery</key>
-                    <delay>15m</delay>
+                    <delay>3m</delay>
                     <status>0</status>
                     <allowed_hosts/>
                     <snmpv3_contextname/>
@@ -59,11 +59,11 @@
                     <description/>
                     <item_prototypes>
                         <item_prototype>
-                            <name>Index page for {#NAME} is available</name>
+                            <name>Index page for {#URL} is available</name>
                             <type>19</type>
                             <snmp_community/>
                             <snmp_oid/>
-                            <key>vhost.index-page.available[{#NAME}]</key>
+                            <key>vhost.index-page.available[{#URL}]</key>
                             <delay>1m</delay>
                             <history>90d</history>
                             <trends>0</trends>
@@ -86,7 +86,7 @@
                             <publickey/>
                             <privatekey/>
                             <port/>
-                            <description>Запрос был сделан к {#URL}</description>
+                            <description>Check URL {#URL}</description>
                             <inventory_link>0</inventory_link>
                             <applications>
                                 <application>
@@ -121,7 +121,7 @@
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>{VirtualHosts:vhost.index-page.available[{#NAME}].str(200)}&lt;&gt;1</expression>
+                            <expression>{VirtualHosts:vhost.index-page.available[{#URL}].str(200)}&lt;&gt;1</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
                             <name>Недоступен сайт {#URL}</name>
