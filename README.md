@@ -7,25 +7,23 @@
 
 ## Настройка Zabbix агента
 
-1. Устанавливаем утилиту:
+1. Устанавливаем утилиту:  
+    ```shell script
+    cp site-discovery-flea /usr/bin/
+    chmod +x /usr/bin/site-discovery-flea
+    ```
 
-```shell script
-cp site-discovery-flea /usr/bin/
-chmod +x /usr/bin/site-discovery-flea
-```
+2. Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:  
+    ```
+    UserParameter=site.discovery,/usr/bin/site-discovery-flea
+    UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i "200 Ok" > /dev/null; echo $?
+    ```
 
-2.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
-
-```
-UserParameter=site.discovery,/usr/bin/site-discovery-flea
-UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i "200 Ok" > /dev/null; echo $?
-```
-
-Файл поставляется с дистрибутивом утилиты.
+    Файл поставляется с дистрибутивом утилиты.
 
 4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts` (прилагается в виде файла `virtual-hosts-template.xml`).
 
-Шаблон идет с дистрибутивом утилиты.
+    Шаблон идет с дистрибутивом утилиты.
 
 ## Как работает утилита
 
