@@ -7,15 +7,14 @@
 
 ## Настройка Zabbix агента
 
-1.Копируем исполняемый файл `site-discovery-flea` в `/usr/bin`.
+1. Устанавливаем утилиту:
 
-2.Обновляем права:
-
-```
+```shell script
+cp site-discovery-flea /usr/bin/
 chmod +x /usr/bin/site-discovery-flea
 ```
 
-3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
+2.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
 
 ```
 UserParameter=site.discovery,/usr/bin/site-discovery-flea
@@ -30,8 +29,8 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 
 ## Как работает утилита
 
-Утилита идет в конфиги Apache и Nginx и извлекает оттуда доменные имена и порты. На базе этих данных она формирует
-данные для Low Level Discovery:
+Утилита сканирует конфигурационные файлы Apache и Nginx и извлекает оттуда доменные имена и порты. 
+На базе этих данных она формирует данные для Low Level Discovery:
 
 - Домен
 - Ссылка
@@ -72,9 +71,9 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 
 Опция: `--include-custom-ports`
 
-В результатах будут также хосты вида http://somehost.ru:3823
+В результатах будут также хосты вида `http://somehost.ru:3823`.
 
-Под стандартными портами понимаются: 80-й и 443-й 
+Под стандартными портами имеются ввиду `80` и `443`.
 
 ### Поддержка версий до 4.2
 
