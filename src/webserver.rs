@@ -43,6 +43,7 @@ pub mod webserver {
 
     pub fn get_virtual_hosts_from_file(vhost_file: &Path,
                                        section_start_pattern: Regex,
+                                       redirect_with_301_pattern: Regex,
                                        port_search_pattern: Regex,
                                        domain_search_pattern: Regex) -> Vec<VirtualHost> {
         let mut hosts: Vec<VirtualHost> = Vec::new();
@@ -55,12 +56,15 @@ pub mod webserver {
                                 .expect(&format!("unable to open file '{}'", vhost_file_name));
         let buffered = BufReader::new(input);
 
-        let mut inside_section = false;
+        let mut inside_server_section = false;
+        let mut redirect_to_url = false;
         let mut port: Option<i32> = None;
         let mut domain: Option<String> = None;
 
         for line in buffered.lines() {
             let row = line.unwrap();
+
+            trace!("row '{}'", row);
 
             if section_start_pattern.is_match(&row) {
                 if domain.is_none() && port.is_some() {
@@ -68,36 +72,57 @@ pub mod webserver {
                     port = None;
                 }
 
-                inside_section = true;
+                if port.is_some() && domain.is_some() && !redirect_to_url {
+                    let domain_name = domain.unwrap();
+
+                    let vhost = VirtualHost {
+                        domain: String::from(&domain_name), port: port.unwrap()
+                    };
+
+                    hosts.push(vhost);
+
+                    port = None;
+                    domain = None;
+                }
+
+                inside_server_section = true;
+                redirect_to_url = false;
             }
 
-            if inside_section && port.is_none() && port_search_pattern.is_match(&row) {
+            if inside_server_section && redirect_with_301_pattern.is_match(&row) {
+                debug!("redirect detected");
+                redirect_to_url = true;
+                domain = None;
+                port = None;
+                inside_server_section = false;
+            }
+
+            if inside_server_section && port.is_none() &&
+               port_search_pattern.is_match(&row) {
                 let groups = port_search_pattern.captures_iter(&row).next().unwrap();
                 let vhost_port_str = String::from(&groups[1]);
                 let vhost_port: i32 = vhost_port_str.parse().unwrap();
+                debug!("port found {}", vhost_port);
                 port = Some(vhost_port);
             }
 
-            if inside_section && domain.is_none() && domain_search_pattern.is_match(&row) {
+            if inside_server_section && domain.is_none() &&
+                domain_search_pattern.is_match(&row) {
                 let groups = domain_search_pattern.captures_iter(&row).next().unwrap();
                 let domain_name = String::from(&groups[1]);
+                debug!("domain found {}", domain_name);
                 domain = Some(domain_name);
             }
+        }
 
-            if port.is_some() && domain.is_some() {
-                let domain_name = domain.unwrap();
+        if port.is_some() && domain.is_some() && !redirect_to_url {
+            let domain_name = domain.unwrap();
 
-                let vhost = VirtualHost {
-                    domain: String::from(&domain_name), port: port.unwrap()
-                };
+            let vhost = VirtualHost {
+                domain: String::from(&domain_name), port: port.unwrap()
+            };
 
-                hosts.push(vhost);
-
-                port = None;
-                domain = None;
-
-                inside_section = false;
-            }
+            hosts.push(vhost);
         }
 
         return hosts
@@ -115,12 +140,20 @@ pub mod webserver {
         return Regex::new("server[\\s\t]+\\{").unwrap();
     }
 
+    pub fn get_nginx_redirect_with_301_regex() -> Regex {
+        return Regex::new("[\t\\s]*return[\\s\t]+301[\\s\t]+http.*[\\s\t]*$").unwrap();
+    }
+
     pub fn get_apache_vhost_section_start_regex() -> Regex {
         return Regex::new("<VirtualHost[\\s\t]+.*:\\d+>").unwrap();
     }
 
+    pub fn get_apache_redirect_to_http_regex() -> Regex {
+        return Regex::new("Redirect[\\s\t]+/[\\s\t]+http").unwrap();
+    }
+
     pub fn get_nginx_vhost_port_regex() -> Regex {
-        return Regex::new("[\\s\t]+listen[\\s\t]+(\\d+)( ssl)?;").unwrap();
+        return Regex::new("[\\s\t]*listen[\\s\t]+(\\d+)([\\s\t]+ssl)?;").unwrap();
     }
 
     pub fn get_apache_vhost_port_regex() -> Regex {

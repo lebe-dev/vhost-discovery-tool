@@ -12,7 +12,7 @@ use serde::Serialize;
 use serde_json::json;
 
 use crate::logging::logging::get_logging_config;
-use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
+use crate::webserver::webserver::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
 
 mod logging;
 
@@ -257,6 +257,7 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
                     debug!("analyze vhost file '{}'", vhost_file.display());
 
                     let section_start_regex = get_nginx_vhost_section_start_regex();
+                    let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
                     let port_search_regex = get_nginx_vhost_port_regex();
                     let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
 
@@ -265,6 +266,7 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
                     let nginx_vhosts = get_virtual_hosts_from_file(
                         vhost_file_path,
                         section_start_regex,
+                        redirect_with_301_regex,
                         port_search_regex,
                         domain_search_regex,
                     );
@@ -301,12 +303,14 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
                     debug!("analyze vhost file '{}'", vhost_file_path.display());
 
                     let section_start_regex = get_apache_vhost_section_start_regex();
+                    let redirect_to_url_regex = get_apache_redirect_to_http_regex();
                     let port_search_regex = get_apache_vhost_port_regex();
                     let domain_search_regex = get_domain_search_regex_for_apache_vhost();
 
                     let apache_vhosts = get_virtual_hosts_from_file(
                         vhost_file_path,
                         section_start_regex,
+                        redirect_to_url_regex,
                         port_search_regex,
                         domain_search_regex,
                     );
