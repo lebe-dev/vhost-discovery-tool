@@ -88,7 +88,7 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 
 В поздних версиях отказались от свойства `data`.
 
-Чтобы включить поддержку старого формата используйте опцию `--use-data-property`
+Чтобы включить поддержку старого формата, используйте опцию `--use-data-property`
 
 ## Пример вывода
 
