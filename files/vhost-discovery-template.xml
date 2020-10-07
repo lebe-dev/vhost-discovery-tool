@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2020-10-07T12:50:19Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Virtual Hosts</template>
+            <name>Virtual Hosts</name>
+            <description>Get urls from nginx\apache config files.&#13;
+Creates items&#13;
+&#13;
+https://github.com/lebe-dev/site-discovery-flea</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>SITE</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Virtual hosts discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>site.discovery</key>
+                    <delay>30m;30m/1-7,09:00-19:00;1h/1-7,19:01-23:59;3h/1-7,00:01-08:59</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Vhost {#URL} item</name>
+                            <type>CALCULATED</type>
+                            <key>vhost.item[{#URL}]</key>
+                            <delay>5m</delay>
+                            <params>0</params>
+                            <applications>
+                                <application>
+                                    <name>SITE</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
