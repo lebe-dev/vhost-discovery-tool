@@ -1,42 +1,37 @@
 # Site Discovery Flea
 
-Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix 
-[Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
+[Русская версия](README.RU.md)
 
-Для версии Zabbix ниже 4.2 используйте опцию `--use-data-property` (см.раздел Опции).
+Gather urls from nginx\apache configs then outputs in Zabbix 
+[Low Level Discovery](https://www.zabbix.com/documentation/current/manual/discovery/low_level_discovery) format.
 
-## Настройка Zabbix агента
+Use `--use-data-property` option for Zabbix < 4.2 (see details in Options section).
 
-1.Копируем исполняемый файл `site-discovery-flea` в `/usr/bin`.
+## Getting started
 
-2.Обновляем права:
+1. Copy `site-discovery-flea` to `/usr/bin`.
+2. Update permissions:  
+    ```shell script
+    chmod +x /usr/bin/site-discovery-flea
+    ```
+   
+3. Copy zabbix agent config `files/vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
 
-```
-chmod +x /usr/bin/site-discovery-flea
-```
+4. Import `files/vhost-discovery-template.xml` to Zabbix Server.
 
-3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
+5. Add `Virtual Hosts` template to target host.
 
-```
-UserParameter=site.discovery,/usr/bin/site-discovery-flea
-UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i "200 Ok" > /dev/null; echo $?
-```
+6. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
 
-Файл поставляется с дистрибутивом утилиты.
+## How it works
 
-4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts` (прилагается в виде файла `virtual-hosts-template.xml`).
+Tool looking for nginx\apache configuration files then creates data structures for Low Level Discovery:
 
-Шаблон идет с дистрибутивом утилиты.
+- domain
+- url
 
-## Как работает утилита
+Add `_http` postfix for domain with http protocol. For example: `http://somesite.ru` will be:  
 
-Утилита идет в конфиги Apache и Nginx и извлекает оттуда доменные имена и порты. На базе этих данных она формирует
-данные для Low Level Discovery:
-
-- Домен
-- Ссылка
-
-Для доменов с протоколом HTTP добавляет постфикс `_http`. Например, для сайта `http://somesite.ru` будет такая структура:
 ```json
 {
   "{#NAME}":"somesite.ru_http",
@@ -44,41 +39,41 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 }
 ```
 
-### Обработка конфигов nginx
+### Processing for nginx configs
 
-Если в `server` не указано значение для `server_name`, то данный виртуальный хост игнорируется. 
+Tool ignores hosts which don't have `server_name` property. 
 
-## Опции
+## Options
 
-### Указать рабочую директорию
+### Working directory
 
-Опция: `--work-dir` или `-d`
+Option: `--work-dir` or `-d`
 
-Значение по умолчанию: `/etc/zabbix`
+Default value: `/etc/zabbix`
 
-### Указать путь к конфигурациям nginx
+### Nginx configs root
 
-Опция: `--nginx-vhosts-path` или `-n`
+Option: `--nginx-vhosts-path` or `-n`
 
-Значение по умолчанию: `/etc/nginx/conf.d`
+Default value: `/etc/nginx/conf.d`
 
-### Указать путь к конфигурациям apache
+### Apache configs root
 
-Опция: `--apache-vhosts-path` или `-a`
+Option: `--apache-vhosts-path` or `-a`
 
-Значение по умолчанию: `/etc/httpd/conf.d`
+Default value: `/etc/httpd/conf.d`
 
-### Показывать в результате хосты с нестандартными портами
+### Show results with custom ports
 
-Опция: `--include-custom-ports`
+Standard ports: 80, 443
 
-В результатах будут также хосты вида http://somehost.ru:3823
+Option: `--include-custom-ports`
 
-Под стандартными портами понимаются: 80-й и 443-й 
+Example: `http://somehost.ru:3823`. 
 
-### Поддержка версий до 4.2
+### Support Zabbix < 4.2
 
-До версии Zabbix 4.2 использовался JSON формат такого вида:
+Zabbix 4.2 has JSON format:
 
 ```json
 {
@@ -86,11 +81,9 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 }
 ``` 
 
-В поздних версиях отказались от свойства `data`.
+Later versions don't support `data` property. Use `--use-data-property` option for that. 
 
-Чтобы включить поддержку старого формата используйте опцию `--use-data-property`
-
-## Пример вывода
+## Output example
 
 ```json
 [
@@ -105,42 +98,24 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -L -i $1 | grep -i 
 ]
 ```
 
-## Решение проблем
+## Troubleshooting
 
-Утилита пишет свой лог в файл `/var/log/zabbix/site-discovery-flea.log`.
+Log: `/var/log/zabbix/site-discovery-flea.log`.
 
-Запуск утилиты от пользователя `zabbix`:
+### Logging levels
 
-```shell script
-sudo -u zabbix /usr/bin/site-discovery-flea
+Use `--log-level` option if you want to switch logging level.
+
+Supported levels: `debug`, `error`, `warn`, `trace`, `info`, `off`
+
+### How to disable logging
+
 ```
-
-### Уровни логирования
-
-Можно управлять уровнем логирования через флаг `--log-level`.
-
-Поддерживаемые значения: `debug`, `error`, `warn`, `trace`, `info`, `off`
-
-### Как отключить логирование?
-
-```shell script
 --log-level=off
 ```
 
-## RoadMap
+## Thanks for support
 
-### 1.5.0
-
-- Опция: Включать Endpoint'ы  
-  Например, проксирование вида `proxy_pass ...` выдавать как отдельный URL 
-  
-### 1.4.0
-
-- По умолчанию сканирует только для nginx
-- Возможность указать для каких web-серверов сканировать: apache, nginx или оба сразу
-
-## Спасибо за поддержку
-
-Спасибо за поддержку проекта, тестирование и обратную связь:
+Thanks for project support, testing and feedback:
 
 - [ttsrg](https://github.com/ttsrg)
