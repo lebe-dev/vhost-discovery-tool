@@ -85,29 +85,30 @@ pub mod webserver {
                 redirect_to_url = false;
             }
 
-            if inside_server_section && redirect_with_301_pattern.is_match(&row) {
-                debug!("redirect detected");
-                redirect_to_url = true;
-                inside_server_section = false;
+            if inside_server_section {
+                if redirect_with_301_pattern.is_match(&row) {
+                    debug!("redirect detected");
+                    redirect_to_url = true;
+                    inside_server_section = false;
 
-                domain = None;
-                port = None;
+                    domain = None;
+                    port = None;
+                }
+
+                if port.is_none() && port_search_pattern.is_match(&row) {
+                    let vhost_port_str = get_first_group_match_as_string(&row, &port_search_pattern);
+                    let vhost_port: i32 = vhost_port_str.parse().unwrap();
+                    debug!("port found {}", vhost_port);
+                    port = Some(vhost_port);
+                }
+
+                if domain.is_none() && domain_search_pattern.is_match(&row) {
+                    let domain_name = get_first_group_match_as_string(&row, &domain_search_pattern);
+                    debug!("domain found {}", domain_name);
+                    domain = Some(domain_name);
+                }
             }
 
-            if inside_server_section && port.is_none() &&
-               port_search_pattern.is_match(&row) {
-                let vhost_port_str = get_first_group_match_as_string(&row, &port_search_pattern);
-                let vhost_port: i32 = vhost_port_str.parse().unwrap();
-                debug!("port found {}", vhost_port);
-                port = Some(vhost_port);
-            }
-
-            if inside_server_section && domain.is_none() &&
-                domain_search_pattern.is_match(&row) {
-                let domain_name = get_first_group_match_as_string(&row, &domain_search_pattern);
-                debug!("domain found {}", domain_name);
-                domain = Some(domain_name);
-            }
         }
 
         if port.is_some() && domain.is_some() && !redirect_to_url {
