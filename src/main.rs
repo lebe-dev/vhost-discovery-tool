@@ -163,12 +163,12 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
     let mut path: &Path = Path::new(default_path);
 
     if matches.is_present(long_argument) {
-        let vhosts_path_value = matches.value_of(long_argument).unwrap();
+        let vhosts_path_value = matches.value_of(long_argument).unwrap_or(default_path);
         path = Path::new(vhosts_path_value)
 
     } else {
         if matches.is_present(short_argument) {
-            let vhosts_path_value = matches.value_of(short_argument).unwrap();
+            let vhosts_path_value = matches.value_of(short_argument).unwrap_or(default_path);
             path = Path::new(vhosts_path_value)
         }
     }
