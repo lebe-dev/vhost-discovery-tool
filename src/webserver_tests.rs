@@ -2,9 +2,10 @@
 mod webserver_tests {
     use std::path::Path;
 
-    use crate::webserver::webserver::{get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
+    use crate::webserver::webserver::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
 
-    const SAMPLE_DOMAIN: &str = "collections.company.ru";
+    const SAMPLE_DOMAIN: &str = "whatever.ru";
+    const SAMPLE_DOMAIN2: &str = "gallery.whatever.ru";
 
     const NGINX_SAMPLE_VHOST_FILE: &str = "tests/nginx-vhosts/vhost2.conf";
 
@@ -27,25 +28,30 @@ mod webserver_tests {
     fn get_virtual_hosts_from_nginx_file() {
         let vhost_file = Path::new(NGINX_SAMPLE_VHOST_FILE);
         let section_start_regex = get_nginx_vhost_section_start_regex();
+        let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
         let port_search_regex = get_nginx_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
 
         let vhosts = get_virtual_hosts_from_file(
-            vhost_file, section_start_regex, port_search_regex, domain_search_regex
+            vhost_file, section_start_regex,
+            redirect_with_301_regex,
+            port_search_regex, domain_search_regex
         );
+
+        vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
 
         let expected_size: usize = 2;
         assert_eq!(&vhosts.len(), &expected_size);
 
         let first_vhost = &vhosts.first().unwrap();
 
-        assert_eq!(first_vhost.port, 38101);
+        assert_eq!(first_vhost.port, 443);
         assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
 
         let last_vhost = &vhosts.last().unwrap();
 
         assert_eq!(last_vhost.port, 23512);
-        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN);
+        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
     }
 
     #[test]
@@ -53,30 +59,39 @@ mod webserver_tests {
         let vhost_file = Path::new(NGINX_SAMPLE_VHOST_FILE);
 
         let section_start_regex = get_nginx_vhost_section_start_regex();
+        let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
         let port_search_regex = get_nginx_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
 
         let vhosts = get_virtual_hosts_from_file(
-            vhost_file, section_start_regex, port_search_regex, domain_search_regex
+            vhost_file, section_start_regex,
+            redirect_with_301_regex,
+            port_search_regex, domain_search_regex
         );
 
-        let first_vhost = vhosts.first().unwrap();
-        let last_vhost = vhosts.last().unwrap();
+        assert_eq!(vhosts.len(), 2);
 
-        assert_eq!(2, vhosts.len());
+        let first_vhost = vhosts.first().unwrap();
         assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
-        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN);
+
+        let last_vhost = vhosts.last().unwrap();
+        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
     }
 
     #[test]
     fn get_virtual_hosts_from_apache_file() {
         let vhost_file = Path::new("tests/apache-vhosts/vhost2.conf");
         let section_start_regex = get_apache_vhost_section_start_regex();
+        let redirect_to_http = get_apache_redirect_to_http_regex();
         let port_search_regex = get_apache_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_apache_vhost();
 
         let vhosts = get_virtual_hosts_from_file(
-            vhost_file, section_start_regex, port_search_regex, domain_search_regex
+            vhost_file,
+            section_start_regex,
+            redirect_to_http,
+            port_search_regex,
+            domain_search_regex
         );
 
         for vhost in &vhosts {
@@ -88,13 +103,13 @@ mod webserver_tests {
 
         let first_vhost = &vhosts.first().unwrap();
 
-        assert_eq!(first_vhost.port, 80);
-        assert_eq!(first_vhost.domain, "collections.e-gallery.ru");
+        assert_eq!(first_vhost.port, 443);
+        assert_eq!(first_vhost.domain, "whatever.ru");
 
         let second_vhost = &vhosts.get(1).unwrap();
 
         assert_eq!(second_vhost.port, 5380);
-        assert_eq!(second_vhost.domain, "crab.corp.ru");
+        assert_eq!(second_vhost.domain, "whatever.ru");
 
         let last_vhost = &vhosts.last().unwrap();
 
@@ -108,5 +123,36 @@ mod webserver_tests {
         assert!(regex.is_match("    ServerName distrib.company.ru"));
         assert!(regex.is_match("ServerName   vp123.Cgro2Mp-aNy.ru"));
         assert_eq!(regex.is_match("ServerName 1 cp.coM2mu-any.ru   "), false);
+    }
+
+    #[test]
+    fn test_get_nginx_vhost_port_regex_pattern() {
+        let regex = get_nginx_vhost_port_regex();
+
+        assert!(regex.is_match("   listen 80;"));
+        assert!(regex.is_match("    listen 443 ssl;"));
+        assert!(regex.is_match("     listen 443  ssl;"));
+        assert!(!regex.is_match(""));
+        assert!(!regex.is_match("listen abcasdwd932 ssl;"));
+    }
+
+    #[test]
+    fn test_get_nginx_redirect_to_https_regex_pattern() {
+        let regex = get_nginx_redirect_with_301_regex();
+        assert!(regex.is_match(" return 301 https://whatever.ru;"));
+        assert!(regex.is_match("return 301 https://whatever.ru;     "));
+        assert!(!regex.is_match("return 302 https://whatever.ru;"));
+    }
+
+    #[test]
+    fn test_get_domain_search_regex_for_nginx_vhost() {
+        let regex = get_domain_search_regex_for_nginx_vhost();
+
+        assert!(regex.is_match("server_name abc;"));
+        assert!(regex.is_match("  server_name  abc; "));
+
+        assert!(!regex.is_match("server_name  abc"));
+        assert!(!regex.is_match("server_nameabc;"));
+        assert!(!regex.is_match(""));
     }
 }
