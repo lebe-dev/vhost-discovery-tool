@@ -92,9 +92,11 @@ pub mod webserver {
 
                 if port.is_none() && port_search_pattern.is_match(&row) {
                     let vhost_port_str = get_first_group_match_as_string(&row, &port_search_pattern);
-                    let vhost_port: i32 = vhost_port_str.parse().unwrap();
-                    debug!("port found {}", vhost_port);
-                    port = Some(vhost_port);
+                    if let Ok(vhost_port) = vhost_port_str.parse() {
+                        debug!("port found {}", vhost_port);
+                        port = Some(vhost_port);
+
+                    } else { error!("unable to parse port value '{}'", vhost_port_str); }
                 }
 
                 if domain.is_none() && domain_search_pattern.is_match(&row) {
