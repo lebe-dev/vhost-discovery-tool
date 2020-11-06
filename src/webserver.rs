@@ -6,19 +6,9 @@ pub mod webserver {
 
     use regex::Regex;
 
+    use crate::domain::domain::VirtualHost;
+
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
-
-    #[derive(Clone)]
-    pub struct VirtualHost {
-        pub domain: String,
-        pub port: i32
-    }
-
-    impl VirtualHost {
-        pub fn to_string(&self) -> String {
-            return String::from(format!("domain: {}, port: {}", self.domain, self.port));
-        }
-    }
 
     pub fn get_vhost_config_file_list(vhost_root_path: &Path) -> Result<Vec<PathBuf>,io::Error> {
         let paths = fs::read_dir(&vhost_root_path)?;

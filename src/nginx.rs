@@ -4,8 +4,9 @@ pub mod nginx {
 
     use regex::Regex;
 
+    use crate::domain::domain::VirtualHost;
     use crate::ERROR_EXIT_CODE;
-    use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
+    use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
     pub fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
         debug!("get virtual hosts from nginx configs");
