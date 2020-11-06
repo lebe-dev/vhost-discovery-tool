@@ -337,12 +337,10 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
 }
 
 fn get_url(domain: &str, vhost_port: i32) -> String {
-    if vhost_port == DEFAULT_HTTP_PORT {
-        String::from(format!("http://{}", domain))
-    } else if vhost_port == DEFAULT_HTTPS_PORT {
-        String::from(format!("https://{}", domain))
-    } else {
-        String::from(format!("http://{}:{}", domain, vhost_port))
+    match vhost_port {
+        DEFAULT_HTTP_PORT => String::from(format!("http://{}", domain)),
+        DEFAULT_HTTPS_PORT => String::from(format!("https://{}", domain)),
+        _ => String::from(format!("http://{}:{}", domain, vhost_port))
     }
 }
 
