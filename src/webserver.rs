@@ -99,8 +99,7 @@ pub mod webserver {
 
             if inside_server_section && port.is_none() &&
                port_search_pattern.is_match(&row) {
-                let groups = port_search_pattern.captures_iter(&row).next().unwrap();
-                let vhost_port_str = String::from(&groups[1]);
+                let vhost_port_str = get_first_group_match_as_string(&row, &port_search_pattern);
                 let vhost_port: i32 = vhost_port_str.parse().unwrap();
                 debug!("port found {}", vhost_port);
                 port = Some(vhost_port);
