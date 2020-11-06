@@ -1,6 +1,6 @@
 pub mod webserver {
     use std::{fs, io};
-    use std::fs::File;
+    use std::fs::{DirEntry, File};
     use std::io::{BufRead, BufReader};
     use std::path::{Path, PathBuf};
 
@@ -26,15 +26,10 @@ pub mod webserver {
 
         for path in paths {
             let file = path.unwrap();
-            let file_type = file.file_type()?;
 
-            if file_type.is_file() || file_type.is_symlink() {
-                let file_name = file.file_name().into_string().unwrap();
-
-                if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
-                    let vhost_file = vhost_root_path.join(file_name);
-                    vhost_files.push(vhost_file);
-                }
+            match get_vhost_file_from_dir(vhost_root_path, &file) {
+                Some(file_path) => vhost_files.push(file_path),
+                None => {}
             }
         }
 
@@ -144,6 +139,27 @@ pub mod webserver {
 
     pub fn get_apache_vhost_port_regex() -> Regex {
         return Regex::new("<VirtualHost[\\s\t]+.*:(\\d+)>").unwrap();
+    }
+
+    fn get_vhost_file_from_dir(vhost_root_path: &Path,
+                               dir_entry: &DirEntry) -> Option<PathBuf> {
+        let mut result: Option<PathBuf> = None;
+
+        if let Ok(file_type) = dir_entry.file_type() {
+            if file_type.is_file() || file_type.is_symlink() {
+                match dir_entry.file_name().into_string() {
+                    Ok(file_name) => {
+                        if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
+                            let vhost_file = vhost_root_path.join(file_name);
+                            result = Some(vhost_file)
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        result
     }
 
     fn get_first_group_match_as_string(row: &str, pattern: &Regex) -> String {
