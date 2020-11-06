@@ -197,16 +197,14 @@ fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>, include_domains_with_w
             true
         }
 
-    }).map(|vhost| {
-        let url = get_url(&vhost.domain, vhost.port);
-
-        Site {
-            name: get_site_name(&vhost.domain, vhost.port),
-            url,
-        }
-    }).collect();
+    }).map(get_site_from_vhost).collect();
 
     return sites;
+}
+
+fn get_site_from_vhost(vhost: &VirtualHost) -> Site {
+    let url = get_url(&vhost.domain, vhost.port);
+    Site { name: get_site_name(&vhost.domain, vhost.port), url }
 }
 
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
@@ -216,6 +214,7 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
     if matches.is_present(long_argument) {
         let vhosts_path_value = matches.value_of(long_argument).unwrap();
         path = Path::new(vhosts_path_value)
+
     } else {
         if matches.is_present(short_argument) {
             let vhosts_path_value = matches.value_of(short_argument).unwrap();
