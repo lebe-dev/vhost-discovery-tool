@@ -73,11 +73,7 @@ pub mod webserver {
                 }
 
                 if port.is_some() && domain.is_some() && !redirect_to_url {
-                    let domain_name = domain.unwrap();
-
-                    let vhost = VirtualHost {
-                        domain: String::from(&domain_name), port: port.unwrap()
-                    };
+                    let vhost = get_virtual_host(domain, port);
 
                     hosts.push(vhost);
 
