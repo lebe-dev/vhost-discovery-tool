@@ -77,8 +77,8 @@ pub mod webserver {
 
                     hosts.push(vhost);
 
-                    port = None;
                     domain = None;
+                    port = None;
                 }
 
                 inside_server_section = true;
@@ -88,9 +88,10 @@ pub mod webserver {
             if inside_server_section && redirect_with_301_pattern.is_match(&row) {
                 debug!("redirect detected");
                 redirect_to_url = true;
+                inside_server_section = false;
+
                 domain = None;
                 port = None;
-                inside_server_section = false;
             }
 
             if inside_server_section && port.is_none() &&
