@@ -263,17 +263,20 @@ fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
 
                     let vhost_file_path = vhost_file.as_path();
 
-                    let nginx_vhosts = get_virtual_hosts_from_file(
+                    if let Ok(nginx_vhosts) = get_virtual_hosts_from_file(
                         vhost_file_path,
                         section_start_regex,
                         redirect_with_301_regex,
                         port_search_regex,
                         domain_search_regex,
-                    );
+                    ) {
+                        for nginx_vhost in nginx_vhosts {
+                            debug!("{}", nginx_vhost.to_string());
+                            vhosts.push(nginx_vhost);
+                        }
 
-                    for nginx_vhost in nginx_vhosts {
-                        debug!("{}", nginx_vhost.to_string());
-                        vhosts.push(nginx_vhost);
+                    } else {
+                        error!("unable to get virtual hosts form file")
                     }
                 }
             }
@@ -307,18 +310,19 @@ fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
                     let port_search_regex = get_apache_vhost_port_regex();
                     let domain_search_regex = get_domain_search_regex_for_apache_vhost();
 
-                    let apache_vhosts = get_virtual_hosts_from_file(
+                    if let Ok(apache_vhosts) = get_virtual_hosts_from_file(
                         vhost_file_path,
                         section_start_regex,
                         redirect_to_url_regex,
                         port_search_regex,
                         domain_search_regex,
-                    );
+                    ) {
+                        for apache_vhost in apache_vhosts {
+                            debug!("{}", apache_vhost.to_string());
+                            vhosts.push(apache_vhost);
+                        }
 
-                    for apache_vhost in apache_vhosts {
-                        debug!("{}", apache_vhost.to_string());
-                        vhosts.push(apache_vhost);
-                    }
+                    } else { error!("unable to get virtual hosts from file") }
                 }
             }
             Err(_) => {

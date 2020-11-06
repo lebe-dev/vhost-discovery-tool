@@ -32,26 +32,26 @@ mod webserver_tests {
         let port_search_regex = get_nginx_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
 
-        let vhosts = get_virtual_hosts_from_file(
+        if let Ok(vhosts) = get_virtual_hosts_from_file(
             vhost_file, section_start_regex,
             redirect_with_301_regex,
             port_search_regex, domain_search_regex
-        );
+        ) {
+            vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
 
-        vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
+            let expected_size: usize = 2;
+            assert_eq!(&vhosts.len(), &expected_size);
 
-        let expected_size: usize = 2;
-        assert_eq!(&vhosts.len(), &expected_size);
+            let first_vhost = &vhosts.first().unwrap();
 
-        let first_vhost = &vhosts.first().unwrap();
+            assert_eq!(first_vhost.port, 443);
+            assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
 
-        assert_eq!(first_vhost.port, 443);
-        assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
+            let last_vhost = &vhosts.last().unwrap();
 
-        let last_vhost = &vhosts.last().unwrap();
-
-        assert_eq!(last_vhost.port, 23512);
-        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
+            assert_eq!(last_vhost.port, 23512);
+            assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
+        }
     }
 
     #[test]
@@ -63,19 +63,19 @@ mod webserver_tests {
         let port_search_regex = get_nginx_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
 
-        let vhosts = get_virtual_hosts_from_file(
+        if let Ok(vhosts) = get_virtual_hosts_from_file(
             vhost_file, section_start_regex,
             redirect_with_301_regex,
             port_search_regex, domain_search_regex
-        );
+        ) {
+            assert_eq!(vhosts.len(), 2);
 
-        assert_eq!(vhosts.len(), 2);
+            let first_vhost = vhosts.first().unwrap();
+            assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
 
-        let first_vhost = vhosts.first().unwrap();
-        assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
-
-        let last_vhost = vhosts.last().unwrap();
-        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
+            let last_vhost = vhosts.last().unwrap();
+            assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
+        }
     }
 
     #[test]
@@ -86,35 +86,36 @@ mod webserver_tests {
         let port_search_regex = get_apache_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_apache_vhost();
 
-        let vhosts = get_virtual_hosts_from_file(
+        if let Ok(vhosts) = get_virtual_hosts_from_file(
             vhost_file,
             section_start_regex,
             redirect_to_http,
             port_search_regex,
             domain_search_regex
-        );
+        ) {
 
-        for vhost in &vhosts {
-            println!("{}", vhost.to_string());
+            for vhost in &vhosts {
+                println!("{}", vhost.to_string());
+            }
+
+            let expected_size: usize = 3;
+            assert_eq!(&vhosts.len(), &expected_size);
+
+            let first_vhost = &vhosts.first().unwrap();
+
+            assert_eq!(first_vhost.port, 443);
+            assert_eq!(first_vhost.domain, "whatever.ru");
+
+            let second_vhost = &vhosts.get(1).unwrap();
+
+            assert_eq!(second_vhost.port, 5380);
+            assert_eq!(second_vhost.domain, "whatever.ru");
+
+            let last_vhost = &vhosts.last().unwrap();
+
+            assert_eq!(last_vhost.port, 1480);
+            assert_eq!(last_vhost.domain, "demo.company.ru");
         }
-
-        let expected_size: usize = 3;
-        assert_eq!(&vhosts.len(), &expected_size);
-
-        let first_vhost = &vhosts.first().unwrap();
-
-        assert_eq!(first_vhost.port, 443);
-        assert_eq!(first_vhost.domain, "whatever.ru");
-
-        let second_vhost = &vhosts.get(1).unwrap();
-
-        assert_eq!(second_vhost.port, 5380);
-        assert_eq!(second_vhost.domain, "whatever.ru");
-
-        let last_vhost = &vhosts.last().unwrap();
-
-        assert_eq!(last_vhost.port, 1480);
-        assert_eq!(last_vhost.domain, "demo.company.ru");
     }
 
     #[test]

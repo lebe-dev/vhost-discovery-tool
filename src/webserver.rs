@@ -40,15 +40,14 @@ pub mod webserver {
                                        section_start_pattern: Regex,
                                        redirect_with_301_pattern: Regex,
                                        port_search_pattern: Regex,
-                                       domain_search_pattern: Regex) -> Vec<VirtualHost> {
+                                       domain_search_pattern: Regex) -> Result<Vec<VirtualHost>, io::Error> {
         let mut hosts: Vec<VirtualHost> = Vec::new();
 
         let vhost_file_name = vhost_file.to_str().unwrap();
 
         info!("get virtual hosts from file '{}'", vhost_file_name);
 
-        let input = File::open(vhost_file)
-                                .expect(&format!("unable to open file '{}'", vhost_file_name));
+        let input = File::open(vhost_file)?;
         let buffered = BufReader::new(input);
 
         let mut inside_server_section = false;
@@ -112,7 +111,7 @@ pub mod webserver {
             hosts.push(get_virtual_host(domain, port));
         }
 
-        return hosts
+        Ok(hosts)
     }
 
     pub fn get_domain_search_regex_for_nginx_vhost() -> Regex {
