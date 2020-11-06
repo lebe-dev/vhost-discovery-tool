@@ -2,8 +2,10 @@ pub mod nginx {
     use std::path::Path;
     use std::process::exit;
 
+    use regex::Regex;
+
     use crate::ERROR_EXIT_CODE;
-    use crate::webserver::webserver::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
+    use crate::webserver::webserver::{get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_vhost_config_file_list, get_virtual_hosts_from_file, VirtualHost};
 
     pub fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
         debug!("get virtual hosts from nginx configs");
@@ -50,5 +52,13 @@ pub mod nginx {
         }
 
         return vhosts;
+    }
+
+    pub fn get_domain_search_regex_for_nginx_vhost() -> Regex {
+        return Regex::new("server_name[\\s\t]+([a-z0-9.\\-]+);").unwrap();
+    }
+
+    pub fn get_nginx_vhost_section_start_regex() -> Regex {
+        return Regex::new("server[\\s\t]+\\{").unwrap();
     }
 }
