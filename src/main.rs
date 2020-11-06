@@ -125,7 +125,6 @@ fn main() {
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
     let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
-
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
     let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
@@ -133,10 +132,7 @@ fn main() {
     let filtered_nginx_vhosts: Vec<VirtualHost> = filter_vhosts(&nginx_vhosts, include_custom_domains);
     filtered_nginx_vhosts.iter().for_each(|vhost| vhosts.push(vhost.to_owned()));
 
-    let apache_vhosts_path: &Path = get_argument_path_value(
-        &matches, APACHE_VHOSTS_PATH_ARGUMENT,
-        APACHE_VHOSTS_PATH_SHORT_ARGUMENT, APACHE_VHOSTS_PATH);
-
+    let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
     let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
@@ -226,6 +222,11 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
 fn get_nginx_vhosts_path<'a>(matches: &'a ArgMatches) -> &'a Path {
     get_argument_path_value(&matches, NGINX_VHOSTS_PATH_ARGUMENT,
         NGINX_VHOSTS_PATH_SHORT_ARGUMENT, NGINX_VHOSTS_PATH)
+}
+
+fn get_apache_vhosts_path<'a>(matches: &'a ArgMatches) -> &'a Path {
+    get_argument_path_value(&matches, APACHE_VHOSTS_PATH_ARGUMENT,
+                            APACHE_VHOSTS_PATH_SHORT_ARGUMENT, APACHE_VHOSTS_PATH)
 }
 
 fn get_site_name(domain: &str, port: i32) -> String {
