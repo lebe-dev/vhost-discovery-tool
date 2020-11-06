@@ -148,14 +148,11 @@ pub mod webserver {
 
         if let Ok(file_type) = dir_entry.file_type() {
             if file_type.is_file() || file_type.is_symlink() {
-                match dir_entry.file_name().into_string() {
-                    Ok(file_name) => {
-                        if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
-                            let vhost_file = vhost_root_path.join(file_name);
-                            result = Some(vhost_file)
-                        }
+                if let Ok(file_name) = dir_entry.file_name().into_string() {
+                    if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
+                        let vhost_file = vhost_root_path.join(file_name);
+                        result = Some(vhost_file)
                     }
-                    _ => {}
                 }
             }
         }
