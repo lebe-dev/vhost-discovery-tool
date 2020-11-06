@@ -134,14 +134,14 @@ fn main() {
 
     for nginx_vhost in nginx_vhosts {
         if nginx_vhost.port == DEFAULT_HTTP_PORT {
-            if !vector_contains_same_domain_with_ssl(&vhosts, &nginx_vhost.domain) {
+            if !vec_contains_same_domain_with_port(&vhosts, &nginx_vhost.domain, DEFAULT_HTTPS_PORT) {
                 debug!("+ add vhost '{}'", nginx_vhost.to_string());
                 vhosts.push(nginx_vhost)
             }
         } else {
             if nginx_vhost.port != DEFAULT_HTTPS_PORT {
                 if include_custom_domains &&
-                    !vector_contains_same_domain_with_default_http_port(&vhosts, &nginx_vhost.domain) {
+                    !vec_contains_same_domain_with_port(&vhosts, &nginx_vhost.domain, DEFAULT_HTTP_PORT) {
                     debug!("+ add vhost '{}'", nginx_vhost.to_string());
                     vhosts.push(nginx_vhost)
                 }
@@ -162,14 +162,14 @@ fn main() {
 
     for apache_vhost in apache_vhosts {
         if apache_vhost.port == DEFAULT_HTTP_PORT {
-            if !vector_contains_same_domain_with_ssl(&vhosts, &apache_vhost.domain) {
+            if !vec_contains_same_domain_with_port(&vhosts, &apache_vhost.domain, DEFAULT_HTTPS_PORT) {
                 debug!("+ add vhost '{}'", apache_vhost.to_string());
                 vhosts.push(apache_vhost)
             }
         } else {
             if apache_vhost.port != DEFAULT_HTTPS_PORT {
                 if include_custom_domains &&
-                    !vector_contains_same_domain_with_default_http_port(&vhosts, &apache_vhost.domain) {
+                    !vec_contains_same_domain_with_port(&vhosts, &apache_vhost.domain, DEFAULT_HTTP_PORT) {
                     debug!("+ found vhost '{}'", apache_vhost.to_string());
                     vhosts.push(apache_vhost)
                 }
@@ -344,31 +344,14 @@ fn get_url(domain: &str, vhost_port: i32) -> String {
     }
 }
 
-fn vector_contains_same_domain_with_ssl(vhosts: &Vec<VirtualHost>, domain: &String) -> bool {
+fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>, domain: &String, port: i32) -> bool {
     let mut result = false;
 
     let vhost_found = vhosts.iter().find(
-        |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTPS_PORT
+        |vhost| &vhost.domain == domain && vhost.port == port
     ).is_some();
 
-    if vhost_found {
-        result = true;
-    }
-
-    result
-}
-
-fn vector_contains_same_domain_with_default_http_port(vhosts: &Vec<VirtualHost>,
-                                                      domain: &String) -> bool {
-    let mut result = false;
-
-    let vhost_found = vhosts.iter().find(
-        |vhost| &vhost.domain == domain && vhost.port == DEFAULT_HTTP_PORT
-    ).is_some();
-
-    if vhost_found {
-        result = true;
-    }
+    if vhost_found { result = true }
 
     result
 }
