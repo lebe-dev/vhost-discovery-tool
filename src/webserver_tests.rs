@@ -2,7 +2,7 @@
 mod webserver_tests {
     use std::path::Path;
 
-    use crate::webserver::webserver::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_apache_vhost_section_start_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
+    use crate::webserver::webserver::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_domain_search_regex_for_apache_vhost, get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_vhost_config_file_list, get_virtual_hosts_from_file};
 
     const SAMPLE_DOMAIN: &str = "whatever.ru";
     const SAMPLE_DOMAIN2: &str = "gallery.whatever.ru";
@@ -81,7 +81,7 @@ mod webserver_tests {
     #[test]
     fn get_virtual_hosts_from_apache_file() {
         let vhost_file = Path::new("tests/apache-vhosts/vhost2.conf");
-        let section_start_regex = get_apache_vhost_section_start_regex();
+        let section_start_regex = get_apache_vhost_port_regex();
         let redirect_to_http = get_apache_redirect_to_http_regex();
         let port_search_regex = get_apache_vhost_port_regex();
         let domain_search_regex = get_domain_search_regex_for_apache_vhost();

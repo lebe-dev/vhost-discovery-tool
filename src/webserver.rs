@@ -134,10 +134,6 @@ pub mod webserver {
         return Regex::new("[\t\\s]*return[\\s\t]+301[\\s\t]+http.*[\\s\t]*$").unwrap();
     }
 
-    pub fn get_apache_vhost_section_start_regex() -> Regex {
-        return Regex::new("<VirtualHost[\\s\t]+.*:\\d+>").unwrap();
-    }
-
     pub fn get_apache_redirect_to_http_regex() -> Regex {
         return Regex::new("Redirect[\\s\t]+/[\\s\t]+http").unwrap();
     }
