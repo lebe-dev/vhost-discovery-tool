@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod main_tests {
-    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property, get_site_name, get_sites_vector_from_vhosts, get_url, Site, vec_contains_same_domain_with_port};
+    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property, get_site_name, get_sites_from_vhosts, get_url, Site, vec_contains_same_domain_with_port};
     use crate::domain::domain::VirtualHost;
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
@@ -96,7 +96,7 @@ mod main_tests {
 
         vhosts.push(vhost);
 
-        let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, true);
+        let sites: Vec<Site> = get_sites_from_vhosts(vhosts, true);
 
         let expected_json: &str = r#"[{"{#NAME}":"meduttio.uk","{#URL}":"https://meduttio.uk"}]"#;
 
@@ -126,7 +126,7 @@ mod main_tests {
         vhosts.push(vhost1);
         vhosts.push(vhost2);
 
-        let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, true);
+        let sites: Vec<Site> = get_sites_from_vhosts(vhosts, true);
 
         assert_eq!(2, sites.len());
 
@@ -158,7 +158,7 @@ mod main_tests {
         vhosts.push(vhost1);
         vhosts.push(vhost2);
 
-        let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, false);
+        let sites: Vec<Site> = get_sites_from_vhosts(vhosts, false);
 
         assert_eq!(1, sites.len());
 
@@ -179,7 +179,7 @@ mod main_tests {
 
         vhosts.push(vhost);
 
-        let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, true);
+        let sites: Vec<Site> = get_sites_from_vhosts(vhosts, true);
 
         let expected_json: &str =
             r#"{"data":[{"{#NAME}":"meduttio.uk","{#URL}":"https://meduttio.uk"}]}"#;

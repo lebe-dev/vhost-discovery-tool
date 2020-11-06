@@ -144,7 +144,7 @@ fn main() {
     let filtered_apache_vhosts: Vec<VirtualHost> = filter_vhosts(&apache_vhosts, include_custom_domains);
     filtered_apache_vhosts.iter().for_each(|vhost| vhosts.push(vhost.to_owned()));
 
-    let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, include_domains_with_www);
+    let sites: Vec<Site> = get_sites_from_vhosts(vhosts, include_domains_with_www);
 
     let json;
 
@@ -183,7 +183,7 @@ fn filter_vhosts(vhosts: &Vec<VirtualHost>, include_custom_domains: bool) -> Vec
     return results
 }
 
-fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>, include_domains_with_www: bool) -> Vec<Site> {
+fn get_sites_from_vhosts(vhosts: Vec<VirtualHost>, include_domains_with_www: bool) -> Vec<Site> {
     let sites: Vec<Site> = vhosts.iter()
         .filter(|vhost| {
         let domain_in_lowercase = vhost.domain.to_lowercase();
