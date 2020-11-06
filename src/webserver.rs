@@ -108,8 +108,7 @@ pub mod webserver {
 
             if inside_server_section && domain.is_none() &&
                 domain_search_pattern.is_match(&row) {
-                let groups = domain_search_pattern.captures_iter(&row).next().unwrap();
-                let domain_name = String::from(&groups[1]);
+                let domain_name = get_first_group_match_as_string(&row, &domain_search_pattern);
                 debug!("domain found {}", domain_name);
                 domain = Some(domain_name);
             }
@@ -158,5 +157,10 @@ pub mod webserver {
 
     pub fn get_apache_vhost_port_regex() -> Regex {
         return Regex::new("<VirtualHost[\\s\t]+.*:(\\d+)>").unwrap();
+    }
+
+    fn get_first_group_match_as_string(row: &str, pattern: &Regex) -> String {
+        let groups = pattern.captures_iter(&row).next().unwrap();
+        String::from(&groups[1])
     }
 }
