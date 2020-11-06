@@ -124,9 +124,7 @@ fn main() {
     info!("- include domains with custom ports: {}", include_custom_domains);
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-    let nginx_vhosts_path: &Path = get_argument_path_value(
-        &matches, NGINX_VHOSTS_PATH_ARGUMENT,
-        NGINX_VHOSTS_PATH_SHORT_ARGUMENT, NGINX_VHOSTS_PATH);
+    let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
 
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
@@ -223,6 +221,11 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
     }
 
     return path;
+}
+
+fn get_nginx_vhosts_path<'a>(matches: &'a ArgMatches) -> &'a Path {
+    get_argument_path_value(&matches, NGINX_VHOSTS_PATH_ARGUMENT,
+        NGINX_VHOSTS_PATH_SHORT_ARGUMENT, NGINX_VHOSTS_PATH)
 }
 
 fn get_site_name(domain: &str, port: i32) -> String {
