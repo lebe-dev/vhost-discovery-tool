@@ -119,16 +119,8 @@ pub mod webserver {
         return Regex::new("ServerName[\\s\t]+([a-zA-Z0-9.-]+)$").unwrap();
     }
 
-    pub fn get_nginx_redirect_with_301_regex() -> Regex {
-        return Regex::new("[\t\\s]*return[\\s\t]+301[\\s\t]+http.*[\\s\t]*$").unwrap();
-    }
-
     pub fn get_apache_redirect_to_http_regex() -> Regex {
         return Regex::new("Redirect[\\s\t]+/[\\s\t]+http").unwrap();
-    }
-
-    pub fn get_nginx_vhost_port_regex() -> Regex {
-        return Regex::new("[\\s\t]*listen[\\s\t]+(\\d+)([\\s\t]+ssl)?;").unwrap();
     }
 
     pub fn get_apache_vhost_port_regex() -> Regex {
