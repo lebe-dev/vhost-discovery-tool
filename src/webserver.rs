@@ -115,13 +115,7 @@ pub mod webserver {
         }
 
         if port.is_some() && domain.is_some() && !redirect_to_url {
-            let domain_name = domain.unwrap();
-
-            let vhost = VirtualHost {
-                domain: String::from(&domain_name), port: port.unwrap()
-            };
-
-            hosts.push(vhost);
+            hosts.push(get_virtual_host(domain, port));
         }
 
         return hosts
@@ -162,5 +156,12 @@ pub mod webserver {
     fn get_first_group_match_as_string(row: &str, pattern: &Regex) -> String {
         let groups = pattern.captures_iter(&row).next().unwrap();
         String::from(&groups[1])
+    }
+
+    fn get_virtual_host(domain: Option<String>, port: Option<i32>) -> VirtualHost {
+        let domain_name = domain.unwrap();
+        VirtualHost {
+            domain: domain_name.to_owned(), port: port.unwrap()
+        }
     }
 }
