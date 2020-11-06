@@ -57,7 +57,7 @@ pub mod webserver {
         let mut domain: Option<String> = None;
 
         for line in buffered.lines() {
-            let row = line.unwrap();
+            let row = line.unwrap_or(String::new());
 
             trace!("row '{}'", row);
 
