@@ -7,13 +7,13 @@ use std::env;
 use std::path::Path;
 
 use clap::{App, Arg, ArgMatches};
-use serde::Serialize;
 use serde_json::json;
 
 use crate::apache::apache::get_apache_vhosts;
-use crate::domain::domain::VirtualHost;
+use crate::domain::domain::{Site, VirtualHost};
 use crate::logging::logging::get_logging_config;
 use crate::nginx::nginx::get_nginx_vhosts;
+use crate::site::site::get_sites_from_vhosts;
 
 mod logging;
 
@@ -24,6 +24,7 @@ mod webserver_tests;
 mod nginx;
 mod domain;
 mod apache;
+mod site;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
@@ -183,28 +184,6 @@ fn filter_vhosts(vhosts: &Vec<VirtualHost>, include_custom_domains: bool) -> Vec
     return results
 }
 
-fn get_sites_from_vhosts(vhosts: Vec<VirtualHost>, include_domains_with_www: bool) -> Vec<Site> {
-    let sites: Vec<Site> = vhosts.iter()
-        .filter(|vhost| {
-        let domain_in_lowercase = vhost.domain.to_lowercase();
-
-        if domain_in_lowercase.starts_with(WWW_SEARCH_PATTERN) && !include_domains_with_www {
-            false
-
-        } else {
-            true
-        }
-
-    }).map(get_site_from_vhost).collect();
-
-    return sites;
-}
-
-fn get_site_from_vhost(vhost: &VirtualHost) -> Site {
-    let url = get_url(&vhost.domain, vhost.port);
-    Site { name: get_site_name(&vhost.domain, vhost.port), url }
-}
-
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
                                short_argument: &str, default_path: &'a str) -> &'a Path {
     let mut path: &Path = Path::new(default_path);
@@ -233,24 +212,6 @@ fn get_apache_vhosts_path<'a>(matches: &'a ArgMatches) -> &'a Path {
                             APACHE_VHOSTS_PATH_SHORT_ARGUMENT, APACHE_VHOSTS_PATH)
 }
 
-fn get_site_name(domain: &str, port: i32) -> String {
-    if port == DEFAULT_HTTP_PORT {
-        String::from(format!("{}_http", domain))
-    } else if port == DEFAULT_HTTPS_PORT {
-        String::from(domain)
-    } else {
-        String::from(format!("{}:{}", domain, port))
-    }
-}
-
-fn get_url(domain: &str, vhost_port: i32) -> String {
-    match vhost_port {
-        DEFAULT_HTTP_PORT => String::from(format!("http://{}", domain)),
-        DEFAULT_HTTPS_PORT => String::from(format!("https://{}", domain)),
-        _ => String::from(format!("http://{}:{}", domain, vhost_port))
-    }
-}
-
 fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>, domain: &String, port: i32) -> bool {
     let mut result = false;
 
@@ -273,12 +234,4 @@ fn get_low_level_discovery_json_with_data_property(sites: Vec<Site>) -> String {
     let json_structure = json!({"data": sites});
     let json = serde_json::to_string(&json_structure).unwrap();
     return json;
-}
-
-#[derive(Clone, Serialize)]
-struct Site {
-    #[serde(rename(serialize = "{#NAME}"))]
-    pub name: String,
-    #[serde(rename(serialize = "{#URL}"))]
-    pub url: String,
 }

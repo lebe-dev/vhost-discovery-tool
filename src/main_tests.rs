@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod main_tests {
-    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property, get_site_name, get_sites_from_vhosts, get_url, Site, vec_contains_same_domain_with_port};
-    use crate::domain::domain::VirtualHost;
+    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property, vec_contains_same_domain_with_port};
+    use crate::domain::domain::{Site, VirtualHost};
+    use crate::site::site::{get_site_name, get_sites_from_vhosts, get_url};
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
 
