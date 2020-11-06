@@ -132,25 +132,8 @@ fn main() {
 
     let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
 
-    for nginx_vhost in nginx_vhosts {
-        if nginx_vhost.port == DEFAULT_HTTP_PORT {
-            if !vec_contains_same_domain_with_port(&vhosts, &nginx_vhost.domain, DEFAULT_HTTPS_PORT) {
-                debug!("+ add vhost '{}'", nginx_vhost.to_string());
-                vhosts.push(nginx_vhost)
-            }
-        } else {
-            if nginx_vhost.port != DEFAULT_HTTPS_PORT {
-                if include_custom_domains &&
-                    !vec_contains_same_domain_with_port(&vhosts, &nginx_vhost.domain, DEFAULT_HTTP_PORT) {
-                    debug!("+ add vhost '{}'", nginx_vhost.to_string());
-                    vhosts.push(nginx_vhost)
-                }
-            } else {
-                debug!("+ add vhost '{}'", nginx_vhost.to_string());
-                vhosts.push(nginx_vhost)
-            }
-        }
-    }
+    let filtered_nginx_vhosts: Vec<VirtualHost> = filter_vhosts(&nginx_vhosts, include_custom_domains);
+    filtered_nginx_vhosts.iter().for_each(|vhost| vhosts.push(vhost.to_owned()));
 
     let apache_vhosts_path: &Path = get_argument_path_value(
         &matches, APACHE_VHOSTS_PATH_ARGUMENT,
@@ -160,25 +143,8 @@ fn main() {
 
     let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
 
-    for apache_vhost in apache_vhosts {
-        if apache_vhost.port == DEFAULT_HTTP_PORT {
-            if !vec_contains_same_domain_with_port(&vhosts, &apache_vhost.domain, DEFAULT_HTTPS_PORT) {
-                debug!("+ add vhost '{}'", apache_vhost.to_string());
-                vhosts.push(apache_vhost)
-            }
-        } else {
-            if apache_vhost.port != DEFAULT_HTTPS_PORT {
-                if include_custom_domains &&
-                    !vec_contains_same_domain_with_port(&vhosts, &apache_vhost.domain, DEFAULT_HTTP_PORT) {
-                    debug!("+ found vhost '{}'", apache_vhost.to_string());
-                    vhosts.push(apache_vhost)
-                }
-            } else {
-                debug!("+ found vhost '{}'", apache_vhost.to_string());
-                vhosts.push(apache_vhost)
-            }
-        }
-    }
+    let filtered_apache_vhosts: Vec<VirtualHost> = filter_vhosts(&apache_vhosts, include_custom_domains);
+    filtered_apache_vhosts.iter().for_each(|vhost| vhosts.push(vhost.to_owned()));
 
     let sites: Vec<Site> = get_sites_vector_from_vhosts(vhosts, include_domains_with_www);
 
@@ -191,6 +157,32 @@ fn main() {
     };
 
     println!("{}", json);
+}
+
+fn filter_vhosts(vhosts: &Vec<VirtualHost>, include_custom_domains: bool) -> Vec<VirtualHost> {
+    let mut results: Vec<VirtualHost> = Vec::new();
+
+    for vhost in vhosts {
+        if vhost.port == DEFAULT_HTTP_PORT {
+            if !vec_contains_same_domain_with_port(&results, &vhost.domain, DEFAULT_HTTPS_PORT) {
+                debug!("+ add vhost '{}'", vhost.to_string());
+                results.push(vhost.to_owned());
+            }
+        } else {
+            if vhost.port != DEFAULT_HTTPS_PORT {
+                if include_custom_domains &&
+                    !vec_contains_same_domain_with_port(&results, &vhost.domain, DEFAULT_HTTP_PORT) {
+                    debug!("+ add vhost '{}'", vhost.to_string());
+                    results.push(vhost.to_owned());
+                }
+            } else {
+                debug!("+ add vhost '{}'", vhost.to_string());
+                results.push(vhost.to_owned())
+            }
+        }
+    }
+
+    return results
 }
 
 fn get_sites_vector_from_vhosts(vhosts: Vec<VirtualHost>, include_domains_with_www: bool) -> Vec<Site> {

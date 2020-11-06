@@ -8,6 +8,7 @@ pub mod webserver {
 
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
 
+    #[derive(Clone)]
     pub struct VirtualHost {
         pub domain: String,
         pub port: i32
