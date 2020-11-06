@@ -11,10 +11,11 @@ use clap::{App, Arg, ArgMatches};
 use serde::Serialize;
 use serde_json::json;
 
+use crate::apache::apache::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_domain_search_regex_for_apache_vhost};
 use crate::domain::domain::VirtualHost;
 use crate::logging::logging::get_logging_config;
 use crate::nginx::nginx::get_nginx_vhosts;
-use crate::webserver::webserver::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_domain_search_regex_for_apache_vhost, get_vhost_config_file_list, get_virtual_hosts_from_file};
+use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
 mod logging;
 
@@ -24,6 +25,7 @@ mod webserver;
 mod webserver_tests;
 mod nginx;
 mod domain;
+mod apache;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
