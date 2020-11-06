@@ -11,6 +11,7 @@ use serde_json::json;
 
 use crate::apache::apache::get_apache_vhosts;
 use crate::domain::domain::{Site, VirtualHost};
+use crate::filter::filter::filter_vhosts;
 use crate::logging::logging::get_logging_config;
 use crate::nginx::nginx::get_nginx_vhosts;
 use crate::site::site::get_sites_from_vhosts;
@@ -25,6 +26,7 @@ mod nginx;
 mod domain;
 mod apache;
 mod site;
+mod filter;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
@@ -158,32 +160,6 @@ fn main() {
     println!("{}", json);
 }
 
-fn filter_vhosts(vhosts: &Vec<VirtualHost>, include_custom_domains: bool) -> Vec<VirtualHost> {
-    let mut results: Vec<VirtualHost> = Vec::new();
-
-    for vhost in vhosts {
-        if vhost.port == DEFAULT_HTTP_PORT {
-            if !vec_contains_same_domain_with_port(&results, &vhost.domain, DEFAULT_HTTPS_PORT) {
-                debug!("+ add vhost '{}'", vhost.to_string());
-                results.push(vhost.to_owned());
-            }
-        } else {
-            if vhost.port != DEFAULT_HTTPS_PORT {
-                if include_custom_domains &&
-                    !vec_contains_same_domain_with_port(&results, &vhost.domain, DEFAULT_HTTP_PORT) {
-                    debug!("+ add vhost '{}'", vhost.to_string());
-                    results.push(vhost.to_owned());
-                }
-            } else {
-                debug!("+ add vhost '{}'", vhost.to_string());
-                results.push(vhost.to_owned())
-            }
-        }
-    }
-
-    return results
-}
-
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
                                short_argument: &str, default_path: &'a str) -> &'a Path {
     let mut path: &Path = Path::new(default_path);
@@ -210,18 +186,6 @@ fn get_nginx_vhosts_path<'a>(matches: &'a ArgMatches) -> &'a Path {
 fn get_apache_vhosts_path<'a>(matches: &'a ArgMatches) -> &'a Path {
     get_argument_path_value(&matches, APACHE_VHOSTS_PATH_ARGUMENT,
                             APACHE_VHOSTS_PATH_SHORT_ARGUMENT, APACHE_VHOSTS_PATH)
-}
-
-fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>, domain: &String, port: i32) -> bool {
-    let mut result = false;
-
-    let vhost_found = vhosts.iter().find(
-        |vhost| &vhost.domain == domain && vhost.port == port
-    ).is_some();
-
-    if vhost_found { result = true }
-
-    result
 }
 
 fn get_low_level_discovery_json(sites: Vec<Site>) -> String {
