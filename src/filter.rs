@@ -28,15 +28,9 @@ pub mod filter {
         return results
     }
 
-    pub fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>, domain: &String, port: i32) -> bool {
-        let mut result = false;
-
-        let vhost_found = vhosts.iter().find(
-            |vhost| &vhost.domain == domain && vhost.port == port
-        ).is_some();
-
-        if vhost_found { result = true }
-
-        result
+    pub fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>,
+                                              domain: &String, port: i32) -> bool {
+        vhosts.iter()
+              .find(|vhost| &vhost.domain == domain && vhost.port == port).is_some()
     }
 }
