@@ -3,6 +3,7 @@ pub mod nginx_tests {
     use std::path::Path;
 
     use crate::nginx::nginx::get_nginx_vhosts;
+    use crate::test_utils::test_utils::assert_vhost_in_vec;
 
     const SAMPLE_DOMAIN: &str = "whatever.ru";
     const SAMPLE_DOMAIN2: &str = "gallery.whatever.ru";
@@ -18,15 +19,8 @@ pub mod nginx_tests {
         let expected_size: usize = 2;
         assert_eq!(&vhosts.len(), &expected_size);
 
-        let first_vhost = &vhosts.first().unwrap();
-
-        assert_eq!(first_vhost.port, 443);
-        assert_eq!(first_vhost.domain, SAMPLE_DOMAIN);
-
-        let last_vhost = &vhosts.last().unwrap();
-
-        assert_eq!(last_vhost.port, 23512);
-        assert_eq!(last_vhost.domain, SAMPLE_DOMAIN2);
+        assert_vhost_in_vec(&vhosts, SAMPLE_DOMAIN, 443);
+        assert_vhost_in_vec(&vhosts, SAMPLE_DOMAIN2, 23512);
     }
 
     #[test]
