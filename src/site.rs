@@ -7,7 +7,11 @@ pub mod site {
             .filter(|vhost| {
                 let domain_in_lowercase = vhost.domain.to_lowercase();
 
-                domain_in_lowercase.starts_with(WWW_SEARCH_PATTERN) && include_domains_with_www
+                let domain_starts_with_www = domain_in_lowercase.starts_with(WWW_SEARCH_PATTERN);
+
+                (!include_domains_with_www && !domain_starts_with_www) ||
+                (include_domains_with_www && domain_starts_with_www) ||
+                !domain_starts_with_www
 
             }).map(get_site_from_vhost).collect();
 
