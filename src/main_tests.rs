@@ -2,31 +2,9 @@
 mod main_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property};
     use crate::domain::domain::{Site, VirtualHost};
-    use crate::site::site::{get_site_name, get_sites_from_vhosts, get_url};
+    use crate::site::site::{get_sites_from_vhosts, get_url};
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
-
-    #[test]
-    fn get_site_name_with_standard_port_should_return_name_without_port() {
-        let domain = "superco.ru";
-
-        assert_eq!(get_site_name(domain, DEFAULT_HTTPS_PORT), domain);
-    }
-
-    #[test]
-    fn get_site_name_with_standard_port_should_return_name_with_http_postfix_for_site_with_http() {
-        let domain = "superco.ru";
-
-        assert_eq!(get_site_name(domain, DEFAULT_HTTP_PORT), format!("{}_http", domain));
-    }
-
-    #[test]
-    fn get_site_name_with_nonstandard_port_should_return_name_with_port() {
-        let domain = "sub.diggers.ru";
-        let expected_domain = format!("{}:{}", domain, CUSTOM_VHOST_PORT);
-
-        assert_eq!(get_site_name(domain, CUSTOM_VHOST_PORT), expected_domain);
-    }
 
     #[test]
     fn get_url_should_return_url_with_https_for_443_port() {

@@ -23,7 +23,7 @@ pub mod site {
         Site { name: get_site_name(&vhost.domain, vhost.port), url }
     }
 
-    pub fn get_site_name(domain: &str, port: i32) -> String {
+    fn get_site_name(domain: &str, port: i32) -> String {
         if port == DEFAULT_HTTP_PORT {
             String::from(format!("{}_http", domain))
         } else if port == DEFAULT_HTTPS_PORT {
