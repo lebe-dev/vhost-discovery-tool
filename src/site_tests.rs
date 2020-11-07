@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod site_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
-    use crate::domain::domain::VirtualHost;
+    use crate::domain::domain::{Site, VirtualHost};
     use crate::site::site::get_sites_from_vhosts;
 
     #[test]
@@ -33,9 +33,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 3);
 
-        let site_with_www_found = results.iter().find(|site| site.url == "https://www.google.com");
-
-        assert!(site_with_www_found.is_some())
+        assert_site_with_url(&results, "https://www.google.com");
     }
 
     #[test]
@@ -47,8 +45,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let site_found = results.iter().find(|site| site.url == "https://dfov.ru");
-        assert!(site_found.is_some())
+        assert_site_with_url(&results, "https://dfov.ru");
     }
 
     #[test]
@@ -60,8 +57,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let site_found = results.iter().find(|site| site.url == "http://tinyops.ru");
-        assert!(site_found.is_some())
+        assert_site_with_url(&results, "http://tinyops.ru");
     }
 
     #[test]
@@ -77,8 +73,7 @@ mod site_tests {
 
         let expected_url = format!("http://{}:{}", domain, custom_port);
 
-        let site_found = results.iter().find(|site| site.url == expected_url);
-        assert!(site_found.is_some())
+        assert_site_with_url(&results, &expected_url);
     }
 
     #[test]
@@ -91,6 +86,11 @@ mod site_tests {
         assert_eq!(results.len(), 1);
 
         let site_found = results.iter().find(|site| site.name == "tinyops.ru_http");
+        assert!(site_found.is_some())
+    }
+
+    fn assert_site_with_url(sites: &Vec<Site>, url: &str) {
+        let site_found = sites.iter().find(|site| site.url == url);
         assert!(site_found.is_some())
     }
 }
