@@ -6,7 +6,7 @@ pub mod filter {
         let mut results: Vec<VirtualHost> = Vec::new();
 
         for vhost in vhosts {
-            if get_filtered_vhost(vhost, &results, include_custom_domains) {
+            if vhost_add_permitted(vhost, &results, include_custom_domains) {
                 debug!("+ add vhost '{}'", vhost.to_string());
                 results.push(vhost.to_owned());
             }
@@ -15,26 +15,25 @@ pub mod filter {
         return results
     }
 
-    fn get_filtered_vhost(vhost: &VirtualHost, buffer: &Vec<VirtualHost>,
-                          include_custom_domains: bool) -> bool {
+    fn vhost_add_permitted(vhost: &VirtualHost, buffer: &Vec<VirtualHost>,
+                           include_custom_ports: bool) -> bool {
         let mut permitted = false;
 
-        if vhost.port == DEFAULT_HTTP_PORT {
-            if !vec_contains_same_domain_with_port(buffer, &vhost.domain, DEFAULT_HTTPS_PORT) {
-                debug!("+ add vhost '{}'", vhost.to_string());
-                permitted = true
+        if include_custom_ports {
+            if !vec_contains_same_domain_with_port(buffer, &vhost.domain, vhost.port) {
+                permitted = true;
             }
+
         } else {
-            if vhost.port != DEFAULT_HTTPS_PORT {
-                if include_custom_domains &&
-                    !vec_contains_same_domain_with_port(buffer, &vhost.domain, DEFAULT_HTTP_PORT) {
-                    debug!("+ add vhost '{}'", vhost.to_string());
-                    permitted = true
+            if vhost.port == DEFAULT_HTTP_PORT || vhost.port == DEFAULT_HTTPS_PORT {
+                if !vec_contains_same_domain_with_port(buffer, &vhost.domain, vhost.port) {
+                    permitted = true;
                 }
-            } else {
-                debug!("+ add vhost '{}'", vhost.to_string());
-                permitted = true
             }
+        }
+
+        if permitted {
+            debug!("+ add vhost '{}'", vhost.to_string());
         }
 
         permitted
