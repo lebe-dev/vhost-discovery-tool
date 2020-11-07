@@ -33,6 +33,7 @@ mod site;
 mod filter;
 mod filter_tests;
 mod site_tests;
+mod nginx_tests;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;

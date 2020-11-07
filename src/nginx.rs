@@ -14,11 +14,11 @@ pub mod nginx {
 
         let mut vhosts: Vec<VirtualHost> = Vec::new();
 
-        if nginx_vhosts_path.is_dir() && nginx_vhosts_path.exists() {
+        if nginx_vhosts_path.exists() && nginx_vhosts_path.is_dir() {
             match get_vhost_config_file_list(nginx_vhosts_path) {
                 Ok(vhost_files) => {
                     for vhost_file in vhost_files {
-                        debug!("analyze vhost file '{}'", vhost_file.display());
+                        debug!("processing vhost file '{}'", vhost_file.display());
 
                         let section_start_regex = get_nginx_vhost_section_start_regex();
                         let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
@@ -39,9 +39,7 @@ pub mod nginx {
                                 vhosts.push(nginx_vhost);
                             }
 
-                        } else {
-                            error!("unable to get virtual hosts form file")
-                        }
+                        } else { error!("unable to get virtual hosts form file") }
                     }
                 }
                 Err(_error) => {
