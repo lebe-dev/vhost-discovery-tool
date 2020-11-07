@@ -25,7 +25,7 @@ pub mod filter {
             }
 
         } else {
-            if vhost.port == DEFAULT_HTTP_PORT || vhost.port == DEFAULT_HTTPS_PORT {
+            if vhost_has_standard_port(vhost.port) {
                 if !vec_contains_same_domain_with_port(buffer, &vhost.domain, vhost.port) {
                     permitted = true;
                 }
@@ -37,6 +37,10 @@ pub mod filter {
         }
 
         permitted
+    }
+
+    fn vhost_has_standard_port(port: i32) -> bool {
+        port == DEFAULT_HTTP_PORT || port == DEFAULT_HTTPS_PORT
     }
 
     fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>,
