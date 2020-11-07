@@ -63,4 +63,21 @@ mod site_tests {
         let vhost_found = results.iter().find(|vhost| vhost.url == "http://tinyops.ru");
         assert!(vhost_found.is_some())
     }
+
+    #[test]
+    fn vhost_with_non_standard_port_should_contain_http_prefix_for_url() {
+        let domain = "cronbox.ru";
+        let custom_port = 2345;
+        let vhost1 = VirtualHost { domain: domain.to_string(), port: custom_port };
+        let vhosts = vec![vhost1.clone()];
+
+        let results = get_sites_from_vhosts(vhosts, false);
+
+        assert_eq!(results.len(), 1);
+
+        let expected_url = format!("http://{}:{}", domain, custom_port);
+
+        let vhost_found = results.iter().find(|vhost| vhost.url == expected_url);
+        assert!(vhost_found.is_some())
+    }
 }
