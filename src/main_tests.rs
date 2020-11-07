@@ -2,7 +2,6 @@
 mod main_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property};
     use crate::domain::domain::{Site, VirtualHost};
-    use crate::filter::filter::vec_contains_same_domain_with_port;
     use crate::site::site::{get_site_name, get_sites_from_vhosts, get_url};
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
@@ -51,38 +50,6 @@ mod main_tests {
         let expected_url = format!("http://{}:{}", domain, CUSTOM_VHOST_PORT);
 
         assert_eq!(get_url(domain, CUSTOM_VHOST_PORT), expected_url)
-    }
-
-    #[test]
-    fn vector_contains_same_domain_with_https_should_return_true_if_vhost_with_ssl_found() {
-        let mut vhosts: Vec<VirtualHost> = Vec::new();
-
-        let domain = String::from("zebra.uk");
-
-        let vhost = VirtualHost {
-            domain: String::from(&domain),
-            port: DEFAULT_HTTPS_PORT
-        };
-
-        vhosts.push(vhost);
-
-        assert!(vec_contains_same_domain_with_port(&vhosts, &domain, DEFAULT_HTTPS_PORT))
-    }
-
-    #[test]
-    fn vector_contains_same_domain_with_default_http_port_should_return_true_if_vhost_with_standard_http_port_found() {
-        let mut vhosts: Vec<VirtualHost> = Vec::new();
-
-        let domain = String::from("meduttio.uk");
-
-        let vhost = VirtualHost {
-            domain: String::from(&domain),
-            port: DEFAULT_HTTP_PORT
-        };
-
-        vhosts.push(vhost);
-
-        assert!(vec_contains_same_domain_with_port(&vhosts, &domain, DEFAULT_HTTP_PORT))
     }
 
     #[test]

@@ -39,7 +39,7 @@ pub mod filter {
         permitted
     }
 
-    pub fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>,
+    fn vec_contains_same_domain_with_port(vhosts: &Vec<VirtualHost>,
                                               domain: &String, port: i32) -> bool {
         vhosts.iter()
               .find(|vhost| &vhost.domain == domain && vhost.port == port).is_some()
