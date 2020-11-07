@@ -16,9 +16,9 @@ mod site_tests {
 
         assert_eq!(results.len(), 2);
 
-        let vhost_with_www_found = results.iter().find(|vhost| vhost.url == "https://www.google.com");
+        let site_with_www_found = results.iter().find(|site| site.url == "https://www.google.com");
 
-        assert!(vhost_with_www_found.is_none())
+        assert!(site_with_www_found.is_none())
     }
 
     #[test]
@@ -33,9 +33,9 @@ mod site_tests {
 
         assert_eq!(results.len(), 3);
 
-        let vhost_with_www_found = results.iter().find(|vhost| vhost.url == "https://www.google.com");
+        let site_with_www_found = results.iter().find(|site| site.url == "https://www.google.com");
 
-        assert!(vhost_with_www_found.is_some())
+        assert!(site_with_www_found.is_some())
     }
 
     #[test]
@@ -47,8 +47,8 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let vhost_found = results.iter().find(|vhost| vhost.url == "https://dfov.ru");
-        assert!(vhost_found.is_some())
+        let site_found = results.iter().find(|site| site.url == "https://dfov.ru");
+        assert!(site_found.is_some())
     }
 
     #[test]
@@ -60,8 +60,8 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let vhost_found = results.iter().find(|vhost| vhost.url == "http://tinyops.ru");
-        assert!(vhost_found.is_some())
+        let site_found = results.iter().find(|site| site.url == "http://tinyops.ru");
+        assert!(site_found.is_some())
     }
 
     #[test]
