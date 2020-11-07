@@ -77,7 +77,20 @@ mod site_tests {
 
         let expected_url = format!("http://{}:{}", domain, custom_port);
 
-        let vhost_found = results.iter().find(|vhost| vhost.url == expected_url);
-        assert!(vhost_found.is_some())
+        let site_found = results.iter().find(|site| site.url == expected_url);
+        assert!(site_found.is_some())
+    }
+
+    #[test]
+    fn site_name_without_https_should_contain_http_postfix() {
+        let vhost1 = VirtualHost { domain: "tinyops.ru".to_string(), port: DEFAULT_HTTP_PORT };
+        let vhosts = vec![vhost1.clone()];
+
+        let results = get_sites_from_vhosts(vhosts, false);
+
+        assert_eq!(results.len(), 1);
+
+        let site_found = results.iter().find(|site| site.name == "tinyops.ru_http");
+        assert!(site_found.is_some())
     }
 }
