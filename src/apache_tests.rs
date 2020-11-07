@@ -2,56 +2,25 @@
 pub mod apache_tests {
     use std::path::Path;
 
-    use crate::apache::apache::{get_apache_redirect_to_http_regex, get_apache_vhost_port_regex, get_domain_search_regex_for_apache_vhost};
-    use crate::webserver::webserver::get_virtual_hosts_from_file;
+    use crate::apache::apache::get_apache_vhosts;
+    use crate::test_utils::test_utils::assert_vhost_in_vec;
 
     #[test]
     fn get_virtual_hosts_from_apache_file() {
-        let vhost_file = Path::new("tests/apache-vhosts/vhost2.conf");
+        let vhosts_path = Path::new("tests/apache-vhosts");
 
-        let section_start_regex = get_apache_vhost_port_regex();
-        let redirect_to_http = get_apache_redirect_to_http_regex();
-        let port_search_regex = get_apache_vhost_port_regex();
-        let domain_search_regex = get_domain_search_regex_for_apache_vhost();
+        let vhosts = get_apache_vhosts(vhosts_path);
 
-        if let Ok(vhosts) = get_virtual_hosts_from_file(
-            vhost_file,
-            section_start_regex,
-            redirect_to_http,
-            port_search_regex,
-            domain_search_regex
-        ) {
-
-            for vhost in &vhosts {
-                println!("{}", vhost.to_string());
-            }
-
-            let expected_size: usize = 3;
-            assert_eq!(&vhosts.len(), &expected_size);
-
-            let first_vhost = &vhosts.first().unwrap();
-
-            assert_eq!(first_vhost.port, 443);
-            assert_eq!(first_vhost.domain, "whatever.ru");
-
-            let second_vhost = &vhosts.get(1).unwrap();
-
-            assert_eq!(second_vhost.port, 5380);
-            assert_eq!(second_vhost.domain, "whatever.ru");
-
-            let last_vhost = &vhosts.last().unwrap();
-
-            assert_eq!(last_vhost.port, 1480);
-            assert_eq!(last_vhost.domain, "demo.company.ru");
+        for vhost in &vhosts {
+            println!("{}", vhost.to_string());
         }
-    }
 
-    #[test]
-    fn get_domain_search_regex_for_apache_vhost_should_match_valid_servername_values() {
-        let regex = get_domain_search_regex_for_apache_vhost();
+        let expected_size: usize = 4;
+        assert_eq!(&vhosts.len(), &expected_size);
 
-        assert!(regex.is_match("    ServerName distrib.company.ru"));
-        assert!(regex.is_match("ServerName   vp123.Cgro2Mp-aNy.ru"));
-        assert_eq!(regex.is_match("ServerName 1 cp.coM2mu-any.ru   "), false);
+        assert_vhost_in_vec(&vhosts, "collections.museum.ru", 8081);
+        assert_vhost_in_vec(&vhosts, "whatever.ru", 443);
+        assert_vhost_in_vec(&vhosts, "whatever.ru", 5380);
+        assert_vhost_in_vec(&vhosts, "demo.company.ru", 1480);
     }
 }

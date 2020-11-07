@@ -35,6 +35,7 @@ mod filter_tests;
 mod site_tests;
 mod nginx_tests;
 mod apache_tests;
+mod test_utils;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
