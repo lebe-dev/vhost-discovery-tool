@@ -20,7 +20,14 @@ UserParameter=site.discovery,/var/lib/zabbix/site-discovery-flea
 UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
 ```
 
-4. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
+4. Даём необходимые права:
+
+```
+chown -R zabbix: /var/log/zabbix/site-discovery-flea.log
+setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+```
+
+5. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
 
 ## Опции
 
