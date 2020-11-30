@@ -1,92 +1,121 @@
 # Site Discovery Flea
 
-Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix [Low Level Discovery](https://www.zabbix.com/documentation/4.0/ru/manual/discovery/low_level_discovery).
+[Русская версия](README.RU.md)
 
-## Настройка Zabbix агента
+Gather urls from nginx\apache configs then outputs in Zabbix 
+[Low Level Discovery](https://www.zabbix.com/documentation/current/manual/discovery/low_level_discovery) format.
 
-1.Копируем исполняемый файл `site-discovery-flea` в `/var/lib/zabbix`.
+Use `--use-data-property` option for Zabbix < 4.2 (see details in Options section).
 
-2.Обновляем права:
+## Getting started
 
-```
-chown -R zabbix.zabbix /var/lib/zabbix
-chmod +x /var/lib/zabbix/site-discovery-flea
-```
+1. Copy `site-discovery-flea` to `/usr/bin`.
+2. Update permissions:  
+    ```shell script
+    chmod +x /usr/bin/site-discovery-flea
+    ```
+   
+3. Copy zabbix agent config `files/vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
 
-3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/site-discovery.conf` с содержимым:
+4. Import `files/vhost-discovery-template.xml` to Zabbix Server.
 
-```
-UserParameter=site.discovery,/var/lib/zabbix/site-discovery-flea
-UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | cut -d " " -f 2 | grep '[200|302]' > /dev/null; echo $?;
-```
+5. Add `Virtual Hosts` template to target host.
 
-4. Даём необходимые права:
+6. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
 
-```
-chown -R zabbix: /var/log/zabbix/site-discovery-flea.log
-setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
-```
+## How it works
 
-5. Добавляем на Zabbix Server к хосту шаблон `VirtualHosts`.
+Tool looking for nginx\apache configuration files then creates data structures for Low Level Discovery:
 
-## Опции
+- domain
+- url
 
-### Показывать в результате хосты с нестандартными портами
+Add `_http` postfix for domain with http protocol. For example: `http://somesite.ru` will be:  
 
-Опция: `--include-custom-ports`
-
-В результатах будут также хосты вида http://somehost.ru:3823
-
-Под стандартными портами понимаются: 80-й и 443-й 
-
-## Пример вывода
-
-```$json
+```json
 {
-    "data":[
-        {
-            "{#NAME}":"somesite.ru",
-            "{#URL}":"https://somesite.ru"
-        },
-        {
-            "{#NAME}":"15.128.42.21:2231",
-            "{#URL}":"http://15.128.42.21:2231"
-        }
-    ]
+  "{#NAME}":"somesite.ru_http",
+  "{#URL}":"http://somesite.ru"
 }
 ```
 
-## Решение проблем
+### Processing for nginx configs
 
-### Ошибки типа Permission denied в логах Zabbix
+Tool ignores hosts which don't have `server_name` property. 
 
-#### Нет доступа к каталогу /etc/nginx
+## Options
 
-**Решение:**
+### Working directory
+
+Option: `--work-dir` or `-d`
+
+Default value: `/etc/zabbix`
+
+### Nginx configs root
+
+Option: `--nginx-vhosts-path` or `-n`
+
+Default value: `/etc/nginx/conf.d`
+
+### Apache configs root
+
+Option: `--apache-vhosts-path` or `-a`
+
+Default value: `/etc/httpd/conf.d`
+
+### Show results with custom ports
+
+Standard ports: 80, 443
+
+Option: `--include-custom-ports`
+
+Example: `http://somehost.ru:3823`. 
+
+### Support Zabbix < 4.2
+
+Zabbix 4.2 has JSON format:
+
+```json
+{
+  "data": []
+}
+``` 
+
+Later versions don't support `data` property. Use `--use-data-property` option for that. 
+
+## Output example
+
+```json
+[
+    {
+        "{#NAME}":"somesite.ru",
+        "{#URL}":"https://somesite.ru"
+    },
+    {
+        "{#NAME}":"15.128.42.21:2231",
+        "{#URL}":"http://15.128.42.21:2231"
+    }
+]
+```
+
+## Troubleshooting
+
+Log: `/var/log/zabbix/site-discovery-flea.log`.
+
+### Logging levels
+
+Use `--log-level` option if you want to switch logging level.
+
+Supported levels: `debug`, `error`, `warn`, `trace`, `info`, `off`
+
+### How to disable logging
 
 ```
-setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+--log-level=off
 ```
 
-или
+## Thanks for support
 
-```
-setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
-```
+Thanks for project support, testing and feedback:
 
-#### Неправильные права на log файл
-Возможно вы запускали агента от пользователя `root`, утилита создала файл `/var/log/zabbix/site-discovery-flea.log` и не может
-туда писать т. к. не имеет прав.
-
-**Решение:** 
-
-```
-chown -R zabbix: /var/log/zabbix/site-discovery-flea.log
-```
-
-## RoadMap
-
-### 1.1.0
-
-- Опция: Включать Endpoint'ы  
-  Например, проксирование вида `proxy_pass ...` выдавать как отдельный URL 
+- [ttsrg](https://github.com/ttsrg)
