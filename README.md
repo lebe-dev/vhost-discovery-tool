@@ -19,9 +19,16 @@ Use `--use-data-property` option for Zabbix < 4.2 (see details in Options sectio
 
 4. Import `files/vhost-discovery-template.xml` to Zabbix Server.
 
-5. Add `Virtual Hosts` template to target host.
+5. Update permissions:
 
-6. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
+```
+chown -R zabbix: /var/log/zabbix
+setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+``` 
+
+6. Add `Virtual Hosts` template to target host.
+
+7. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
 
 ## How it works
 

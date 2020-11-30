@@ -15,13 +15,24 @@
 chmod +x /usr/bin/site-discovery-flea
 ```
 
-3.Создаем файл конфигурации `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf` (берём из папки `files`)
+3.Создаем файл конфигурации:
 
-Файл поставляется с дистрибутивом утилиты.
+```
+cp files/vhost-discovery.conf /etc/zabbix/zabbix-agent.d/
+```
 
-4. Добавляем на Zabbix Server к хосту шаблон `Virtual Hosts` (прилагается в виде файла `vhost-discovery-template.xml`).
+4. Обновляем права доступа:
+
+```
+chown -R zabbix: /var/log/zabbix
+setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+``` 
+
+5. Добавляем на Zabbix Server к хосту шаблон `Virtual Hosts` (прилагается в виде файла `vhost-discovery-template.xml`).
 
 Шаблон идет с дистрибутивом утилиты.
+
+6. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
 
 ## Как работает утилита
 
