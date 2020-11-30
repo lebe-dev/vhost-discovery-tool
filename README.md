@@ -49,6 +49,34 @@ UserParameter=vhost.index-page.available[*],/usr/bin/curl -s -i $1 | head -1 | c
 }
 ```
 
+## Решение проблем
+
+### Ошибки типа Permission denied в логах Zabbix
+
+#### Нет доступа к каталогу /etc/nginx
+
+**Решение:**
+
+```
+setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+```
+
+или
+
+```
+setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
+```
+
+#### Неправильные права на log файл
+Возможно вы запускали агента от пользователя `root`, утилита создала файл `/var/log/zabbix/site-discovery-flea.log` и не может
+туда писать т. к. не имеет прав.
+
+**Решение:** 
+
+```
+chown -R zabbix: /var/log/zabbix/site-discovery-flea.log
+```
+
 ## RoadMap
 
 ### 1.1.0
