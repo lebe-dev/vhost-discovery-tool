@@ -1,18 +1,18 @@
-# Site Discovery Flea
+# Virtual Host Discovery Tool
 
-Утилита сбора ссылок из nginx и apache для мониторинга. Вывод результатов в формате Zabbix 
+Утилита сбора ссылок (URL) из nginx и apache для мониторинга. Вывод результатов в формате Zabbix 
 [Low Level Discovery](https://www.zabbix.com/documentation/current/manual/discovery/low_level_discovery).
 
 Для версии Zabbix ниже 4.2 используйте опцию `--use-data-property` (см.раздел Опции).
 
 ## Настройка Zabbix агента
 
-1.Копируем исполняемый файл `site-discovery-flea` в `/usr/bin`.
+1.Копируем исполняемый файл `vhdt` в `/usr/bin`.
 
 2.Обновляем права:
 
 ```
-chmod +x /usr/bin/site-discovery-flea
+chmod +x /usr/bin/vhdt
 ```
 
 3.Создаем файл конфигурации:
@@ -113,12 +113,12 @@ setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
 
 ## Решение проблем
 
-Утилита пишет свой лог в файл `/var/log/zabbix/site-discovery-flea.log`.
+Утилита пишет свой лог в файл `/var/log/zabbix/vhdt.log`.
 
 Запуск утилиты от пользователя `zabbix`:
 
 ```shell script
-sudo -u zabbix /usr/bin/site-discovery-flea
+sudo -u zabbix /usr/bin/vhdt
 ```
 
 ### Уровни логирования

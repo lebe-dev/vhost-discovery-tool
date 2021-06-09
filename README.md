@@ -1,4 +1,4 @@
-# Site Discovery Flea
+# Virtual Host Discovery Tool
 
 [Русская версия](README.RU.md)
 
@@ -9,10 +9,10 @@ Use `--use-data-property` option for Zabbix < 4.2 (see details in Options sectio
 
 ## Getting started
 
-1. Copy `site-discovery-flea` to `/usr/bin`.
+1. Copy `vhdt` to `/usr/bin`.
 2. Update permissions:  
     ```shell script
-    chmod +x /usr/bin/site-discovery-flea
+    chmod +x /usr/bin/vhdt
     ```
    
 3. Copy zabbix agent config `files/vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
@@ -107,7 +107,7 @@ Later versions don't support `data` property. Use `--use-data-property` option f
 
 ## Troubleshooting
 
-Log: `/var/log/zabbix/site-discovery-flea.log`.
+Log: `/var/log/zabbix/vhdt.log`.
 
 ### Logging levels
 

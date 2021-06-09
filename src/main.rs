@@ -67,7 +67,7 @@ const LOG_LEVEL_DEFAULT_VALUE: &str = "info";
 const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
-    let matches = App::new("Site Discovery Flea")
+    let matches = App::new("Virtual Host Discovery Tool")
         .version("1.3.3")
         .author("Eugene Lebedev <duke.tougu@gmail.com>")
         .about("Discover site configs for nginx and apache. \
