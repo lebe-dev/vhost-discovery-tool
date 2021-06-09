@@ -150,3 +150,4 @@ sudo -u zabbix /usr/bin/vhdt
 Спасибо за поддержку проекта, тестирование и обратную связь:
 
 - [ttsrg](https://github.com/ttsrg)
+- [BTLzdravtech](https://github.com/BTLzdravtech)

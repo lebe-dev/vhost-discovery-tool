@@ -126,3 +126,4 @@ Supported levels: `debug`, `error`, `warn`, `trace`, `info`, `off`
 Thanks for project support, testing and feedback:
 
 - [ttsrg](https://github.com/ttsrg)
+- [BTLzdravtech](https://github.com/BTLzdravtech)
