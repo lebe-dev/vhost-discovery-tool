@@ -68,7 +68,7 @@ const ERROR_EXIT_CODE: i32 = 1;
 
 fn main() {
     let matches = App::new("Virtual Host Discovery Tool")
-        .version("1.3.4")
+        .version("1.4.0")
         .author("Eugene Lebedev <duke.tougu@gmail.com>")
         .about("Discover site configs for nginx and apache. \
                                             Then generate urls and show output in \
