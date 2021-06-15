@@ -71,6 +71,18 @@ Option: `--include-custom-ports`
 
 Example: `http://somehost.ru:3823`. 
 
+### Filter vhosts by domain masks
+
+Option: `--ignore-by-masks` or `-i`
+
+Example:
+
+```bash
+vhdt -i test,rfid
+```
+
+Ignore vhosts with domain contains any of strings: `test` or `rfid`.
+
 ### Support Zabbix < 4.2
 
 Zabbix 4.2 has JSON format:
