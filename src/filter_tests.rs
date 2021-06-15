@@ -20,7 +20,7 @@ mod filter_tests {
             vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
         ];
 
-        let masks: Vec<String> = vec![String::from("ads"), String::from("qwerty")];
+        let masks: Vec<&str> = vec!["ads", "qwerty"];
 
         let results = filter_by_domain_masks(&vhosts, &masks);
 
@@ -44,7 +44,7 @@ mod filter_tests {
             vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
         ];
 
-        let masks: Vec<String> = vec![String::from(""), String::from("qwerty")];
+        let masks: Vec<&str> = vec!["", "qwerty"];
 
         let results = filter_by_domain_masks(&vhosts, &masks);
 

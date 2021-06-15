@@ -2,7 +2,7 @@ pub mod filter {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::VirtualHost;
 
-    pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>, masks: &Vec<String>) -> Vec<VirtualHost> {
+    pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>, masks: &Vec<&str>) -> Vec<VirtualHost> {
         let mut results: Vec<VirtualHost> = Vec::new();
 
         for vhost in vhosts {

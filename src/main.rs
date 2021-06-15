@@ -11,7 +11,7 @@ use serde_json::json;
 
 use crate::apache::apache::get_apache_vhosts;
 use crate::domain::domain::{Site, VirtualHost};
-use crate::filter::filter::filter_vhosts;
+use crate::filter::filter::{filter_vhosts, filter_by_domain_masks};
 use crate::logging::logging::get_logging_config;
 use crate::nginx::nginx::get_nginx_vhosts;
 use crate::site::site::get_sites_from_vhosts;
@@ -145,6 +145,12 @@ fn main() {
     let include_domains_with_www = matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0;
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
 
+    let domain_ignore_masks_row: &str = if matches.is_present(DOMAIN_IGNORE_MASKS_OPTION) {
+        matches.value_of(DOMAIN_IGNORE_MASKS_OPTION).unwrap()
+    } else { "" };
+
+    let domain_ignore_masks: Vec<&str> = domain_ignore_masks_row.split("|").collect();
+
     info!("[~] collect virtual hosts..");
     info!("- include domains with custom ports: {}", include_custom_domains);
     let mut vhosts: Vec<VirtualHost> = Vec::new();
@@ -153,15 +159,25 @@ fn main() {
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
     let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
-    let mut filtered_nginx_vhosts: Vec<VirtualHost> = filter_vhosts(&nginx_vhosts, include_custom_domains);
-    vhosts.append(&mut filtered_nginx_vhosts);
+    let filtered_nginx_vhosts: Vec<VirtualHost> = filter_vhosts(&nginx_vhosts, include_custom_domains);
+
+    let mut nginx_vhosts_filtered_by_domain_masks = filter_by_domain_masks(
+        &filtered_nginx_vhosts, &domain_ignore_masks
+    );
+
+    vhosts.append(&mut nginx_vhosts_filtered_by_domain_masks);
 
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
     let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
-    let mut filtered_apache_vhosts: Vec<VirtualHost> = filter_vhosts(&apache_vhosts, include_custom_domains);
-    vhosts.append(&mut filtered_apache_vhosts);
+    let filtered_apache_vhosts: Vec<VirtualHost> = filter_vhosts(&apache_vhosts, include_custom_domains);
+
+    let mut apache_vhosts_filtered_by_domain_masks = filter_by_domain_masks(
+        &filtered_apache_vhosts, &domain_ignore_masks
+    );
+
+    vhosts.append(&mut apache_vhosts_filtered_by_domain_masks);
 
     let sites: Vec<Site> = get_sites_from_vhosts(vhosts, include_domains_with_www);
 
@@ -169,6 +185,7 @@ fn main() {
 
     if matches.is_present(USE_DATA_PROPERTY_ARGUMENT) {
         json = get_low_level_discovery_json_with_data_property(sites);
+
     } else {
         json = get_low_level_discovery_json(sites);
     };
@@ -181,12 +198,14 @@ fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
     let mut path: &Path = Path::new(default_path);
 
     if matches.is_present(long_argument) {
-        let vhosts_path_value = matches.value_of(long_argument).unwrap_or(default_path);
+        let vhosts_path_value = matches.value_of(long_argument)
+                                             .unwrap_or(default_path);
         path = Path::new(vhosts_path_value)
 
     } else {
         if matches.is_present(short_argument) {
-            let vhosts_path_value = matches.value_of(short_argument).unwrap_or(default_path);
+            let vhosts_path_value = matches.value_of(short_argument)
+                                                 .unwrap_or(default_path);
             path = Path::new(vhosts_path_value)
         }
     }
