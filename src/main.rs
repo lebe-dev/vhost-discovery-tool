@@ -147,28 +147,19 @@ fn main() {
     let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
-    let nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
-    let filtered_nginx_vhosts: Vec<VirtualHost> = filter_vhosts(&nginx_vhosts, include_custom_domains);
-
-    let mut nginx_vhosts_filtered_by_domain_masks = filter_by_domain_masks(
-        &filtered_nginx_vhosts, &domain_ignore_masks
-    );
-
-    vhosts.append(&mut nginx_vhosts_filtered_by_domain_masks);
+    let mut nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
+    vhosts.append(&mut nginx_vhosts);
 
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
-    let apache_vhosts = get_apache_vhosts(apache_vhosts_path);
-    let filtered_apache_vhosts: Vec<VirtualHost> = filter_vhosts(&apache_vhosts, include_custom_domains);
+    let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path);
+    vhosts.append(&mut apache_vhosts);
 
-    let mut apache_vhosts_filtered_by_domain_masks = filter_by_domain_masks(
-        &filtered_apache_vhosts, &domain_ignore_masks
-    );
+    let mut filtered_vhosts = filter_vhosts(&vhosts, include_custom_domains);
+    filtered_vhosts = filter_by_domain_masks(&filtered_vhosts, &domain_ignore_masks);
 
-    vhosts.append(&mut apache_vhosts_filtered_by_domain_masks);
-
-    let sites: Vec<Site> = get_sites_from_vhosts(vhosts, include_domains_with_www);
+    let sites: Vec<Site> = get_sites_from_vhosts(filtered_vhosts, include_domains_with_www);
 
     let json;
 
