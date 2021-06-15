@@ -21,11 +21,12 @@ chmod +x /usr/bin/vhdt
 cp files/vhost-discovery.conf /etc/zabbix/zabbix-agent.d/
 ```
 
-4. Обновляем права доступа:
+4.Даём необходимые права:
 
 ```
 chown -R zabbix: /var/log/zabbix
 setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
 ``` 
 
 5. Добавляем на Zabbix Server к хосту шаблон `Virtual Hosts` (прилагается в виде файла `vhost-discovery-template.xml`).

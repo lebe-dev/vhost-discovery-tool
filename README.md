@@ -24,6 +24,7 @@ Use `--use-data-property` option for Zabbix < 4.2 (see details in Options sectio
 ```
 chown -R zabbix: /var/log/zabbix
 setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
 ``` 
 
 6. Add `Virtual Hosts` template to target host.
