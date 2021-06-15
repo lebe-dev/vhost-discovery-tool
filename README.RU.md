@@ -5,35 +5,23 @@
 
 Для версии Zabbix ниже 4.2 используйте опцию `--use-data-property` (см.раздел Опции).
 
-## Настройка Zabbix агента
+## С чего начать
 
-1.Копируем исполняемый файл `vhdt` в `/usr/bin`.
-
-2.Обновляем права:
-
-```
-chmod +x /usr/bin/vhdt
-```
-
-3.Создаем файл конфигурации:
-
-```
-cp files/vhost-discovery.conf /etc/zabbix/zabbix-agent.d/
-```
-
-4.Даём необходимые права:
-
-```
-chown -R zabbix: /var/log/zabbix
-setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
-setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
-``` 
-
-5. Добавляем на Zabbix Server к хосту шаблон `Virtual Hosts` (прилагается в виде файла `vhost-discovery-template.xml`).
-
+1. Копируем исполняемый файл `vhdt` в `/usr/bin`.
+2. Создаем файл конфигурации:
+  ```
+  cp files/vhost-discovery.conf /etc/zabbix/zabbix-agent.d/
+  ```
+3. Даём необходимые права:
+  ```
+  chmod +x /usr/bin/vhdt
+  chown -R zabbix: /var/log/zabbix
+  setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+  setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
+  ```
+4. Добавляем на Zabbix Server к хосту шаблон `Virtual Hosts` (прилагается в виде файла `vhost-discovery-template.xml`).
 Шаблон идет с дистрибутивом утилиты.
-
-6. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
+5. (Опционально) Устанавливаем утилиту [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws), которая создаёт Web-сценарии на базе обнаруженных vhosts.
 
 ## Как работает утилита
 

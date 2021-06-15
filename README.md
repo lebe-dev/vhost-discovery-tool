@@ -7,29 +7,21 @@ Gather urls from nginx\apache configs then outputs in Zabbix
 
 Use `--use-data-property` option for Zabbix < 4.2 (see details in Options section).
 
-## Getting started
+## Quick start
 
 1. Copy `vhdt` to `/usr/bin`.
-2. Update permissions:  
-    ```shell script
-    chmod +x /usr/bin/vhdt
-    ```
-   
-3. Copy zabbix agent config `files/vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
+2. Copy zabbix agent config `files/vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
+3. Import `files/vhost-discovery-template.xml` to Zabbix Server.
+4. Update permissions:
+  ```
+  chmod +x /usr/bin/vhdt
+  chown -R zabbix: /var/log/zabbix
+  setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+  setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
+  ``` 
 
-4. Import `files/vhost-discovery-template.xml` to Zabbix Server.
-
-5. Update permissions:
-
-```
-chown -R zabbix: /var/log/zabbix
-setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
-setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
-``` 
-
-6. Add `Virtual Hosts` template to target host.
-
-7. Setup [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
+5. Add `Virtual Hosts` template to target host.
+6. (Optional) Use [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
 
 ## How it works
 
