@@ -108,7 +108,7 @@ fn main() {
         ).arg(
             Arg::with_name(DOMAIN_IGNORE_MASKS_OPTION)
                 .short(DOMAIN_IGNORE_MASKS_OPTION)
-                .help("set ignore masks for domains. Use '|' char as value separator. Example: house|ads")
+                .help("set ignore masks for domains. Use ',' char as value separator. Example: house|ads")
                 .long(DOMAIN_IGNORE_MASKS_OPTION)
                 .takes_value(true).required(false)
         )
@@ -138,7 +138,7 @@ fn main() {
         matches.value_of(DOMAIN_IGNORE_MASKS_OPTION).unwrap()
     } else { "" };
 
-    let domain_ignore_masks: Vec<&str> = domain_ignore_masks_row.split("|").collect();
+    let domain_ignore_masks: Vec<&str> = domain_ignore_masks_row.split(",").collect();
 
     info!("[~] collect virtual hosts..");
     info!("- include domains with custom ports: {}", include_custom_domains);
