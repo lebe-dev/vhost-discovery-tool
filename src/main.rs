@@ -108,7 +108,7 @@ fn main() {
         ).arg(
             Arg::with_name(DOMAIN_IGNORE_MASKS_OPTION)
                 .short(DOMAIN_IGNORE_MASKS_OPTION)
-                .help("set ignore masks for domains. Use ',' char as value separator. Example: house|ads")
+                .help("set ignore masks for domains. Use ',' char as value separator. Example: house,ads")
                 .long(DOMAIN_IGNORE_MASKS_OPTION)
                 .takes_value(true).required(false)
         )
