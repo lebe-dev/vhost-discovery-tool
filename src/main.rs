@@ -135,12 +135,7 @@ fn main() {
 
     env::set_current_dir(&working_directory).expect("unable to set working directory");
 
-    let logging_level: &str = if matches.is_present(LOG_LEVEL_ARGUMENT) {
-        matches.value_of(LOG_LEVEL_ARGUMENT).unwrap()
-    } else { LOG_LEVEL_DEFAULT_VALUE };
-
-    let logging_config = get_logging_config(logging_level);
-    log4rs::init_config(logging_config).unwrap();
+    init_logging(&matches);
 
     let include_domains_with_www = matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0;
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
@@ -191,6 +186,15 @@ fn main() {
     };
 
     println!("{}", json);
+}
+
+fn init_logging(matches: &ArgMatches) {
+    let logging_level: &str = if matches.is_present(LOG_LEVEL_ARGUMENT) {
+        matches.value_of(LOG_LEVEL_ARGUMENT).unwrap()
+    } else { LOG_LEVEL_DEFAULT_VALUE };
+
+    let logging_config = get_logging_config(logging_level);
+    log4rs::init_config(logging_config).unwrap();
 }
 
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
