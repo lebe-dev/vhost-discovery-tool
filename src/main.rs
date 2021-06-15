@@ -128,14 +128,8 @@ fn main() {
         )
         .get_matches();
 
-    let working_directory: &Path = get_argument_path_value(
-        &matches, WORK_DIR_ARGUMENT, WORK_DIR_SHORT_ARGUMENT, WORKDIR);
-
-    debug!("working directory '{}'", &working_directory.display());
-
-    env::set_current_dir(&working_directory).expect("unable to set working directory");
-
     init_logging(&matches);
+    init_working_dir(&matches);
 
     let include_domains_with_www = matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0;
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
@@ -195,6 +189,15 @@ fn init_logging(matches: &ArgMatches) {
 
     let logging_config = get_logging_config(logging_level);
     log4rs::init_config(logging_config).unwrap();
+}
+
+fn init_working_dir(matches: &ArgMatches) {
+    let working_directory: &Path = get_argument_path_value(
+        &matches, WORK_DIR_ARGUMENT, WORK_DIR_SHORT_ARGUMENT, WORKDIR);
+
+    debug!("working directory '{}'", &working_directory.display());
+
+    env::set_current_dir(&working_directory).expect("unable to set working directory");
 }
 
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,
