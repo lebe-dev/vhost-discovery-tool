@@ -109,6 +109,20 @@ Later versions don't support `data` property. Use `--use-data-property` option f
 
 Log: `/var/log/zabbix/vhdt.log`.
 
+### Unable to access /etc/nginx directory
+
+Fix:
+
+```bash
+setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+```
+
+or
+
+```bash
+setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
+```
+
 ### Logging levels
 
 Use `--log-level` option if you want to switch logging level.

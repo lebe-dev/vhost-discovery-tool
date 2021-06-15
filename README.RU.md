@@ -121,6 +121,20 @@ setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
 sudo -u zabbix /usr/bin/vhdt
 ```
 
+### Нет доступа к каталогу /etc/nginx
+
+Решение:
+
+```bash
+setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
+```
+
+или
+
+```bash
+setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
+```
+
 ### Уровни логирования
 
 Можно управлять уровнем логирования через флаг `--log-level`.
