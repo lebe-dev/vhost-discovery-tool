@@ -2,10 +2,54 @@
 mod filter_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::VirtualHost;
-    use crate::filter::filter::filter_vhosts;
+    use crate::filter::filter::{filter_vhosts, filter_by_domain_masks};
 
     const DOMAIN: &str = "cronbox.ru";
     const DOMAIN2: &str = "dfov.ru";
+    const DOMAIN3: &str = "fancy-ads.com";
+    const DOMAIN4: &str = "ads.megacorp.com";
+
+    #[test]
+    fn filter_by_domain_masks_should_exclude_domains_which_contain_at_least_one_mask() {
+        let vhost1 = VirtualHost { domain: DOMAIN2.to_string(), port: DEFAULT_HTTP_PORT };
+        let vhost2 = VirtualHost { domain: DOMAIN3.to_string(), port: DEFAULT_HTTPS_PORT };
+        let vhost3 = VirtualHost { domain: DOMAIN.to_string(), port: 5384 };
+        let vhost4 = VirtualHost { domain: DOMAIN4.to_string(), port: DEFAULT_HTTPS_PORT };
+
+        let vhosts: Vec<VirtualHost> = vec![
+            vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
+        ];
+
+        let masks: Vec<String> = vec![String::from("ads"), String::from("qwerty")];
+
+        let results = filter_by_domain_masks(&vhosts, &masks);
+
+        assert_eq!(results.len(), 2);
+
+        let first_result = results.get(0).unwrap();
+        assert_eq!(first_result.domain, vhost1.domain);
+
+        let second_result = results.get(1).unwrap();
+        assert_eq!(second_result.domain, vhost3.domain);
+    }
+
+    #[test]
+    fn filter_by_domain_masks_should_ignore_blank_masks() {
+        let vhost1 = VirtualHost { domain: DOMAIN2.to_string(), port: DEFAULT_HTTP_PORT };
+        let vhost2 = VirtualHost { domain: DOMAIN3.to_string(), port: DEFAULT_HTTPS_PORT };
+        let vhost3 = VirtualHost { domain: DOMAIN.to_string(), port: 5384 };
+        let vhost4 = VirtualHost { domain: DOMAIN4.to_string(), port: DEFAULT_HTTPS_PORT };
+
+        let vhosts: Vec<VirtualHost> = vec![
+            vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
+        ];
+
+        let masks: Vec<String> = vec![String::from(""), String::from("qwerty")];
+
+        let results = filter_by_domain_masks(&vhosts, &masks);
+
+        assert_eq!(results.len(), 4);
+    }
 
     #[test]
     fn result_without_custom_ports_should_contain_only_http_or_https_ports() {

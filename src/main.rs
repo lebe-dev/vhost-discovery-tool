@@ -44,6 +44,8 @@ const DEFAULT_HTTPS_PORT: i32 = 443;
 const INCLUDE_DOMAINS_WITH_WWW: &str = "include-www";
 const INCLUDE_CUSTOM_PORTS_OPTION: &str = "include-custom-ports";
 
+const DOMAIN_IGNORE_MASKS_OPTION: &str = "ignore-by-masks";
+
 const WWW_SEARCH_PATTERN: &str = "www.";
 
 const WORKDIR: &str = "/etc/zabbix";
@@ -102,6 +104,12 @@ fn main() {
                 .short(APACHE_VHOSTS_PATH_SHORT_ARGUMENT)
                 .help("set apache vhosts root path")
                 .long(APACHE_VHOSTS_PATH_ARGUMENT)
+                .takes_value(true).required(false)
+        ).arg(
+            Arg::with_name(DOMAIN_IGNORE_MASKS_OPTION)
+                .short(DOMAIN_IGNORE_MASKS_OPTION)
+                .help("set ignore masks for domains. Use '|' char as value separator. Example: house|ads")
+                .long(DOMAIN_IGNORE_MASKS_OPTION)
                 .takes_value(true).required(false)
         )
         .arg(

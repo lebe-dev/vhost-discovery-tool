@@ -2,6 +2,28 @@ pub mod filter {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::VirtualHost;
 
+    pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>, masks: &Vec<String>) -> Vec<VirtualHost> {
+        let mut results: Vec<VirtualHost> = Vec::new();
+
+        for vhost in vhosts {
+            let mut permitted = true;
+
+            for mask in masks {
+                if mask.len() > 0 && vhost.domain.contains(mask) {
+                    debug!("vhost domain '{}' has been filtered by mask '{}'", vhost.domain, mask);
+                    permitted = false;
+                    break
+                }
+            }
+
+            if permitted {
+                results.push(vhost.to_owned())
+            }
+        }
+
+        return results
+    }
+
     pub fn filter_vhosts(vhosts: &Vec<VirtualHost>, include_custom_domains: bool) -> Vec<VirtualHost> {
         let mut results: Vec<VirtualHost> = Vec::new();
 
