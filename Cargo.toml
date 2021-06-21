@@ -1,6 +1,6 @@
 [package]
 name = "vhost-discovery-tool"
-version = "1.4.0"
+version = "1.4.1"
 authors = ["Eugene Lebedev <duke.tougu@gmail.com>"]
 edition = "2018"
 
