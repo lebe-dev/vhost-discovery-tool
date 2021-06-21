@@ -90,9 +90,13 @@ pub mod webserver {
                 }
 
                 if domain.is_none() && domain_search_pattern.is_match(&row) {
-                    let domain_name = get_first_group_match_as_string(&row, &domain_search_pattern);
-                    debug!("domain found {}", domain_name);
-                    domain = Some(domain_name);
+                    let domains_row = get_first_group_match_as_string(&row, &domain_search_pattern);
+                    let sanitized_domains_row = domains_row.replace(r"[\s\t]{2}", " ");
+                    let domains: Vec<&str> = sanitized_domains_row.split(" ").collect::<Vec<&str>>();
+                    if let Some(domain_value) = domains.first() {
+                        debug!("domain found {}", domain_value);
+                        domain = Some(domain_value.to_string());
+                    }
                 }
             }
 

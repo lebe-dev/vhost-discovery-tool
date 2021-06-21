@@ -54,7 +54,7 @@ pub mod nginx {
     }
 
     fn get_domain_search_regex_for_nginx_vhost() -> Regex {
-        return Regex::new("(?:^|^[^#]+)server_name[\\s\t]+([a-z0-9.\\-]+);").unwrap();
+        return Regex::new("(?:^|^[^#]+)server_name[\\s\t]+([a-z0-9.\\s\\-]+);").unwrap();
     }
 
     fn get_nginx_vhost_section_start_regex() -> Regex {

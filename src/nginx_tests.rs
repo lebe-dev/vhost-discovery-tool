@@ -6,8 +6,8 @@ pub mod nginx_tests {
     use crate::nginx::nginx::get_nginx_vhosts;
     use crate::test_utils::test_utils::assert_vhost_in_vec;
 
-    const SAMPLE_DOMAIN: &str = "whatever.ru";
-    const SAMPLE_DOMAIN2: &str = "gallery.whatever.ru";
+    const SAMPLE_DOMAIN: &str = "goodhost.ru";
+    const SAMPLE_DOMAIN2: &str = "www.goodhost.ru";
 
     #[test]
     fn get_nginx_vhosts_from_path() {
