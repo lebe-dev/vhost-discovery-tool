@@ -10,8 +10,8 @@ Use `--use-data-property` option for Zabbix < 4.2 (see details in Options sectio
 ## Quick start
 
 1. Copy `vhdt` to `/usr/bin`.
-2. Copy zabbix agent config `files/vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
-3. Import `files/vhost-discovery-template.xml` to Zabbix Server.
+2. Copy zabbix agent config `vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
+3. Import `vhost-discovery-template.xml` to Zabbix Server.
 4. Update permissions:
   ```
   chmod +x /usr/bin/vhdt
