@@ -10,7 +10,7 @@
 1. Копируем исполняемый файл `vhdt` в `/usr/bin`.
 2. Создаем файл конфигурации:
   ```
-  cp files/vhost-discovery.conf /etc/zabbix/zabbix-agent.d/
+  cp vhost-discovery.conf /etc/zabbix/zabbix-agent.d/
   ```
 3. Даём необходимые права:
   ```
