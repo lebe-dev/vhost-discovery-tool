@@ -19,12 +19,13 @@ mod filter_tests {
         let vhost2 = VirtualHost { domain: DOMAIN3.to_string(), port: DEFAULT_HTTPS_PORT };
         let vhost3 = VirtualHost { domain: DOMAIN.to_string(), port: 5384 };
         let vhost4 = VirtualHost { domain: DOMAIN4.to_string(), port: DEFAULT_HTTPS_PORT };
+        let vhost5 = VirtualHost { domain: "localhost".to_string(), port: DEFAULT_HTTPS_PORT };
 
         let vhosts: Vec<VirtualHost> = vec![
-            vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
+            vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone(), vhost5.clone()
         ];
 
-        let masks: Vec<&str> = vec![".de$", "^fancy", "ops"];
+        let masks: Vec<&str> = vec![".de$", "^fancy", "ops", "^localhost$"];
 
         let results = filter_by_domain_masks(&vhosts, &masks);
 
