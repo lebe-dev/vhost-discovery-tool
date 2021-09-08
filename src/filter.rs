@@ -1,19 +1,35 @@
 pub mod filter {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::VirtualHost;
+    use regex::Regex;
 
-    pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>, masks: &Vec<&str>) -> Vec<VirtualHost> {
+    pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>,
+                                  mask_patterns: &Vec<&str>) -> Vec<VirtualHost> {
+
         let mut results: Vec<VirtualHost> = Vec::new();
 
         for vhost in vhosts {
             let mut permitted = true;
 
-            for mask in masks {
-                if mask.len() > 0 && vhost.domain.contains(mask) {
-                    debug!("vhost domain '{}' has been filtered by mask '{}'", vhost.domain, mask);
-                    permitted = false;
-                    break
+            for mask in mask_patterns {
+                debug!("mask regexp '{}'", mask);
+
+                if mask.len() > 0 {
+                    match Regex::new(mask) {
+                        Ok(mask_pattern) => {
+                            if mask_pattern.is_match(&vhost.domain) {
+                                debug!(
+                                    "vhost domain '{}' has been filtered by pattern '{}'",
+                                    vhost.domain, mask
+                                );
+                                permitted = false;
+                                break
+                            }
+                        }
+                        Err(e) => error!("invalid filter mask pattern: {} [skip]", e)
+                    }
                 }
+
             }
 
             if permitted {
@@ -39,6 +55,7 @@ pub mod filter {
 
     fn vhost_add_permitted(vhost: &VirtualHost, buffer: &Vec<VirtualHost>,
                            include_custom_ports: bool) -> bool {
+
         let mut permitted = false;
 
         if include_custom_ports {

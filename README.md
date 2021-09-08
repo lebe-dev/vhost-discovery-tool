@@ -87,10 +87,10 @@ Option: `--ignore-by-masks` or `-i`
 Example:
 
 ```bash
-vhdt -i test,rfid
+vhdt -i "^test,rfid$,demo"
 ```
 
-Ignore vhosts with domain contains any of strings: `test` or `rfid`.
+Will ignore vhosts with domain names starts with `test` or ends with `rfid` or contain `demo`.
 
 ### Support Zabbix < 4.2
 

@@ -108,13 +108,15 @@ fn main() {
         ).arg(
             Arg::with_name(DOMAIN_IGNORE_MASKS_OPTION)
                 .short(DOMAIN_IGNORE_MASKS_OPTION)
-                .help("set ignore masks for domains. Use ',' char as value separator. Example: house,ads")
+                .help("set ignore masks for domains. Use ',' \
+                        char as value separator. Example: house,ads")
                 .long(DOMAIN_IGNORE_MASKS_OPTION)
                 .takes_value(true).required(false)
         )
         .arg(
             Arg::with_name(USE_DATA_PROPERTY_ARGUMENT)
-                .help("use low level discovery format with 'data' property. example: { \"data\": [] }")
+                .help("use low level discovery format with 'data' \
+                        property. example: { \"data\": [] }")
                 .long(USE_DATA_PROPERTY_ARGUMENT)
                 .takes_value(false).required(false)
         )

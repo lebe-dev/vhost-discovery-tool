@@ -3,14 +3,18 @@ mod filter_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::VirtualHost;
     use crate::filter::filter::{filter_vhosts, filter_by_domain_masks};
+    use crate::logging::logging::get_logging_config;
 
     const DOMAIN: &str = "cronbox.ru";
-    const DOMAIN2: &str = "dfov.ru";
+    const DOMAIN2: &str = "tinyops.ru";
     const DOMAIN3: &str = "fancy-ads.com";
-    const DOMAIN4: &str = "ads.megacorp.com";
+    const DOMAIN4: &str = "ads.megacorp.de";
 
     #[test]
     fn filter_by_domain_masks_should_exclude_domains_which_contain_at_least_one_mask() {
+        let logging_config = get_logging_config("debug");
+        log4rs::init_config(logging_config).unwrap();
+
         let vhost1 = VirtualHost { domain: DOMAIN2.to_string(), port: DEFAULT_HTTP_PORT };
         let vhost2 = VirtualHost { domain: DOMAIN3.to_string(), port: DEFAULT_HTTPS_PORT };
         let vhost3 = VirtualHost { domain: DOMAIN.to_string(), port: 5384 };
@@ -20,17 +24,14 @@ mod filter_tests {
             vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
         ];
 
-        let masks: Vec<&str> = vec!["ads", "qwerty"];
+        let masks: Vec<&str> = vec![".de$", "^fancy", "ops"];
 
         let results = filter_by_domain_masks(&vhosts, &masks);
 
-        assert_eq!(results.len(), 2);
+        assert_eq!(results.len(), 1);
 
         let first_result = results.get(0).unwrap();
-        assert_eq!(first_result.domain, vhost1.domain);
-
-        let second_result = results.get(1).unwrap();
-        assert_eq!(second_result.domain, vhost3.domain);
+        assert_eq!(first_result.domain, vhost3.domain);
     }
 
     #[test]
