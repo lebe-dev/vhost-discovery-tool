@@ -111,6 +111,7 @@ fn main() {
                 .help("set ignore masks for domains. Use ',' \
                         char as value separator. Example: house,ads")
                 .long(DOMAIN_IGNORE_MASKS_OPTION)
+                .default_value("^localhost$")
                 .takes_value(true).required(false)
         )
         .arg(
