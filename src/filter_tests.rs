@@ -3,7 +3,6 @@ mod filter_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::VirtualHost;
     use crate::filter::filter::{filter_vhosts, filter_by_domain_masks};
-    use crate::logging::logging::get_logging_config;
 
     const DOMAIN: &str = "cronbox.ru";
     const DOMAIN2: &str = "tinyops.ru";
@@ -12,9 +11,6 @@ mod filter_tests {
 
     #[test]
     fn filter_by_domain_masks_should_exclude_domains_which_contain_at_least_one_mask() {
-        let logging_config = get_logging_config("debug");
-        log4rs::init_config(logging_config).unwrap();
-
         let vhost1 = VirtualHost { domain: DOMAIN2.to_string(), port: DEFAULT_HTTP_PORT };
         let vhost2 = VirtualHost { domain: DOMAIN3.to_string(), port: DEFAULT_HTTPS_PORT };
         let vhost3 = VirtualHost { domain: DOMAIN.to_string(), port: 5384 };
