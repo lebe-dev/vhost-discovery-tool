@@ -6,7 +6,7 @@ pub mod logging {
 
     const FILE_APPENDER_NAME: &str = "file";
 
-    const LOG_FILE_PATH: &str = "vhdt.log";
+    const LOG_FILE_PATH: &str = "/var/log/zabbix/vhdt.log";
 
     fn get_logging_level_from_string(level: &str) -> LevelFilter {
         return match level {
