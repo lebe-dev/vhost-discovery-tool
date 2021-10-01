@@ -53,19 +53,19 @@ pub mod nginx {
         return vhosts;
     }
 
-    fn get_domain_search_regex_for_nginx_vhost() -> Regex {
+    pub fn get_domain_search_regex_for_nginx_vhost() -> Regex {
         return Regex::new("(?:^|^[^#]+)server_name[\\s\t]+([a-z0-9.\\s\\-]+);").unwrap();
     }
 
-    fn get_nginx_vhost_section_start_regex() -> Regex {
+    pub fn get_nginx_vhost_section_start_regex() -> Regex {
         return Regex::new("(?:^|^[^#]+)server[\\s\t]+\\{").unwrap();
     }
 
-    fn get_nginx_redirect_with_301_regex() -> Regex {
+    pub fn get_nginx_redirect_with_301_regex() -> Regex {
         return Regex::new("[\t\\s]*return[\\s\t]+301[\\s\t]+http.*[\\s\t]*$").unwrap();
     }
 
-    fn get_nginx_vhost_port_regex() -> Regex {
-        return Regex::new("[\\s\t]*listen[\\s\t]+(\\d+)([\\s\t]+ssl)?;").unwrap();
+    pub fn get_nginx_vhost_port_regex() -> Regex {
+        return Regex::new("[\\s\t]*listen[\\s\t]+(\\d+)([\\s\t]+(ssl)?)?;").unwrap();
     }
 }

@@ -27,11 +27,11 @@ pub mod webserver {
         Ok(vhost_files)
     }
 
-    pub fn get_virtual_hosts_from_file(vhost_file: &Path,
-                                       section_start_pattern: Regex,
-                                       redirect_with_301_pattern: Regex,
-                                       port_search_pattern: Regex,
-                                       domain_search_pattern: Regex) -> Result<Vec<VirtualHost>, io::Error> {
+    pub fn get_virtual_hosts_from_file(
+        vhost_file: &Path, section_start_pattern: Regex, redirect_with_301_pattern: Regex,
+        port_search_pattern: Regex,
+        domain_search_pattern: Regex) -> Result<Vec<VirtualHost>, io::Error> {
+
         let mut hosts: Vec<VirtualHost> = Vec::new();
 
         let vhost_file_name = vhost_file.to_str().unwrap();
@@ -45,6 +45,8 @@ pub mod webserver {
         let mut redirect_to_url = false;
         let mut port: Option<i32> = None;
         let mut domain: Option<String> = None;
+
+        let mut previous_row: Option<String> = None;
 
         for line in buffered.lines() {
             let row = line.unwrap_or(String::new());
@@ -72,16 +74,40 @@ pub mod webserver {
 
             if inside_server_section {
                 if redirect_with_301_pattern.is_match(&row) {
-                    debug!("redirect detected");
-                    redirect_to_url = true;
-                    inside_server_section = false;
+                    trace!("redirect 301 pattern has been matched");
 
-                    domain = None;
-                    port = None;
+                    match previous_row {
+                        Some(previous_row_value) => {
+                            trace!("previous row value: '{}'", previous_row_value);
+                            if !previous_row_value.contains("location /") {
+                                debug!(
+                                    "previous row doesn't contain 'location /', \
+                                    redirect 301 was detected, skip vhost"
+                                );
+                                redirect_to_url = true;
+                                domain = None;
+                                port = None;
+                                inside_server_section = false;
+                            }
+                        }
+                        None => {
+                            debug!("redirect detected, skip vhost");
+                            redirect_to_url = true;
+                            domain = None;
+                            port = None;
+                            inside_server_section = false;
+                        }
+                    }
                 }
 
                 if port.is_none() && port_search_pattern.is_match(&row) {
-                    let vhost_port_str = get_first_group_match_as_string(&row, &port_search_pattern);
+                    trace!("port wasn't detected yet, port pattern has been matched");
+                    let vhost_port_str = get_first_group_match_as_string(
+                        &row, &port_search_pattern
+                    );
+
+                    trace!("vhost port: '{}'", vhost_port_str);
+
                     if let Ok(vhost_port) = vhost_port_str.parse() {
                         debug!("port found {}", vhost_port);
                         port = Some(vhost_port);
@@ -90,7 +116,9 @@ pub mod webserver {
                 }
 
                 if domain.is_none() && domain_search_pattern.is_match(&row) {
-                    let domains_row = get_first_group_match_as_string(&row, &domain_search_pattern);
+                    let domains_row = get_first_group_match_as_string(
+                        &row, &domain_search_pattern
+                    );
                     let sanitized_domains_row = domains_row.replace(r"[\s\t]{2}", " ");
                     let domains: Vec<&str> = sanitized_domains_row.split(" ").collect::<Vec<&str>>();
                     if let Some(domain_value) = domains.first() {
@@ -100,6 +128,7 @@ pub mod webserver {
                 }
             }
 
+            previous_row = Some(row)
         }
 
         if port.is_some() && domain.is_some() && !redirect_to_url {

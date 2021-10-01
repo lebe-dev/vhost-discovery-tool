@@ -30,13 +30,25 @@ Tool looking for nginx\apache configuration files then creates data structures f
 - domain
 - url
 
-### Nginx: Multiple values in server_name
+### Limitations
+
+#### 1. Nginx: Multiple values in server_name
 
 Example: `server_name toys.com www.toys.com`
 
 Domain `toys.com` will be collected.
 
 Create issue if you want all domains and explain it.
+
+#### 2. Redirect limitations
+
+If your vhost has row:
+
+```
+return 301 http...
+```
+
+Not inside `location` directive, it will be excluded from results.
 
 ### HTTP
 Add `_http` postfix for domain with http protocol. For example: `http://somesite.ru` will be:  
