@@ -2,14 +2,14 @@
 mod site_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::{Site, VirtualHost};
-    use crate::site::site::get_sites_from_vhosts;
+    use crate::site::site::get_domains_from_vhosts;
     use crate::test_samples::test_samples::{get_4_sample_vhosts, SAMPLE_DOMAIN1, SAMPLE_DOMAIN2, SAMPLE_DOMAIN3, SAMPLE_DOMAIN4};
 
     #[test]
     fn without_www_domains_result_should_not_contain_domains_with_www_lol() {
         let vhosts = get_4_sample_vhosts();
 
-        let results = get_sites_from_vhosts(vhosts, false);
+        let results = get_domains_from_vhosts(vhosts, false);
 
         assert_eq!(results.len(), 3);
 
@@ -23,7 +23,7 @@ mod site_tests {
     fn with_www_domains_results_should_contain_domains_with_www() {
         let vhosts = get_4_sample_vhosts();
 
-        let results = get_sites_from_vhosts(vhosts, true);
+        let results = get_domains_from_vhosts(vhosts, true);
 
         assert_eq!(results.len(), 4);
 
@@ -36,7 +36,7 @@ mod site_tests {
         let vhost1 = VirtualHost { domain: SAMPLE_DOMAIN2.to_string(), port: DEFAULT_HTTPS_PORT };
         let vhosts = vec![vhost1.clone()];
 
-        let results = get_sites_from_vhosts(vhosts, false);
+        let results = get_domains_from_vhosts(vhosts, false);
 
         assert_eq!(results.len(), 1);
 
@@ -50,7 +50,7 @@ mod site_tests {
         let vhost1 = VirtualHost { domain: SAMPLE_DOMAIN3.to_string(), port: DEFAULT_HTTP_PORT };
         let vhosts = vec![vhost1.clone()];
 
-        let results = get_sites_from_vhosts(vhosts, false);
+        let results = get_domains_from_vhosts(vhosts, false);
 
         assert_eq!(results.len(), 1);
 
@@ -66,7 +66,7 @@ mod site_tests {
         let vhost1 = VirtualHost { domain: domain.to_string(), port: custom_port };
         let vhosts = vec![vhost1.clone()];
 
-        let results = get_sites_from_vhosts(vhosts, false);
+        let results = get_domains_from_vhosts(vhosts, false);
 
         assert_eq!(results.len(), 1);
 
@@ -80,7 +80,7 @@ mod site_tests {
         let vhost1 = VirtualHost { domain: SAMPLE_DOMAIN3.to_string(), port: DEFAULT_HTTP_PORT };
         let vhosts = vec![vhost1.clone()];
 
-        let results = get_sites_from_vhosts(vhosts, false);
+        let results = get_domains_from_vhosts(vhosts, false);
 
         assert_eq!(results.len(), 1);
 

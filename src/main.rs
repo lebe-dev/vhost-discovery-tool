@@ -14,7 +14,7 @@ use crate::domain::domain::{Site, VirtualHost};
 use crate::filter::filter::{filter_vhosts, filter_by_domain_masks};
 use crate::logging::logging::get_logging_config;
 use crate::nginx::nginx::get_nginx_vhosts;
-use crate::site::site::get_sites_from_vhosts;
+use crate::site::site::get_domains_from_vhosts;
 
 mod logging;
 
@@ -162,7 +162,7 @@ fn main() {
     let mut filtered_vhosts = filter_vhosts(&vhosts, include_custom_domains);
     filtered_vhosts = filter_by_domain_masks(&filtered_vhosts, &domain_ignore_masks);
 
-    let sites: Vec<Site> = get_sites_from_vhosts(filtered_vhosts, include_domains_with_www);
+    let sites: Vec<Site> = get_domains_from_vhosts(filtered_vhosts, include_domains_with_www);
 
     let json;
 
