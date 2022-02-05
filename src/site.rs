@@ -19,6 +19,14 @@ pub mod site {
         return sites;
     }
 
+    pub fn get_url(domain: &str, vhost_port: i32) -> String {
+        match vhost_port {
+            DEFAULT_HTTP_PORT => String::from(format!("http://{}", domain)),
+            DEFAULT_HTTPS_PORT => String::from(format!("https://{}", domain)),
+            _ => String::from(format!("http://{}:{}", domain, vhost_port))
+        }
+    }
+
     fn get_domain_from_vhost(vhost: &VirtualHost) -> Site {
         let url = get_url(&vhost.domain, vhost.port);
         Site { name: get_site_name(&vhost.domain, vhost.port), url }
@@ -31,14 +39,6 @@ pub mod site {
             String::from(domain)
         } else {
             String::from(format!("{}:{}", domain, port))
-        }
-    }
-
-    pub fn get_url(domain: &str, vhost_port: i32) -> String {
-        match vhost_port {
-            DEFAULT_HTTP_PORT => String::from(format!("http://{}", domain)),
-            DEFAULT_HTTPS_PORT => String::from(format!("https://{}", domain)),
-            _ => String::from(format!("http://{}:{}", domain, vhost_port))
         }
     }
 }
