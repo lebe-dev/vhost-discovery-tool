@@ -62,7 +62,7 @@ pub mod nginx {
     }
 
     pub fn get_nginx_redirect_with_301_regex() -> Regex {
-        return Regex::new("[\t\\s]*return[\\s\t]+301[\\s\t]+http.*[\\s\t]*$").unwrap();
+        return Regex::new("^[\t\\s]*return[\\s\\t]+301[\\s\t]+http.*[\\s\t]*$").unwrap();
     }
 
     pub fn get_nginx_vhost_port_regex() -> Regex {
