@@ -3,8 +3,8 @@ pub mod test_samples {
     use crate::DEFAULT_HTTPS_PORT;
     use crate::domain::domain::VirtualHost;
 
-    pub const SAMPLE_DOMAIN1: &str = "cronbox.ru";
-    pub const SAMPLE_DOMAIN2: &str = "dfov.ru";
+    pub const SAMPLE_DOMAIN1: &str = "sumanguru.fi";
+    pub const SAMPLE_DOMAIN2: &str = "dhl.de";
     pub const SAMPLE_DOMAIN3: &str = "tinyops.ru";
     pub const SAMPLE_DOMAIN4: &str = "www.google.com";
 

@@ -1,7 +1,7 @@
 pub mod domain {
     use serde::Serialize;
 
-    #[derive(Clone)]
+    #[derive(Clone, Debug)]
     pub struct VirtualHost {
         pub domain: String,
         pub port: i32

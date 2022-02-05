@@ -50,7 +50,6 @@ pub mod webserver {
 
         for line in buffered.lines() {
             let row = line.unwrap_or(String::new());
-
             trace!("row '{}'", row);
 
             if section_start_pattern.is_match(&row) {
@@ -59,7 +58,7 @@ pub mod webserver {
                     port = None;
                 }
 
-                if port.is_some() && domain.is_some() && !redirect_to_url {
+                if domain.is_some() && port.is_some() && !redirect_to_url {
                     let vhost = get_virtual_host(domain, port);
 
                     hosts.push(vhost);
