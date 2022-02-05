@@ -9,7 +9,7 @@ pub mod apache_tests {
     fn get_virtual_hosts_from_apache_file() {
         let vhosts_path = Path::new("tests/apache-vhosts");
 
-        let vhosts = get_apache_vhosts(vhosts_path);
+        let vhosts = get_apache_vhosts(vhosts_path, false);
 
         for vhost in &vhosts {
             println!("{}", vhost.to_string());

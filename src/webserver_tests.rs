@@ -6,9 +6,18 @@ mod webserver_tests {
     use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
     #[test]
+    fn support_recursive_mode() {
+        let vhost_root_path = Path::new("tests/nginx-multi-files");
+        let files = get_vhost_config_file_list(vhost_root_path, true).unwrap();
+
+        let expected_size: usize = 3;
+        assert_eq!(&files.len(), &expected_size);
+    }
+
+    #[test]
     fn get_vhost_config_file_list_should_return_file_names() {
         let vhost_root_path = Path::new("tests/apache-vhosts");
-        let files = get_vhost_config_file_list(vhost_root_path).unwrap();
+        let files = get_vhost_config_file_list(vhost_root_path, false).unwrap();
 
         let expected_size: usize = 2;
         assert_eq!(&files.len(), &expected_size);
@@ -17,7 +26,7 @@ mod webserver_tests {
     #[test]
     fn get_vhost_config_file_list_should_return_error_for_unknown_path() {
         let unknown_path = Path::new("unknown-path");
-        assert!(get_vhost_config_file_list(unknown_path).is_err());
+        assert!(get_vhost_config_file_list(unknown_path, false).is_err());
     }
 
     #[test]

@@ -8,14 +8,14 @@ pub mod apache {
     use crate::ERROR_EXIT_CODE;
     use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
-    pub fn get_apache_vhosts(vhosts_path: &Path) -> Vec<VirtualHost> {
+    pub fn get_apache_vhosts(vhosts_path: &Path, recursive: bool) -> Vec<VirtualHost> {
         debug!("get virtual hosts from apache configs");
         debug!("configs path '{}'", vhosts_path.display());
 
         let mut vhosts: Vec<VirtualHost> = Vec::new();
 
         if vhosts_path.is_dir() && vhosts_path.exists() {
-            match get_vhost_config_file_list(vhosts_path) {
+            match get_vhost_config_file_list(vhosts_path, recursive) {
                 Ok(vhost_files) => {
                     for vhost_file in vhost_files {
                         let vhost_file_path = vhost_file.as_path();

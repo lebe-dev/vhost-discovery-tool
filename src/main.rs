@@ -58,6 +58,9 @@ const APACHE_VHOSTS_PATH: &str = "/etc/httpd/conf.d";
 
 const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
 const NGINX_VHOSTS_PATH_SHORT_ARGUMENT: &str = "n";
+
+const RECURSIVE_OPTION: &str = "r";
+
 const APACHE_VHOSTS_PATH_ARGUMENT: &str = "apache-vhosts-path";
 const APACHE_VHOSTS_PATH_SHORT_ARGUMENT: &str = "a";
 
@@ -91,6 +94,12 @@ fn main() {
             Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
                 .long(INCLUDE_CUSTOM_PORTS_OPTION)
                 .help("include domains with custom ports")
+        )
+        .arg(
+            Arg::with_name(RECURSIVE_OPTION)
+                .long(RECURSIVE_OPTION)
+                .help("scan vhost-files in subdirectories")
+                .takes_value(false).required(false)
         )
         .arg(
             Arg::with_name(NGINX_VHOSTS_PATH_ARGUMENT)
@@ -136,6 +145,7 @@ fn main() {
 
     let include_domains_with_www = matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0;
     let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
+    let recursive_mode = matches.occurrences_of(RECURSIVE_OPTION) > 0;
 
     let domain_ignore_masks_row: &str = if matches.is_present(DOMAIN_IGNORE_MASKS_OPTION) {
         matches.value_of(DOMAIN_IGNORE_MASKS_OPTION).unwrap()
@@ -150,13 +160,13 @@ fn main() {
     let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
-    let mut nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path);
+    let mut nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path, recursive_mode);
     vhosts.append(&mut nginx_vhosts);
 
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
-    let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path);
+    let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path, recursive_mode);
     vhosts.append(&mut apache_vhosts);
 
     let mut filtered_vhosts = filter_vhosts(&vhosts, include_custom_domains);

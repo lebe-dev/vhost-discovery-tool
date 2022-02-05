@@ -10,17 +10,36 @@ pub mod webserver {
 
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
 
-    pub fn get_vhost_config_file_list(vhost_root_path: &Path) -> Result<Vec<PathBuf>,io::Error> {
+    pub fn get_vhost_config_file_list(vhost_root_path: &Path,
+                                      recursive: bool) -> Result<Vec<PathBuf>,io::Error> {
+
         let paths = fs::read_dir(&vhost_root_path)?;
 
         let mut vhost_files: Vec<PathBuf> = Vec::new();
 
-        for path in paths {
-            let file = path.unwrap();
+        for path_entry in paths {
+            let dir_entry = path_entry.unwrap();
 
-            match get_vhost_file_from_dir(vhost_root_path, &file) {
-                Some(file_path) => vhost_files.push(file_path),
-                None => {}
+            match dir_entry.file_type() {
+                Ok(file_type) => {
+                    if file_type.is_dir() && recursive {
+                        let path_entry = dir_entry.path();
+                        let path_subdir_entry = path_entry.as_path();
+
+                        match get_vhost_config_file_list(path_subdir_entry, recursive) {
+                            Ok(mut vhosts) => vhost_files.append(&mut vhosts),
+                            Err(e) => error!("{}", e)
+                        }
+                    }
+
+                    if file_type.is_file() || file_type.is_symlink() {
+                        match get_vhost_file_from_dir(vhost_root_path, &dir_entry) {
+                            Some(file_path) => vhost_files.push(file_path),
+                            None => {}
+                        }
+                    }
+                }
+                Err(e) => error!("{}", e)
             }
         }
 

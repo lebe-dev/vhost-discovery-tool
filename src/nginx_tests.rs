@@ -96,7 +96,7 @@ pub mod nginx_tests {
     fn vhosts_should_be_extracted_from_multiply_files_from_path() {
         let nginx_vhost_path = Path::new("tests/nginx-multi-files");
 
-        let vhosts = get_nginx_vhosts(&nginx_vhost_path);
+        let vhosts = get_nginx_vhosts(&nginx_vhost_path, false);
 
         vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
 

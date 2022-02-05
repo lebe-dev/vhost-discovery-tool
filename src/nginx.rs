@@ -8,14 +8,14 @@ pub mod nginx {
     use crate::ERROR_EXIT_CODE;
     use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
-    pub fn get_nginx_vhosts(nginx_vhosts_path: &Path) -> Vec<VirtualHost> {
+    pub fn get_nginx_vhosts(nginx_vhosts_path: &Path, recursive: bool) -> Vec<VirtualHost> {
         debug!("get virtual hosts from nginx configs");
         debug!("configs path '{}'", nginx_vhosts_path.display());
 
         let mut vhosts: Vec<VirtualHost> = Vec::new();
 
         if nginx_vhosts_path.exists() && nginx_vhosts_path.is_dir() {
-            match get_vhost_config_file_list(nginx_vhosts_path) {
+            match get_vhost_config_file_list(nginx_vhosts_path, recursive) {
                 Ok(vhost_files) => {
                     for vhost_file in vhost_files {
                         debug!("processing vhost file '{}'", vhost_file.display());
