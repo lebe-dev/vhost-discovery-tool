@@ -72,6 +72,14 @@ Option: `--work-dir` or `-d`
 
 Default value: `/etc/zabbix`
 
+### Recursive mode
+
+Enable recursive scan for sub-directories.
+
+Option: `-r`
+
+Default value: `false`
+
 ### Nginx configs root
 
 Option: `--nginx-vhosts-path` or `-n`
