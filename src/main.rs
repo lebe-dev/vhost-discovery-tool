@@ -97,7 +97,7 @@ fn main() {
         )
         .arg(
             Arg::with_name(RECURSIVE_OPTION)
-                .long(RECURSIVE_OPTION)
+                .short(RECURSIVE_OPTION)
                 .help("scan vhost-files in subdirectories")
                 .takes_value(false).required(false)
         )
