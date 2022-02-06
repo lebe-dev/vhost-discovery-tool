@@ -17,8 +17,8 @@ pub mod nginx {
         if nginx_vhosts_path.exists() && nginx_vhosts_path.is_dir() {
             match get_vhost_config_file_list(nginx_vhosts_path, recursive) {
                 Ok(vhost_files) => {
+
                     for vhost_file in vhost_files {
-                        debug!("processing vhost file '{}'", vhost_file.display());
 
                         let section_start_regex = get_nginx_vhost_section_start_regex();
                         let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
@@ -48,7 +48,8 @@ pub mod nginx {
                     exit(ERROR_EXIT_CODE)
                 }
             }
-        }
+
+        } else { info!("nginx vhosts path doesn't exist, skip") }
 
         return vhosts;
     }

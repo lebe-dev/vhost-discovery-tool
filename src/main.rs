@@ -161,12 +161,18 @@ fn main() {
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
     let mut nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path, recursive_mode);
+
+    debug!("nginx vhosts collected:");
+    debug!("{:?}", nginx_vhosts);
+
     vhosts.append(&mut nginx_vhosts);
 
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
     let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path, recursive_mode);
+    debug!("apache vhosts collected:");
+    debug!("{:?}", apache_vhosts);
     vhosts.append(&mut apache_vhosts);
 
     let mut filtered_vhosts = filter_vhosts(&vhosts, include_custom_domains);

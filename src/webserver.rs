@@ -43,6 +43,8 @@ pub mod webserver {
             }
         }
 
+        debug!("vhost files collected: {:?}", vhost_files);
+
         Ok(vhost_files)
     }
 
