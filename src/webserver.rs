@@ -122,7 +122,7 @@ pub mod webserver {
 
                 if port.is_none() && port_search_pattern.is_match(&row) {
                     trace!("port wasn't detected yet, port pattern has been matched");
-                    let vhost_port_str = get_first_group_match_as_string(
+                    let vhost_port_str = find_group_with_port_value(
                         &row, &port_search_pattern
                     );
 
@@ -179,6 +179,16 @@ pub mod webserver {
     fn get_first_group_match_as_string(row: &str, pattern: &Regex) -> String {
         let groups = pattern.captures_iter(&row).next().unwrap();
         String::from(&groups[1])
+    }
+
+    fn find_group_with_port_value(row: &str, pattern: &Regex) -> String {
+        let mut port = String::new();
+
+        for caps in pattern.captures_iter(&row) {
+            port = format!("{}", &caps["port"]);
+        }
+
+        return port
     }
 
     fn get_virtual_host(domain: Option<String>, port: Option<i32>) -> VirtualHost {

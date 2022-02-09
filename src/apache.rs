@@ -62,6 +62,6 @@ pub mod apache {
     }
 
     fn get_apache_vhost_port_regex() -> Regex {
-        return Regex::new("(?:^|^[^#]+)<VirtualHost[\\s\t]+.*:(\\d+)>").unwrap();
+        return Regex::new("(?:^|^[^#]+)<VirtualHost[\\s\t]+.*:(?P<port>\\d+)>").unwrap();
     }
 }

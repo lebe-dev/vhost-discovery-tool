@@ -67,6 +67,6 @@ pub mod nginx {
     }
 
     pub fn get_nginx_vhost_port_regex() -> Regex {
-        return Regex::new("^[\\s\t]*listen[\\s\t]+(\\d+)[\\s\t]*[ssl\\s|http2\\s]*;").unwrap();
+        return Regex::new("^[\\s\t]*listen[\\s\t]+(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:)?(?P<port>\\d+)[\\s\t]*[ssl\\s|http2\\s]*;.*$").unwrap();
     }
 }
