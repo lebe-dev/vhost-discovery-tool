@@ -29,7 +29,7 @@ pub mod logging {
             Root::builder()
                 .appender(FILE_APPENDER_NAME)
                 .build(level)
-            ).expect(&format!("unable to create log file '{}'", LOG_FILE_PATH))
+            ).expect(&format!("couldn't create log file '{}'", LOG_FILE_PATH))
     }
 
     fn get_file_appender_definition() -> Appender {

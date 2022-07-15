@@ -202,7 +202,7 @@ fn init_working_dir(matches: &ArgMatches) {
 
     debug!("working directory '{}'", &working_directory.display());
 
-    env::set_current_dir(&working_directory).expect("unable to set working directory");
+    env::set_current_dir(&working_directory).expect("couldn't set working directory");
 }
 
 fn get_argument_path_value<'a>(matches: &'a ArgMatches, long_argument: &str,

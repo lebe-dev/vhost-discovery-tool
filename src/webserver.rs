@@ -132,7 +132,7 @@ pub mod webserver {
                         debug!("port found {}", vhost_port);
                         port = Some(vhost_port);
 
-                    } else { error!("unable to parse port value '{}'", vhost_port_str); }
+                    } else { error!("couldn't parse port value '{}'", vhost_port_str); }
                 }
 
                 if domain.is_none() && domain_search_pattern.is_match(&row) {
@@ -202,8 +202,8 @@ pub mod webserver {
 #[cfg(test)]
 mod webserver_tests {
     use std::path::Path;
-    use crate::nginx::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex};
 
+    use crate::nginx::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex};
     use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
     #[test]

@@ -39,11 +39,11 @@ pub mod nginx {
                                 vhosts.push(nginx_vhost);
                             }
 
-                        } else { error!("unable to get virtual hosts form file") }
+                        } else { error!("couldn't get virtual hosts form file") }
                     }
                 }
                 Err(_error) => {
-                    error!("unable to get vhost file list from '{}', \
+                    error!("couldn't get vhost file list from '{}', \
                        possible reason: lack of permissions", nginx_vhosts_path.display());
                     exit(ERROR_EXIT_CODE)
                 }

@@ -143,7 +143,7 @@ Later versions don't support `data` property. Use `--use-data-property` option f
 
 Log: `/var/log/zabbix/vhdt.log`.
 
-### Unable to access /etc/nginx directory
+### Couldn't access to /etc/nginx directory
 
 Fix:
 
