@@ -77,7 +77,7 @@ pub mod nginx_tests {
 
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, VirtualHost};
     use crate::nginx::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_nginx_vhosts};
-    use crate::test_utils::test_utils::assert_vhost_in_vec;
+    use crate::test_utils::assert_vhost_in_vec;
     use crate::webserver::webserver::get_virtual_hosts_from_file;
 
     #[test]

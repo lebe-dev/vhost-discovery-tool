@@ -71,7 +71,7 @@ pub mod apache_tests {
     use std::path::Path;
 
     use crate::apache::apache::get_apache_vhosts;
-    use crate::test_utils::test_utils::assert_vhost_in_vec;
+    use crate::test_utils::assert_vhost_in_vec;
 
     #[test]
     fn get_virtual_hosts_from_apache_file() {

@@ -48,7 +48,7 @@ mod site_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::domain::{Site, VirtualHost};
     use crate::site::site::get_domains_from_vhosts;
-    use crate::test_samples::test_samples::{get_4_sample_vhosts, SAMPLE_DOMAIN1, SAMPLE_DOMAIN2, SAMPLE_DOMAIN3, SAMPLE_DOMAIN4};
+    use crate::test_utils::samples::{get_4_sample_vhosts, SAMPLE_DOMAIN1, SAMPLE_DOMAIN2, SAMPLE_DOMAIN3, SAMPLE_DOMAIN4};
 
     #[test]
     fn without_www_domains_result_should_not_contain_domains_with_www_lol() {
