@@ -31,7 +31,6 @@ mod site;
 mod filter;
 mod filter_tests;
 mod site_tests;
-mod nginx_tests;
 mod test_utils;
 mod test_samples;
 
