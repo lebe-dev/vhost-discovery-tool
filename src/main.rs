@@ -29,7 +29,6 @@ mod apache;
 mod site;
 
 mod filter;
-mod filter_tests;
 mod site_tests;
 mod test_utils;
 mod test_samples;
