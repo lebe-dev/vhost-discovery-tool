@@ -30,7 +30,9 @@ mod site;
 
 mod filter;
 
+#[cfg(test)]
 mod test_utils;
+#[cfg(test)]
 mod test_samples;
 
 const DEFAULT_HTTP_PORT: i32 = 80;
