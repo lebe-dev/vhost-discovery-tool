@@ -14,7 +14,7 @@ use crate::domain::{Site, VirtualHost};
 use crate::filter::{filter_by_domain_masks, filter_vhosts};
 use crate::logging::get_logging_config;
 use crate::nginx::get_nginx_vhosts;
-use crate::site::site::get_domains_from_vhosts;
+use crate::site::get_domains_from_vhosts;
 
 mod logging;
 
@@ -251,7 +251,7 @@ fn get_low_level_discovery_json_with_data_property(sites: Vec<Site>) -> String {
 mod main_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_low_level_discovery_json, get_low_level_discovery_json_with_data_property};
     use crate::domain::{Site, VirtualHost};
-    use crate::site::site::{get_domains_from_vhosts, get_url};
+    use crate::site::{get_domains_from_vhosts, get_url};
 
     const CUSTOM_VHOST_PORT: i32 = 5382;
 
