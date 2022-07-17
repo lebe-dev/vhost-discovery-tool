@@ -64,8 +64,6 @@ const USE_DATA_PROPERTY_ARGUMENT: &str = "use-data-property";
 const LOG_LEVEL_ARGUMENT: &str = "log-level";
 const LOG_LEVEL_DEFAULT_VALUE: &str = "info";
 
-const ERROR_EXIT_CODE: i32 = 1;
-
 fn main() {
     let matches = App::new("Virtual Host Discovery Tool")
         .version("1.5.3")
@@ -166,7 +164,9 @@ fn main() {
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
-    let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path, recursive_mode);
+    let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path, recursive_mode)
+        .expect("couldn't get vhosts from apache");
+
     debug!("apache vhosts collected:");
     debug!("{:?}", apache_vhosts);
     vhosts.append(&mut apache_vhosts);
