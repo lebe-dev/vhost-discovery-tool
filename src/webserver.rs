@@ -19,7 +19,7 @@ pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<
     if path.is_dir() && path.exists() {
         let vhost_files = get_vhost_config_file_list(
             path, config.include_subdirs)
-            .context("couldn't get vhosts for apache")?;
+            .context("couldn't get vhost files from path")?;
 
         for vhost_file in vhost_files {
             let vhost_file_path = vhost_file.as_path();
@@ -45,7 +45,6 @@ pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<
         warn!("vhosts path '{}' doesn't exist", path.display());
         Err(anyhow!("vhosts path doesn't exist"))
     }
-
 
 }
 
