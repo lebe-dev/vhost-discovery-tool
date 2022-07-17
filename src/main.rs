@@ -11,7 +11,7 @@ use serde_json::json;
 
 use crate::apache::get_apache_vhosts;
 use crate::domain::{Site, VirtualHost};
-use crate::filter::filter::{filter_by_domain_masks, filter_vhosts};
+use crate::filter::{filter_by_domain_masks, filter_vhosts};
 use crate::logging::logging::get_logging_config;
 use crate::nginx::nginx::get_nginx_vhosts;
 use crate::site::site::get_domains_from_vhosts;
