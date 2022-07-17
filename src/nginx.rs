@@ -5,7 +5,7 @@ use regex::Regex;
 
 use crate::domain::VirtualHost;
 use crate::ERROR_EXIT_CODE;
-use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
+use crate::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
 pub fn get_nginx_vhosts(nginx_vhosts_path: &Path, recursive: bool) -> Vec<VirtualHost> {
     debug!("get virtual hosts from nginx configs");
@@ -76,7 +76,7 @@ pub mod nginx_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, VirtualHost};
     use crate::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_nginx_vhosts};
     use crate::test_utils::assert_vhost_in_vec;
-    use crate::webserver::webserver::get_virtual_hosts_from_file;
+    use crate::webserver::get_virtual_hosts_from_file;
 
     #[test]
     fn support_ip_and_port() {

@@ -5,7 +5,7 @@ use regex::Regex;
 
 use crate::domain::VirtualHost;
 use crate::ERROR_EXIT_CODE;
-use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
+use crate::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
 pub fn get_apache_vhosts(vhosts_path: &Path, recursive: bool) -> Vec<VirtualHost> {
     debug!("get virtual hosts from apache configs");
