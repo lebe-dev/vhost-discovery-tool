@@ -28,8 +28,8 @@ pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<
 
             let apache_vhosts = get_virtual_hosts_from_file(
                 vhost_file_path,
-    &config.section_start_regex, &config.redirect_to_url,
-            &config.port, &config.domain
+                &config.section_start, &config.redirect_to_url,
+                &config.port, &config.domain
             ).context("couldn't get virtual hosts from file")?;
 
             for apache_vhost in apache_vhosts {
