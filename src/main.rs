@@ -20,6 +20,8 @@ mod logging;
 
 mod webserver;
 
+mod vhost;
+
 mod nginx;
 
 mod domain;

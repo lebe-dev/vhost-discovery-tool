@@ -3,11 +3,51 @@ use std::fs::{DirEntry, File};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
+use anyhow::{anyhow, Context};
 use regex::Regex;
 
 use crate::domain::VirtualHost;
+use crate::vhost::VhostDiscoveryConfig;
 
 const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
+
+pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<Vec<VirtualHost>> {
+    info!("get vhosts from path '{}'", path.display());
+
+    let mut vhosts: Vec<VirtualHost> = Vec::new();
+
+    if path.is_dir() && path.exists() {
+        let vhost_files = get_vhost_config_file_list(
+            path, config.include_subdirs)
+            .context("couldn't get vhosts for apache")?;
+
+        for vhost_file in vhost_files {
+            let vhost_file_path = vhost_file.as_path();
+
+            debug!("processing file '{}'", vhost_file_path.display());
+
+            let apache_vhosts = get_virtual_hosts_from_file(
+                vhost_file_path,
+    &config.section_start_regex, &config.redirect_to_url,
+            &config.port, &config.domain
+            ).context("couldn't get virtual hosts from file")?;
+
+            for apache_vhost in apache_vhosts {
+                debug!("{}", apache_vhost.to_string());
+                vhosts.push(apache_vhost);
+            }
+
+        }
+
+        Ok(vhosts)
+
+    } else {
+        warn!("vhosts path '{}' doesn't exist", path.display());
+        Err(anyhow!("vhosts path doesn't exist"))
+    }
+
+
+}
 
 pub fn get_vhost_config_file_list(vhost_root_path: &Path,
                                   recursive: bool) -> Result<Vec<PathBuf>,io::Error> {
@@ -194,6 +234,21 @@ fn get_virtual_host(domain: Option<String>, port: Option<i32>) -> VirtualHost {
     let domain_name = domain.unwrap();
     VirtualHost {
         domain: domain_name.to_owned(), port: port.unwrap()
+    }
+}
+
+#[cfg(test)]
+mod get_vhosts_tests {
+    use std::path::Path;
+
+    use crate::test_utils::config::get_nginx_discovery_config;
+    use crate::webserver::get_vhosts;
+
+    #[test]
+    fn return_error_for_invalid_path() {
+        let config = get_nginx_discovery_config(true);
+        let path = Path::new("does-not-exist");
+        assert!(get_vhosts(path, &config).is_err())
     }
 }
 
