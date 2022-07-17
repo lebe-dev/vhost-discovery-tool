@@ -203,7 +203,7 @@ pub mod webserver {
 mod webserver_tests {
     use std::path::Path;
 
-    use crate::nginx::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex};
+    use crate::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex};
     use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 
     #[test]
