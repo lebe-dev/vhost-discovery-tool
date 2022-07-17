@@ -89,7 +89,7 @@ pub fn get_vhost_config_file_list(vhost_root_path: &Path,
 pub fn get_virtual_hosts_from_file(
     vhost_file: &Path, section_start_pattern: &Regex, redirect_with_301_pattern: &Regex,
     port_search_pattern: &Regex,
-    domain_search_pattern: &Regex) -> Result<Vec<VirtualHost>, io::Error> {
+    domain_search_pattern: &Regex) -> anyhow::Result<Vec<VirtualHost>> {
 
     let mut hosts: Vec<VirtualHost> = Vec::new();
 
