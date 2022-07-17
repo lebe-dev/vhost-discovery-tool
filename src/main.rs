@@ -155,7 +155,8 @@ fn main() {
     let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
-    let mut nginx_vhosts = get_nginx_vhosts(nginx_vhosts_path, recursive_mode);
+    let mut nginx_vhosts = get_nginx_vhosts(
+        nginx_vhosts_path, recursive_mode).expect("couldn't get vhosts from nginx");
 
     debug!("nginx vhosts collected:");
     debug!("{:?}", nginx_vhosts);
