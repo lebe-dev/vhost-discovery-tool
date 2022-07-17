@@ -200,25 +200,6 @@ pub mod nginx_tests {
     }
 
     #[test]
-    fn vhosts_should_be_extracted_from_multiply_files_from_path() {
-        let nginx_vhost_path = Path::new("tests/nginx-multi-files");
-
-        let vhosts = get_nginx_vhosts(&nginx_vhost_path, false).unwrap();
-
-        vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
-
-        println!("{:?}", vhosts);
-
-        let expected_len: usize = 4;
-        assert_eq!(vhosts.len(), expected_len);
-
-        assert_vhost_in_vec(&vhosts, "beta.tesla.com", 12398);
-        assert_vhost_in_vec(&vhosts, "rust-lang.org", DEFAULT_HTTP_PORT);
-        assert_vhost_in_vec(&vhosts, "whatever.ru", DEFAULT_HTTP_PORT);
-        assert_vhost_in_vec(&vhosts, "tesla.com", DEFAULT_HTTPS_PORT);
-    }
-
-    #[test]
     fn comments_should_be_respected() {
         let section_start_regex = get_nginx_vhost_section_start_regex();
         let redirect_with_301_regex = get_nginx_redirect_with_301_regex();

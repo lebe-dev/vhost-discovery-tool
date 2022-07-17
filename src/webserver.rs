@@ -240,8 +240,30 @@ fn get_virtual_host(domain: Option<String>, port: Option<i32>) -> VirtualHost {
 mod get_vhosts_tests {
     use std::path::Path;
 
+    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
+    use crate::test_utils::assert_vhost_in_vec;
     use crate::test_utils::config::get_nginx_discovery_config;
     use crate::webserver::get_vhosts;
+
+    #[test]
+    fn vhosts_should_be_extracted_from_multiply_files_from_path() {
+        let nginx_vhost_path = Path::new("test-data/nginx-multi-files");
+        let config = get_nginx_discovery_config(false);
+
+        let vhosts = get_vhosts(&nginx_vhost_path, &config).unwrap();
+
+        vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
+
+        println!("{:?}", vhosts);
+
+        let expected_len: usize = 4;
+        assert_eq!(vhosts.len(), expected_len);
+
+        assert_vhost_in_vec(&vhosts, "beta.tesla.com", 12398);
+        assert_vhost_in_vec(&vhosts, "rust-lang.org", DEFAULT_HTTP_PORT);
+        assert_vhost_in_vec(&vhosts, "whatever.ru", DEFAULT_HTTP_PORT);
+        assert_vhost_in_vec(&vhosts, "tesla.com", DEFAULT_HTTPS_PORT);
+    }
 
     #[test]
     fn return_error_for_invalid_path() {
