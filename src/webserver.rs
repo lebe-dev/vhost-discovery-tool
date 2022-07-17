@@ -48,9 +48,9 @@ pub fn get_vhost_config_file_list(vhost_root_path: &Path,
 }
 
 pub fn get_virtual_hosts_from_file(
-    vhost_file: &Path, section_start_pattern: Regex, redirect_with_301_pattern: Regex,
-    port_search_pattern: Regex,
-    domain_search_pattern: Regex) -> Result<Vec<VirtualHost>, io::Error> {
+    vhost_file: &Path, section_start_pattern: &Regex, redirect_with_301_pattern: &Regex,
+    port_search_pattern: &Regex,
+    domain_search_pattern: &Regex) -> Result<Vec<VirtualHost>, io::Error> {
 
     let mut hosts: Vec<VirtualHost> = Vec::new();
 
@@ -232,10 +232,10 @@ mod webserver_tests {
     fn include_vhosts_with_redirect_inside_location() {
         let vhost_file = Path::new("tests/nginx-vhosts/vhost2.conf");
         let vhosts = get_virtual_hosts_from_file(
-            vhost_file, get_nginx_vhost_section_start_regex(),
-            get_nginx_redirect_with_301_regex(),
-            get_nginx_vhost_port_regex(),
-            get_domain_search_regex_for_nginx_vhost()
+            vhost_file, &get_nginx_vhost_section_start_regex(),
+            &get_nginx_redirect_with_301_regex(),
+            &get_nginx_vhost_port_regex(),
+            &get_domain_search_regex_for_nginx_vhost()
         ).unwrap();
 
         let expected_domain = "goodhost.ru";

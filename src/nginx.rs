@@ -17,21 +17,21 @@ pub fn get_nginx_vhosts(nginx_vhosts_path: &Path, recursive: bool) -> Vec<Virtua
         match get_vhost_config_file_list(nginx_vhosts_path, recursive) {
             Ok(vhost_files) => {
 
-                for vhost_file in vhost_files {
+                let section_start_regex = get_nginx_vhost_section_start_regex();
+                let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
+                let port_search_regex = get_nginx_vhost_port_regex();
+                let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
 
-                    let section_start_regex = get_nginx_vhost_section_start_regex();
-                    let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
-                    let port_search_regex = get_nginx_vhost_port_regex();
-                    let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
+                for vhost_file in vhost_files {
 
                     let vhost_file_path = vhost_file.as_path();
 
                     if let Ok(nginx_vhosts) = get_virtual_hosts_from_file(
                         vhost_file_path,
-                        section_start_regex,
-                        redirect_with_301_regex,
-                        port_search_regex,
-                        domain_search_regex,
+                        &section_start_regex,
+                        &redirect_with_301_regex,
+                        &port_search_regex,
+                        &domain_search_regex,
                     ) {
                         for nginx_vhost in nginx_vhosts {
                             debug!("{}", nginx_vhost.to_string());
@@ -89,10 +89,10 @@ pub mod nginx_tests {
 
         match get_virtual_hosts_from_file(
             vhost_file_path,
-            section_start_regex,
-            redirect_with_301_regex,
-            port_search_regex,
-            domain_search_regex,
+            &section_start_regex,
+            &redirect_with_301_regex,
+            &port_search_regex,
+            &domain_search_regex,
         ) {
             Ok(vhosts) => {
                 println!("{:?}", vhosts);
@@ -131,10 +131,10 @@ pub mod nginx_tests {
 
         match get_virtual_hosts_from_file(
             vhost_file_path,
-            section_start_regex,
-            redirect_with_301_regex,
-            port_search_regex,
-            domain_search_regex,
+            &section_start_regex,
+            &redirect_with_301_regex,
+            &port_search_regex,
+            &domain_search_regex,
         ) {
             Ok(vhosts) => {
                 println!("{:?}", vhosts);
@@ -185,10 +185,10 @@ pub mod nginx_tests {
 
         match get_virtual_hosts_from_file(
             vhost_file_path,
-            section_start_regex,
-            redirect_with_301_regex,
-            port_search_regex,
-            domain_search_regex,
+            &section_start_regex,
+            &redirect_with_301_regex,
+            &port_search_regex,
+            &domain_search_regex,
         ) {
             Ok(vhosts) => {
                 println!("{:?}", vhosts);
@@ -235,10 +235,10 @@ pub mod nginx_tests {
 
         match get_virtual_hosts_from_file(
             vhost_file_path,
-            section_start_regex,
-            redirect_with_301_regex,
-            port_search_regex,
-            domain_search_regex,
+            &section_start_regex,
+            &redirect_with_301_regex,
+            &port_search_regex,
+            &domain_search_regex,
         ) {
             Ok(vhosts) => {
                 println!("{:?}", vhosts);
@@ -268,10 +268,10 @@ pub mod nginx_tests {
 
         match get_virtual_hosts_from_file(
             vhost_file_path,
-            section_start_regex,
-            redirect_with_301_regex,
-            port_search_regex,
-            domain_search_regex,
+            &section_start_regex,
+            &redirect_with_301_regex,
+            &port_search_regex,
+            &domain_search_regex,
         ) {
             Ok(vhosts) => {
                 println!("{:?}", vhosts);

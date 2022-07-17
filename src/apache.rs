@@ -16,22 +16,22 @@ pub fn get_apache_vhosts(vhosts_path: &Path, recursive: bool) -> Vec<VirtualHost
     if vhosts_path.is_dir() && vhosts_path.exists() {
         match get_vhost_config_file_list(vhosts_path, recursive) {
             Ok(vhost_files) => {
+                let section_start_regex = get_apache_vhost_port_regex();
+                let redirect_to_url_regex = get_apache_redirect_to_http_regex();
+                let port_search_regex = get_apache_vhost_port_regex();
+                let domain_search_regex = get_domain_search_regex_for_apache_vhost();
+
                 for vhost_file in vhost_files {
                     let vhost_file_path = vhost_file.as_path();
 
                     debug!("analyze vhost file '{}'", vhost_file_path.display());
 
-                    let section_start_regex = get_apache_vhost_port_regex();
-                    let redirect_to_url_regex = get_apache_redirect_to_http_regex();
-                    let port_search_regex = get_apache_vhost_port_regex();
-                    let domain_search_regex = get_domain_search_regex_for_apache_vhost();
-
                     if let Ok(apache_vhosts) = get_virtual_hosts_from_file(
                         vhost_file_path,
-                        section_start_regex,
-                        redirect_to_url_regex,
-                        port_search_regex,
-                        domain_search_regex,
+                        &section_start_regex,
+                        &redirect_to_url_regex,
+                        &port_search_regex,
+                        &domain_search_regex,
                     ) {
                         for apache_vhost in apache_vhosts {
                             debug!("{}", apache_vhost.to_string());
