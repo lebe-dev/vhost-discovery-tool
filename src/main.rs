@@ -9,7 +9,7 @@ use std::path::Path;
 use clap::{App, Arg, ArgMatches};
 use serde_json::json;
 
-use crate::apache::apache::get_apache_vhosts;
+use crate::apache::get_apache_vhosts;
 use crate::domain::domain::{Site, VirtualHost};
 use crate::filter::filter::{filter_by_domain_masks, filter_vhosts};
 use crate::logging::logging::get_logging_config;
