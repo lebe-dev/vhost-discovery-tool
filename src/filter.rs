@@ -2,7 +2,7 @@ pub mod filter {
     use regex::Regex;
 
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
-    use crate::domain::domain::VirtualHost;
+    use crate::domain::VirtualHost;
 
     pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>,
                                   mask_patterns: &Vec<&str>) -> Vec<VirtualHost> {
@@ -93,7 +93,7 @@ pub mod filter {
 #[cfg(test)]
 mod filter_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
-    use crate::domain::domain::VirtualHost;
+    use crate::domain::VirtualHost;
     use crate::filter::filter::{filter_by_domain_masks, filter_vhosts};
 
     const DOMAIN: &str = "cronbox.ru";

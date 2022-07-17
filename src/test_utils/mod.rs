@@ -1,4 +1,4 @@
-use crate::domain::domain::VirtualHost;
+use crate::domain::VirtualHost;
 
 pub mod samples;
 

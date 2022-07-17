@@ -1,6 +1,6 @@
 pub mod site {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, WWW_SEARCH_PATTERN};
-    use crate::domain::domain::{Site, VirtualHost};
+    use crate::domain::{Site, VirtualHost};
 
     pub fn get_domains_from_vhosts(vhosts: Vec<VirtualHost>,
                                    include_domains_with_www: bool) -> Vec<Site> {
@@ -46,7 +46,7 @@ pub mod site {
 #[cfg(test)]
 mod site_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
-    use crate::domain::domain::{Site, VirtualHost};
+    use crate::domain::{Site, VirtualHost};
     use crate::site::site::get_domains_from_vhosts;
     use crate::test_utils::samples::{get_4_sample_vhosts, SAMPLE_DOMAIN1, SAMPLE_DOMAIN2, SAMPLE_DOMAIN3, SAMPLE_DOMAIN4};
 

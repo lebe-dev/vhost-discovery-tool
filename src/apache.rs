@@ -3,7 +3,7 @@ use std::process::exit;
 
 use regex::Regex;
 
-use crate::domain::domain::VirtualHost;
+use crate::domain::VirtualHost;
 use crate::ERROR_EXIT_CODE;
 use crate::webserver::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
 

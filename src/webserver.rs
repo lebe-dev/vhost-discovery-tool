@@ -6,7 +6,7 @@ pub mod webserver {
 
     use regex::Regex;
 
-    use crate::domain::domain::VirtualHost;
+    use crate::domain::VirtualHost;
 
     const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
 
