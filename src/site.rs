@@ -32,12 +32,10 @@ fn get_domain_from_vhost(vhost: &VirtualHost) -> Site {
 }
 
 fn get_site_name(domain: &str, port: i32) -> String {
-    if port == DEFAULT_HTTP_PORT {
-        String::from(format!("{}_http", domain))
-    } else if port == DEFAULT_HTTPS_PORT {
-        String::from(domain)
-    } else {
-        String::from(format!("{}:{}", domain, port))
+    match port {
+        DEFAULT_HTTP_PORT => String::from(format!("{}_http", domain)),
+        DEFAULT_HTTPS_PORT => String::from(domain),
+        _ => String::from(format!("{}:{}", domain, port))
     }
 }
 
