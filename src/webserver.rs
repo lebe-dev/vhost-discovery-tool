@@ -240,9 +240,8 @@ fn get_virtual_host(domain: Option<String>, port: Option<i32>) -> VirtualHost {
 mod get_vhosts_tests {
     use std::path::Path;
 
-    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
+    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, get_nginx_discovery_config};
     use crate::test_utils::assert_vhost_in_vec;
-    use crate::test_utils::config::get_nginx_discovery_config;
     use crate::webserver::get_vhosts;
 
     #[test]

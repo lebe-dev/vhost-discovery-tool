@@ -9,12 +9,13 @@ use std::path::Path;
 use clap::{App, Arg, ArgMatches};
 use serde_json::json;
 
-use crate::apache::get_apache_vhosts;
+use crate::apache::get_apache_discovery_config;
 use crate::domain::{Site, VirtualHost};
 use crate::filter::{filter_by_domain_masks, filter_vhosts};
 use crate::logging::get_logging_config;
-use crate::nginx::get_nginx_vhosts;
+use crate::nginx::get_nginx_discovery_config;
 use crate::site::get_domains_from_vhosts;
+use crate::webserver::get_vhosts;
 
 mod logging;
 
@@ -155,8 +156,9 @@ fn main() {
     let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
-    let mut nginx_vhosts = get_nginx_vhosts(
-        nginx_vhosts_path, recursive_mode).expect("couldn't get vhosts from nginx");
+    let nginx_discovery_config = get_nginx_discovery_config(recursive_mode);
+    let mut nginx_vhosts = get_vhosts(nginx_vhosts_path, &nginx_discovery_config)
+        .expect("couldn't get vhosts from nginx");
 
     debug!("nginx vhosts collected:");
     debug!("{:?}", nginx_vhosts);
@@ -166,7 +168,8 @@ fn main() {
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
-    let mut apache_vhosts = get_apache_vhosts(apache_vhosts_path, recursive_mode)
+    let apache_discovery_config = get_apache_discovery_config(recursive_mode);
+    let mut apache_vhosts = get_vhosts(apache_vhosts_path, &apache_discovery_config)
         .expect("couldn't get vhosts from apache");
 
     debug!("apache vhosts collected:");

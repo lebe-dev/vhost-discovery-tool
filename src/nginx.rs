@@ -1,50 +1,15 @@
-use std::path::Path;
-
-use anyhow::Context;
 use regex::Regex;
 
-use crate::domain::VirtualHost;
-use crate::webserver::{get_vhost_config_file_list, get_virtual_hosts_from_file};
+use crate::vhost::VhostDiscoveryConfig;
 
-pub fn get_nginx_vhosts(nginx_vhosts_path: &Path,
-                        recursive: bool) -> anyhow::Result<Vec<VirtualHost>> {
-
-    debug!("get virtual hosts from nginx configs");
-    debug!("configs path '{}'", nginx_vhosts_path.display());
-
-    let mut vhosts: Vec<VirtualHost> = Vec::new();
-
-    if nginx_vhosts_path.exists() && nginx_vhosts_path.is_dir() {
-
-        let vhost_files = get_vhost_config_file_list(
-            nginx_vhosts_path, recursive).context("couldn't get files from path")?;
-
-        let section_start_regex = get_nginx_vhost_section_start_regex();
-        let redirect_with_301_regex = get_nginx_redirect_with_301_regex();
-        let port_search_regex = get_nginx_vhost_port_regex();
-        let domain_search_regex = get_domain_search_regex_for_nginx_vhost();
-
-        for vhost_file in vhost_files {
-            let vhost_file_path = vhost_file.as_path();
-
-            if let Ok(nginx_vhosts) = get_virtual_hosts_from_file(
-                vhost_file_path,
-                &section_start_regex,
-                &redirect_with_301_regex,
-                &port_search_regex,
-                &domain_search_regex,
-            ) {
-                for nginx_vhost in nginx_vhosts {
-                    debug!("{}", nginx_vhost.to_string());
-                    vhosts.push(nginx_vhost);
-                }
-
-            } else { error!("couldn't get virtual hosts from file") }
-        }
-
-    } else { info!("nginx vhosts path doesn't exist, skip") }
-
-    Ok(vhosts)
+pub fn get_nginx_discovery_config(include_subdirs: bool) -> VhostDiscoveryConfig {
+    VhostDiscoveryConfig {
+        section_start: get_nginx_vhost_section_start_regex(),
+        redirect_to_url: get_nginx_redirect_with_301_regex(),
+        port: get_nginx_vhost_port_regex(),
+        domain: get_domain_search_regex_for_nginx_vhost(),
+        include_subdirs
+    }
 }
 
 pub fn get_domain_search_regex_for_nginx_vhost() -> Regex {
@@ -67,9 +32,8 @@ pub fn get_nginx_vhost_port_regex() -> Regex {
 pub mod nginx_tests {
     use std::path::Path;
 
-    use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT, VirtualHost};
-    use crate::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex, get_nginx_vhosts};
-    use crate::test_utils::assert_vhost_in_vec;
+    use crate::VirtualHost;
+    use crate::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex};
     use crate::webserver::get_virtual_hosts_from_file;
 
     #[test]

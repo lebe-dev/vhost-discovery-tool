@@ -1,7 +1,6 @@
 use crate::domain::VirtualHost;
 
 pub mod samples;
-pub mod config;
 
 pub fn assert_vhost_in_vec(vhosts: &Vec<VirtualHost>, domain: &str, port: i32) {
     let vhost_found = vhosts.iter().find(|vhost| vhost.domain == domain && vhost.port == port);
