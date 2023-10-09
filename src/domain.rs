@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 use serde::Serialize;
 
 #[derive(Clone, Debug)]
@@ -6,9 +8,9 @@ pub struct VirtualHost {
     pub port: i32
 }
 
-impl VirtualHost {
-    pub fn to_string(&self) -> String {
-        return String::from(format!("domain: {}, port: {}", self.domain, self.port));
+impl Display for VirtualHost {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "domain: '{}', port: {}", self.domain, self.port)
     }
 }
 
