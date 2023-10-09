@@ -22,20 +22,21 @@ pub fn get_app_config(arg_matches: &ArgMatches) -> AppConfig {
         arg_matches.value_of(VHOST_FILE_EXTENSIONS_DEFAULT_VALUE).unwrap()
     } else { VHOST_FILE_EXTENSIONS_DEFAULT_VALUE };
 
-    let vhost_file_extensions = vhost_file_extensions_row.split(",")
-        .collect::<Vec<&str>>()
-        .iter()
-        .map(|fe|fe.to_string())
-        .collect::<Vec<String>>();
+    let vhost_file_extensions = get_string_args_separated_by_comma(vhost_file_extensions_row);
 
     AppConfig {
         include_domains_with_www: arg_matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0,
         include_custom_domains: arg_matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0,
         recursive_mode: arg_matches.occurrences_of(RECURSIVE_OPTION) > 0,
-        domain_ignore_masks: domain_ignore_masks_row.split(",").collect::<Vec<&str>>()
-            .iter()
-            .map(|fe|fe.to_string())
-            .collect::<Vec<String>>(),
+        domain_ignore_masks: get_string_args_separated_by_comma(domain_ignore_masks_row),
         vhost_file_extensions,
     }
+}
+
+fn get_string_args_separated_by_comma(input: &str) -> Vec<String> {
+    input.split(",")
+        .collect::<Vec<&str>>()
+        .iter()
+        .map(|fe|fe.to_string())
+        .collect::<Vec<String>>()
 }
