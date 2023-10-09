@@ -1,0 +1,71 @@
+stages:
+  - build
+
+build-linux:
+  stage: build
+
+  only:
+    - main
+
+  script:
+    - cross test
+    - cross build --release
+    - cp target/x86_64-unknown-linux-gnu/release/vhost-discovery-tool vhdt
+    - eu-elfcompress vhdt
+    - strip vhdt
+    - upx -9 --lzma vhdt
+
+  artifacts:
+    name: vhdt-rockylinux8
+    paths:
+      - vhdt
+      - README.md
+    expire_in: 1 week
+
+  tags:
+    - rockylinux8
+
+build-rhel7:
+  stage: build
+
+  only:
+    - main
+
+  script:
+    - cross test
+    - cross build --release
+    - cp target/x86_64-unknown-linux-gnu/release/vhost-discovery-tool vhdt
+    - eu-elfcompress vhdt
+    - strip vhdt
+    - upx -9 --lzma vhdt
+
+  artifacts:
+    name: vhdt-rhel7
+    paths:
+      - vhdt
+      - README.md
+    expire_in: 1 week
+
+  tags:
+    - rhel7
+
+build-windows:
+  stage: build
+
+  only:
+    - main
+
+  script:
+    - cargo test
+    - cargo build --release
+    - copy target/release/vhost-discovery-tool.exe ./vhdt.exe
+
+  artifacts:
+    name: vhdt-windows
+    paths:
+      - vhdt.exe
+      - README.md
+    expire_in: 1 week
+
+  tags:
+    - windows
