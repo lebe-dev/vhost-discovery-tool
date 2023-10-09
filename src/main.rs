@@ -10,6 +10,7 @@ use clap::{App, Arg, ArgMatches};
 use serde_json::json;
 
 use crate::apache::get_apache_discovery_config;
+use crate::cli::get_app_config;
 use crate::domain::{Site, VirtualHost};
 use crate::filter::{filter_by_domain_masks, filter_vhosts};
 use crate::logging::get_logging_config;
@@ -33,6 +34,8 @@ mod site;
 
 mod filter;
 
+mod cli;
+
 #[cfg(test)]
 mod test_utils;
 
@@ -54,6 +57,9 @@ const WORK_DIR_SHORT_ARGUMENT: &str = "d";
 const NGINX_VHOSTS_PATH: &str = "/etc/nginx/conf.d";
 const APACHE_VHOSTS_PATH: &str = "/etc/httpd/conf.d";
 
+const VHOST_FILE_EXTENSIONS_ARGUMENT: &str = "file-extensions";
+const VHOST_FILE_EXTENSIONS_DEFAULT_VALUE: &str = ".conf,.vhost";
+
 const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
 const NGINX_VHOSTS_PATH_SHORT_ARGUMENT: &str = "n";
 
@@ -69,7 +75,7 @@ const LOG_LEVEL_DEFAULT_VALUE: &str = "info";
 
 fn main() {
     let matches = App::new("Virtual Host Discovery Tool")
-        .version("1.5.3")
+        .version("1.5.4")
         .author("Eugene Lebedev <duke.tougu@gmail.com>")
         .about("Discover site configs for nginx and apache. \
                                             Then generate urls and show output in \
@@ -90,6 +96,11 @@ fn main() {
             Arg::with_name(INCLUDE_CUSTOM_PORTS_OPTION)
                 .long(INCLUDE_CUSTOM_PORTS_OPTION)
                 .help("include domains with custom ports")
+        )
+        .arg(
+            Arg::with_name(VHOST_FILE_EXTENSIONS_ARGUMENT)
+                .long(VHOST_FILE_EXTENSIONS_ARGUMENT)
+                .help("specify file extensions, default: .conf and .vhost")
         )
         .arg(
             Arg::with_name(RECURSIVE_OPTION)
@@ -139,24 +150,17 @@ fn main() {
     init_logging(&matches);
     init_working_dir(&matches);
 
-    let include_domains_with_www = matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0;
-    let include_custom_domains = matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0;
-    let recursive_mode = matches.occurrences_of(RECURSIVE_OPTION) > 0;
-
-    let domain_ignore_masks_row: &str = if matches.is_present(DOMAIN_IGNORE_MASKS_OPTION) {
-        matches.value_of(DOMAIN_IGNORE_MASKS_OPTION).unwrap()
-    } else { "" };
-
-    let domain_ignore_masks: Vec<&str> = domain_ignore_masks_row.split(",").collect();
+    let app_config = get_app_config(&matches);
 
     info!("[~] collect virtual hosts..");
-    info!("- include domains with custom ports: {}", include_custom_domains);
+    info!("- include domains with custom ports: {}", &app_config.include_custom_domains);
     let mut vhosts: Vec<VirtualHost> = Vec::new();
 
     let nginx_vhosts_path: &Path = get_nginx_vhosts_path(&matches);
     debug!("- nginx vhosts root: '{}'", nginx_vhosts_path.display());
 
-    let nginx_discovery_config = get_nginx_discovery_config(recursive_mode);
+    let nginx_discovery_config = get_nginx_discovery_config(
+        app_config.recursive_mode, &app_config.vhost_file_extensions);
     let mut nginx_vhosts = get_vhosts(nginx_vhosts_path, &nginx_discovery_config)
         .expect("couldn't get vhosts from nginx");
 
@@ -168,7 +172,8 @@ fn main() {
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
-    let apache_discovery_config = get_apache_discovery_config(recursive_mode);
+    let apache_discovery_config = get_apache_discovery_config(
+        app_config.recursive_mode, &app_config.vhost_file_extensions);
     let mut apache_vhosts = get_vhosts(apache_vhosts_path, &apache_discovery_config)
         .expect("couldn't get vhosts from apache");
 
@@ -176,10 +181,10 @@ fn main() {
     debug!("{:?}", apache_vhosts);
     vhosts.append(&mut apache_vhosts);
 
-    let mut filtered_vhosts = filter_vhosts(&vhosts, include_custom_domains);
-    filtered_vhosts = filter_by_domain_masks(&filtered_vhosts, &domain_ignore_masks);
+    let mut filtered_vhosts = filter_vhosts(&vhosts, app_config.include_custom_domains);
+    filtered_vhosts = filter_by_domain_masks(&filtered_vhosts, &app_config.domain_ignore_masks);
 
-    let sites: Vec<Site> = get_domains_from_vhosts(filtered_vhosts, include_domains_with_www);
+    let sites: Vec<Site> = get_domains_from_vhosts(filtered_vhosts, app_config.include_domains_with_www);
 
     let json;
 

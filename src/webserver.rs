@@ -9,8 +9,6 @@ use regex::Regex;
 use crate::domain::VirtualHost;
 use crate::vhost::VhostDiscoveryConfig;
 
-const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
-
 pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<Vec<VirtualHost>> {
     info!("get vhosts from path '{}'", path.display());
 
@@ -18,7 +16,7 @@ pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<
 
     if path.is_dir() && path.exists() {
         let vhost_files = get_vhost_config_file_list(
-            path, config.include_subdirs)
+            path, &config.file_extensions, config.include_subdirs)
             .context("couldn't get vhost files from path")?;
 
         for vhost_file in vhost_files {
@@ -48,7 +46,7 @@ pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<
 
 }
 
-pub fn get_vhost_config_file_list(vhost_root_path: &Path,
+pub fn get_vhost_config_file_list(vhost_root_path: &Path, file_extensions: &Vec<String>,
                                   recursive: bool) -> Result<Vec<PathBuf>,io::Error> {
 
     let paths = fs::read_dir(&vhost_root_path)?;
@@ -64,14 +62,14 @@ pub fn get_vhost_config_file_list(vhost_root_path: &Path,
                     let path_entry = dir_entry.path();
                     let path_subdir_entry = path_entry.as_path();
 
-                    match get_vhost_config_file_list(path_subdir_entry, recursive) {
+                    match get_vhost_config_file_list(path_subdir_entry, &file_extensions, recursive) {
                         Ok(mut vhosts) => vhost_files.append(&mut vhosts),
                         Err(e) => error!("{}", e)
                     }
                 }
 
                 if file_type.is_file() || file_type.is_symlink() {
-                    match get_vhost_file_from_dir(vhost_root_path, &dir_entry) {
+                    match get_vhost_file_from_dir(vhost_root_path, &file_extensions, &dir_entry) {
                         Some(file_path) => vhost_files.push(file_path),
                         None => {}
                     }
@@ -196,16 +194,22 @@ pub fn get_virtual_hosts_from_file(
     Ok(hosts)
 }
 
-fn get_vhost_file_from_dir(vhost_root_path: &Path,
+fn get_vhost_file_from_dir(vhost_root_path: &Path, file_extensions: &Vec<String>,
                            dir_entry: &DirEntry) -> Option<PathBuf> {
     let mut result: Option<PathBuf> = None;
 
     if let Ok(file_type) = dir_entry.file_type() {
         if file_type.is_file() || file_type.is_symlink() {
             if let Ok(file_name) = dir_entry.file_name().into_string() {
-                if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
-                    let vhost_file = vhost_root_path.join(file_name);
-                    result = Some(vhost_file)
+
+                for file_ext in file_extensions.iter() {
+
+                    if file_name.ends_with(file_ext) {
+                        let vhost_file = vhost_root_path.join(file_name);
+                        result = Some(vhost_file);
+                        break;
+                    }
+
                 }
             }
         }
@@ -247,7 +251,8 @@ mod get_vhosts_tests {
     #[test]
     fn vhosts_should_be_extracted_from_multiply_files_from_path() {
         let nginx_vhost_path = Path::new("test-data/nginx-multi-files");
-        let config = get_nginx_discovery_config(false);
+        let config = get_nginx_discovery_config(
+            false, &vec![".conf".to_string()]);
 
         let vhosts = get_vhosts(&nginx_vhost_path, &config).unwrap();
 
@@ -266,7 +271,7 @@ mod get_vhosts_tests {
 
     #[test]
     fn return_error_for_invalid_path() {
-        let config = get_nginx_discovery_config(true);
+        let config = get_nginx_discovery_config(true, &vec![".conf".to_string()]);
         let path = Path::new("does-not-exist");
         assert!(get_vhosts(path, &config).is_err())
     }
@@ -282,7 +287,7 @@ mod webserver_tests {
     #[test]
     fn support_recursive_mode() {
         let vhost_root_path = Path::new("tests/nginx-multi-files");
-        let files = get_vhost_config_file_list(vhost_root_path, true).unwrap();
+        let files = get_vhost_config_file_list(vhost_root_path,  &vec![".conf".to_string()], true).unwrap();
 
         let expected_size: usize = 3;
         assert_eq!(&files.len(), &expected_size);
@@ -291,7 +296,7 @@ mod webserver_tests {
     #[test]
     fn get_vhost_config_file_list_should_return_file_names() {
         let vhost_root_path = Path::new("tests/apache-vhosts");
-        let files = get_vhost_config_file_list(vhost_root_path, false).unwrap();
+        let files = get_vhost_config_file_list(vhost_root_path, &vec![".conf".to_string()], false).unwrap();
 
         let expected_size: usize = 2;
         assert_eq!(&files.len(), &expected_size);
@@ -300,7 +305,7 @@ mod webserver_tests {
     #[test]
     fn get_vhost_config_file_list_should_return_error_for_unknown_path() {
         let unknown_path = Path::new("unknown-path");
-        assert!(get_vhost_config_file_list(unknown_path, false).is_err());
+        assert!(get_vhost_config_file_list(unknown_path, &vec![".conf".to_string()], false).is_err());
     }
 
     #[test]

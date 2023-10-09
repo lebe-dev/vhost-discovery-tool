@@ -20,5 +20,7 @@ pub struct VhostDiscoveryConfig {
     pub domain: Regex,
 
     /// Scan sub-directories for vhost files
-    pub include_subdirs: bool
+    pub include_subdirs: bool,
+
+    pub file_extensions: Vec<String>
 }

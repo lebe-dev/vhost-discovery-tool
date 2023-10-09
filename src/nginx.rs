@@ -2,13 +2,15 @@ use regex::Regex;
 
 use crate::vhost::VhostDiscoveryConfig;
 
-pub fn get_nginx_discovery_config(include_subdirs: bool) -> VhostDiscoveryConfig {
+pub fn get_nginx_discovery_config(include_subdirs: bool,
+                                  file_extensions: &Vec<String>) -> VhostDiscoveryConfig {
     VhostDiscoveryConfig {
         section_start: get_nginx_vhost_section_start_regex(),
         redirect_to_url: get_nginx_redirect_with_301_regex(),
         port: get_nginx_vhost_port_regex(),
         domain: get_domain_search_regex_for_nginx_vhost(),
-        include_subdirs
+        include_subdirs,
+        file_extensions: file_extensions.clone()
     }
 }
 
@@ -32,8 +34,8 @@ pub fn get_nginx_vhost_port_regex() -> Regex {
 pub mod nginx_tests {
     use std::path::Path;
 
-    use crate::VirtualHost;
     use crate::nginx::{get_domain_search_regex_for_nginx_vhost, get_nginx_redirect_with_301_regex, get_nginx_vhost_port_regex, get_nginx_vhost_section_start_regex};
+    use crate::VirtualHost;
     use crate::webserver::get_virtual_hosts_from_file;
 
     #[test]

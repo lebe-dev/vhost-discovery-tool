@@ -4,7 +4,7 @@ use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
 use crate::domain::VirtualHost;
 
 pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>,
-                              mask_patterns: &Vec<&str>) -> Vec<VirtualHost> {
+                              mask_patterns: &Vec<String>) -> Vec<VirtualHost> {
 
     let mut results: Vec<VirtualHost> = Vec::new();
 
@@ -111,7 +111,8 @@ mod filter_tests {
             vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone(), vhost5.clone()
         ];
 
-        let masks: Vec<&str> = vec![".de$", "^fancy", "ops", "^localhost$"];
+        let masks: Vec<String> = vec![
+            ".de$".to_string(), "^fancy".to_string(), "ops".to_string(), "^localhost$".to_string()];
 
         let results = filter_by_domain_masks(&vhosts, &masks);
 
@@ -132,7 +133,7 @@ mod filter_tests {
             vhost1.clone(), vhost2.clone(), vhost3.clone(), vhost4.clone()
         ];
 
-        let masks: Vec<&str> = vec!["", "qwerty"];
+        let masks: Vec<String> = vec!["".to_string(), "qwerty".to_string()];
 
         let results = filter_by_domain_masks(&vhosts, &masks);
 
