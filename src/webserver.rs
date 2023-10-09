@@ -93,7 +93,7 @@ pub fn get_virtual_hosts_from_file(
 
     let vhost_file_name = vhost_file.to_str().unwrap();
 
-    info!("get virtual hosts from file '{}'", vhost_file_name);
+    info!("get virtual hosts from file '{vhost_file_name}'");
 
     let input = File::open(vhost_file)?;
     let buffered = BufReader::new(input);
@@ -107,7 +107,7 @@ pub fn get_virtual_hosts_from_file(
 
     for line in buffered.lines() {
         let row = line.unwrap_or(String::new());
-        trace!("row '{}'", row);
+        trace!("row '{row}'");
 
         if section_start_pattern.is_match(&row) {
             if domain.is_none() && port.is_some() {
@@ -134,7 +134,7 @@ pub fn get_virtual_hosts_from_file(
 
                 match previous_row {
                     Some(previous_row_value) => {
-                        trace!("previous row value: '{}'", previous_row_value);
+                        trace!("previous row value: '{previous_row_value}'");
                         if !previous_row_value.contains("location /") {
                             debug!(
                                     "previous row doesn't contain 'location /', \
@@ -162,13 +162,13 @@ pub fn get_virtual_hosts_from_file(
                     &row, &port_search_pattern
                 );
 
-                trace!("vhost port: '{}'", vhost_port_str);
+                trace!("vhost port: '{vhost_port_str}'");
 
                 if let Ok(vhost_port) = vhost_port_str.parse() {
                     debug!("port found {}", vhost_port);
                     port = Some(vhost_port);
 
-                } else { error!("couldn't parse port value '{}'", vhost_port_str); }
+                } else { error!("couldn't parse port value '{vhost_port_str}'"); }
             }
 
             if domain.is_none() && domain_search_pattern.is_match(&row) {
@@ -178,7 +178,7 @@ pub fn get_virtual_hosts_from_file(
                 let sanitized_domains_row = domains_row.replace(r"[\s\t]{2}", " ");
                 let domains: Vec<&str> = sanitized_domains_row.split(" ").collect::<Vec<&str>>();
                 if let Some(domain_value) = domains.first() {
-                    debug!("domain found {}", domain_value);
+                    debug!("domain found {domain_value}");
                     domain = Some(domain_value.to_string());
                 }
             }
