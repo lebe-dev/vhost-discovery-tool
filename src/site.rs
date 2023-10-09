@@ -20,9 +20,9 @@ pub fn get_domains_from_vhosts(vhosts: Vec<VirtualHost>,
 
 pub fn get_url(domain: &str, vhost_port: i32) -> String {
     match vhost_port {
-        DEFAULT_HTTP_PORT => String::from(format!("http://{}", domain)),
-        DEFAULT_HTTPS_PORT => String::from(format!("https://{}", domain)),
-        _ => String::from(format!("http://{}:{}", domain, vhost_port))
+        DEFAULT_HTTP_PORT => String::from(format!("http://{domain}")),
+        DEFAULT_HTTPS_PORT => String::from(format!("https://{domain}")),
+        _ => String::from(format!("http://{domain}:{vhost_port}"))
     }
 }
 
@@ -35,7 +35,7 @@ fn get_site_name(domain: &str, port: i32) -> String {
     match port {
         DEFAULT_HTTP_PORT => String::from(format!("{}_http", domain)),
         DEFAULT_HTTPS_PORT => String::from(domain),
-        _ => String::from(format!("{}:{}", domain, port))
+        _ => String::from(format!("{domain}:{port}"))
     }
 }
 

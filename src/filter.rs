@@ -12,7 +12,7 @@ pub fn filter_by_domain_masks(vhosts: &Vec<VirtualHost>,
         let mut permitted = true;
 
         for mask in mask_patterns {
-            debug!("mask regexp '{}'", mask);
+            debug!("mask regexp '{mask}'");
 
             if mask.len() > 0 {
                 match Regex::new(mask) {

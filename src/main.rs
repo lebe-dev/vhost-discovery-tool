@@ -161,6 +161,7 @@ fn main() {
 
     let nginx_discovery_config = get_nginx_discovery_config(
         app_config.recursive_mode, &app_config.vhost_file_extensions);
+
     let mut nginx_vhosts = get_vhosts(nginx_vhosts_path, &nginx_discovery_config)
         .expect("couldn't get vhosts from nginx");
 
@@ -195,7 +196,7 @@ fn main() {
         json = get_low_level_discovery_json(sites);
     };
 
-    println!("{}", json);
+    println!("{json}");
 }
 
 fn init_logging(matches: &ArgMatches) {
