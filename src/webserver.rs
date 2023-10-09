@@ -9,7 +9,7 @@ use regex::Regex;
 use crate::domain::VirtualHost;
 use crate::vhost::VhostDiscoveryConfig;
 
-const VHOST_CONFIG_FILE_EXTENSION: &str = ".conf";
+const VHOST_CONFIG_FILE_EXTENSIONS: [&str; 2] = [".conf", ".vhost"];
 
 pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<Vec<VirtualHost>> {
     info!("get vhosts from path '{}'", path.display());
@@ -203,7 +203,7 @@ fn get_vhost_file_from_dir(vhost_root_path: &Path,
     if let Ok(file_type) = dir_entry.file_type() {
         if file_type.is_file() || file_type.is_symlink() {
             if let Ok(file_name) = dir_entry.file_name().into_string() {
-                if file_name.ends_with(VHOST_CONFIG_FILE_EXTENSION) {
+                if VHOST_CONFIG_FILE_EXTENSIONS.iter().any(|&ext| file_name.ends_with(ext)) {
                     let vhost_file = vhost_root_path.join(file_name);
                     result = Some(vhost_file)
                 }
