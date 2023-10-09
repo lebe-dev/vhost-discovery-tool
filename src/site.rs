@@ -33,7 +33,7 @@ fn get_domain_from_vhost(vhost: &VirtualHost) -> Site {
 
 fn get_site_name(domain: &str, port: i32) -> String {
     match port {
-        DEFAULT_HTTP_PORT => String::from(format!("{}_http", domain)),
+        DEFAULT_HTTP_PORT => String::from(format!("{domain}_http")),
         DEFAULT_HTTPS_PORT => String::from(domain),
         _ => String::from(format!("{domain}:{port}"))
     }
@@ -44,7 +44,7 @@ mod site_tests {
     use crate::{DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT};
     use crate::domain::{Site, VirtualHost};
     use crate::site::get_domains_from_vhosts;
-    use crate::test_utils::samples::{get_4_sample_vhosts, SAMPLE_DOMAIN1, SAMPLE_DOMAIN2, SAMPLE_DOMAIN3, SAMPLE_DOMAIN4};
+    use crate::test_utils::samples::{get_4_sample_vhosts, SAMPLE_DOMAIN1, SAMPLE_DOMAIN2, SAMPLE_DOMAIN3};
 
     #[test]
     fn without_www_domains_result_should_not_contain_domains_with_www_lol() {
@@ -68,7 +68,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 4);
 
-        let expected_url = format!("https://{}", SAMPLE_DOMAIN4);
+        let expected_url = format!("https://{SAMPLE_DOMAIN4}");
         assert_site_with_url(&results, &expected_url);
     }
 
@@ -95,7 +95,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let expected_url = format!("http://{}", SAMPLE_DOMAIN3);
+        let expected_url = format!("http://{SAMPLE_DOMAIN3}");
 
         assert_site_with_url(&results, &expected_url);
     }
@@ -111,7 +111,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let expected_url = format!("http://{}:{}", domain, custom_port);
+        let expected_url = format!("http://{domain}:{custom_port}");
 
         assert_site_with_url(&results, &expected_url);
     }
@@ -125,7 +125,7 @@ mod site_tests {
 
         assert_eq!(results.len(), 1);
 
-        let expected_site_name = format!("{}_http", SAMPLE_DOMAIN3);
+        let expected_site_name = format!("{SAMPLE_DOMAIN3}_http");
 
         let site_found = results.iter().find(|site| site.name == expected_site_name);
         assert!(site_found.is_some())
