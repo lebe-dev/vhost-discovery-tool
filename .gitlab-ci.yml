@@ -5,7 +5,7 @@ build-linux:
   stage: build
 
   only:
-    - main
+    - master
 
   script:
     - cross test
@@ -29,7 +29,7 @@ build-rhel7:
   stage: build
 
   only:
-    - main
+    - master
 
   script:
     - cross test
@@ -53,7 +53,7 @@ build-windows:
   stage: build
 
   only:
-    - main
+    - master
 
   script:
     - cargo test
