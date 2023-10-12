@@ -8,16 +8,16 @@ Use `--use-data-property` option for Zabbix < 4.2 (see details in Options sectio
 
 1. Copy `vhdt` to `/usr/bin`.
 2. Copy zabbix agent config `vhost-discovery.conf` to `/etc/zabbix/zabbix-agent.d/vhost-discovery.conf`
-3. Import `vhost-discovery-template.xml` to Zabbix Server.
+3. Import template file `vhost-discovery-template.xml` in Zabbix Server Admin Panel.
 4. Update permissions:
-  ```
+  ```shell
   chmod +x /usr/bin/vhdt
   chown -R zabbix: /var/log/zabbix
   setfacl -Rm u:zabbix:rx /etc/nginx/conf.d
   setfacl -Rm u:zabbix:rx /etc/nginx/sites-enabled
   ``` 
 
-5. Add `Virtual Hosts` template to target host.
+5. Attach `Virtual Hosts` template to target host.
 6. (Optional) Use [wszl tool](https://github.com/tinyops-ru/zabbix-lld-ws). It creates web-scenarios+triggers based on vhost items.
 
 ## How it works
@@ -34,8 +34,6 @@ Tool looking for nginx\apache configuration files then creates data structures f
 Example: `server_name toys.com www.toys.com`
 
 Domain `toys.com` will be collected.
-
-Create issue if you want all domains and explain it.
 
 #### 2. Redirect limitations
 
@@ -57,7 +55,7 @@ Add `_http` postfix for domain with http protocol. For example: `http://somesite
 }
 ```
 
-### Processing for nginx configs
+### Processing nginx configs
 
 Tool ignores hosts which don't have `server_name` property. 
 
@@ -172,3 +170,4 @@ Thanks for project support, testing and feedback:
 
 - [ttsrg](https://github.com/ttsrg)
 - [BTLzdravtech](https://github.com/BTLzdravtech)
+- [bbx-github](https://github.com/bbx-github)
