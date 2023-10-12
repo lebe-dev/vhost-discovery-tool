@@ -2,8 +2,7 @@
 
 [Русская версия](README.RU.md)
 
-Gather urls from nginx\apache configs then outputs in Zabbix 
-[Low Level Discovery](https://www.zabbix.com/documentation/current/manual/discovery/low_level_discovery) format.
+Collect URLs from nginx/apache configs and output them in Zabbix [Low-Level Discovery](https://www.zabbix.com/documentation/current/manual/discovery/low_level_discovery) format.
 
 Use `--use-data-property` option for Zabbix < 4.2 (see details in Options section).
 
