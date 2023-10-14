@@ -38,7 +38,7 @@ pub mod apache_tests {
 
         let config = get_apache_discovery_config(false, &vec![".conf".to_string()]);
 
-        let vhosts = get_vhosts(vhosts_path, &config).unwrap();
+        let vhosts = get_vhosts(vhosts_path, &config, false).unwrap();
 
         for vhost in &vhosts {
             println!("{}", vhost.to_string());

@@ -5,6 +5,7 @@ extern crate serde_json;
 
 use std::env;
 use std::path::Path;
+use std::process::exit;
 
 use clap::{App, Arg, ArgMatches};
 use serde_json::json;
@@ -39,6 +40,7 @@ mod cli;
 #[cfg(test)]
 mod test_utils;
 
+const EXIT_CODE_ERROR: i32 = 1;
 const DEFAULT_HTTP_PORT: i32 = 80;
 const DEFAULT_HTTPS_PORT: i32 = 443;
 
@@ -64,6 +66,9 @@ const NGINX_VHOSTS_PATH_ARGUMENT: &str = "nginx-vhosts-path";
 const NGINX_VHOSTS_PATH_SHORT_ARGUMENT: &str = "n";
 
 const RECURSIVE_OPTION: &str = "r";
+
+const FALL_ON_PARSE_ERROR_OPTION: &str = "fall-on-parse-error";
+const FALL_ON_PARSE_ERROR_SHORT_OPTION: &str = "f";
 
 const APACHE_VHOSTS_PATH_ARGUMENT: &str = "apache-vhosts-path";
 const APACHE_VHOSTS_PATH_SHORT_ARGUMENT: &str = "a";
@@ -101,6 +106,12 @@ fn main() {
             Arg::with_name(VHOST_FILE_EXTENSIONS_ARGUMENT)
                 .long(VHOST_FILE_EXTENSIONS_ARGUMENT)
                 .help("specify file extensions, default: .conf and .vhost")
+        )
+        .arg(
+            Arg::with_name(FALL_ON_PARSE_ERROR_OPTION)
+                .long(FALL_ON_PARSE_ERROR_OPTION)
+                .short(FALL_ON_PARSE_ERROR_SHORT_OPTION)
+                .help("exit on parse errors")
         )
         .arg(
             Arg::with_name(RECURSIVE_OPTION)
@@ -162,25 +173,40 @@ fn main() {
     let nginx_discovery_config = get_nginx_discovery_config(
         app_config.recursive_mode, &app_config.vhost_file_extensions);
 
-    let mut nginx_vhosts = get_vhosts(nginx_vhosts_path, &nginx_discovery_config)
-        .expect("couldn't get vhosts from nginx");
-
-    debug!("nginx vhosts collected:");
-    debug!("{:?}", nginx_vhosts);
-
-    vhosts.append(&mut nginx_vhosts);
+    match get_vhosts(nginx_vhosts_path, &nginx_discovery_config,
+                     app_config.fall_on_parse_errors) {
+        Ok(mut nginx_vhosts) => {
+            debug!("nginx vhosts collected:");
+            debug!("{:?}", nginx_vhosts);
+            vhosts.append(&mut nginx_vhosts);
+        }
+        Err(e) => {
+            error!("{}", e);
+            if app_config.fall_on_parse_errors {
+                exit(EXIT_CODE_ERROR)
+            }
+        }
+    }
 
     let apache_vhosts_path: &Path = get_apache_vhosts_path(&matches);
     debug!("apache vhosts root: '{}'", apache_vhosts_path.display());
 
     let apache_discovery_config = get_apache_discovery_config(
         app_config.recursive_mode, &app_config.vhost_file_extensions);
-    let mut apache_vhosts = get_vhosts(apache_vhosts_path, &apache_discovery_config)
-        .expect("couldn't get vhosts from apache");
 
-    debug!("apache vhosts collected:");
-    debug!("{:?}", apache_vhosts);
-    vhosts.append(&mut apache_vhosts);
+    match get_vhosts(apache_vhosts_path, &apache_discovery_config, app_config.fall_on_parse_errors) {
+        Ok(mut apache_vhosts) => {
+            debug!("apache vhosts collected:");
+            debug!("{:?}", apache_vhosts);
+            vhosts.append(&mut apache_vhosts);
+        }
+        Err(e) => {
+            error!("{}", e);
+            if app_config.fall_on_parse_errors {
+                exit(EXIT_CODE_ERROR)
+            }
+        }
+    }
 
     let mut filtered_vhosts = filter_vhosts(&vhosts, app_config.include_custom_domains);
     filtered_vhosts = filter_by_domain_masks(&filtered_vhosts, &app_config.domain_ignore_masks);

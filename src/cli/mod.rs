@@ -1,8 +1,9 @@
 use clap::ArgMatches;
 
-use crate::{DOMAIN_IGNORE_MASKS_OPTION, INCLUDE_CUSTOM_PORTS_OPTION, INCLUDE_DOMAINS_WITH_WWW, RECURSIVE_OPTION, VHOST_FILE_EXTENSIONS_DEFAULT_VALUE};
+use crate::{DOMAIN_IGNORE_MASKS_OPTION, FALL_ON_PARSE_ERROR_OPTION, FALL_ON_PARSE_ERROR_SHORT_OPTION, INCLUDE_CUSTOM_PORTS_OPTION, INCLUDE_DOMAINS_WITH_WWW, RECURSIVE_OPTION, VHOST_FILE_EXTENSIONS_DEFAULT_VALUE};
 
 pub struct AppConfig {
+    pub fall_on_parse_errors: bool,
     pub include_domains_with_www: bool,
     pub include_custom_domains: bool,
     pub recursive_mode: bool,
@@ -25,6 +26,8 @@ pub fn get_app_config(arg_matches: &ArgMatches) -> AppConfig {
     let vhost_file_extensions = get_string_args_separated_by_comma(vhost_file_extensions_row);
 
     AppConfig {
+        fall_on_parse_errors: arg_matches.occurrences_of(FALL_ON_PARSE_ERROR_OPTION) > 0 ||
+                              arg_matches.occurrences_of(FALL_ON_PARSE_ERROR_SHORT_OPTION) > 0,
         include_domains_with_www: arg_matches.occurrences_of(INCLUDE_DOMAINS_WITH_WWW) > 0,
         include_custom_domains: arg_matches.occurrences_of(INCLUDE_CUSTOM_PORTS_OPTION) > 0,
         recursive_mode: arg_matches.occurrences_of(RECURSIVE_OPTION) > 0,

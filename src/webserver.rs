@@ -9,10 +9,11 @@ use regex::Regex;
 use crate::domain::VirtualHost;
 use crate::vhost::VhostDiscoveryConfig;
 
-pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<Vec<VirtualHost>> {
-    info!("get vhosts from path '{}'", path.display());
+pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig,
+                  fall_on_parse_errors: bool) -> anyhow::Result<Vec<VirtualHost>> {
+    info!("getting vhosts from path '{}'..", path.display());
 
-    let mut vhosts: Vec<VirtualHost> = Vec::new();
+    let mut results: Vec<VirtualHost> = Vec::new();
 
     if path.is_dir() && path.exists() {
         let vhost_files = get_vhost_config_file_list(
@@ -24,20 +25,30 @@ pub fn get_vhosts(path: &Path, config: &VhostDiscoveryConfig) -> anyhow::Result<
 
             debug!("processing file '{}'", vhost_file_path.display());
 
-            let apache_vhosts = get_virtual_hosts_from_file(
+            match get_virtual_hosts_from_file(
                 vhost_file_path,
                 &config.section_start, &config.redirect_to_url,
                 &config.port, &config.domain
-            ).context("couldn't get virtual hosts from file")?;
+            ) {
+                Ok(vhosts) => {
+                    for vhost in vhosts {
+                        debug!("{}", vhost.to_string());
+                        results.push(vhost);
+                    }
+                }
+                Err(e) => {
+                    error!("unable to get virtual hosts from file path '{}': {}",
+                        vhost_file_path.display(), e);
 
-            for apache_vhost in apache_vhosts {
-                debug!("{}", apache_vhost.to_string());
-                vhosts.push(apache_vhost);
+                    if fall_on_parse_errors {
+                        break;
+                    }
+                }
             }
 
         }
 
-        Ok(vhosts)
+        Ok(results)
 
     } else {
         warn!("vhosts path '{}' doesn't exist", path.display());
@@ -54,7 +65,7 @@ pub fn get_vhost_config_file_list(vhost_root_path: &Path, file_extensions: &Vec<
     let mut vhost_files: Vec<PathBuf> = Vec::new();
 
     for path_entry in paths {
-        let dir_entry = path_entry.unwrap();
+        let dir_entry = path_entry?;
 
         match dir_entry.file_type() {
             Ok(file_type) => {
@@ -254,7 +265,7 @@ mod get_vhosts_tests {
         let config = get_nginx_discovery_config(
             false, &vec![".conf".to_string()]);
 
-        let vhosts = get_vhosts(&nginx_vhost_path, &config).unwrap();
+        let vhosts = get_vhosts(&nginx_vhost_path, &config, false).unwrap();
 
         vhosts.iter().for_each(|vhost| println!("{}", vhost.to_string()));
 
@@ -273,7 +284,7 @@ mod get_vhosts_tests {
     fn return_error_for_invalid_path() {
         let config = get_nginx_discovery_config(true, &vec![".conf".to_string()]);
         let path = Path::new("does-not-exist");
-        assert!(get_vhosts(path, &config).is_err())
+        assert!(get_vhosts(path, &config, false).is_err())
     }
 }
 
